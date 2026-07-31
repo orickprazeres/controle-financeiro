@@ -47,7 +47,9 @@ A exclusão pelo site remove uma linha por vez. Para apagar a compra inteira, fi
 
 ### A aba Investimentos aparece vazia
 
-Você atualizou o `index.html` mas não o `Codigo.gs`. As duas partes precisam estar na v1.1.0: cole o novo `Codigo.gs` no Apps Script **e reimplante** (Implantar → Gerenciar implantações → lápis → Nova versão).
+Você atualizou o `index.html` mas não o `Codigo.gs`, ou não criou as abas novas. O passo a passo completo está em [`06-atualizar-versao.md`](06-atualizar-versao.md).
+
+Atalho para diagnosticar: no editor do Apps Script, rode a função **`verificarInstalacao`**.
 
 Para conferir, abra a URL da API com `?token=SUA-SENHA` no navegador: o JSON precisa ter as chaves `ativos`, `investimentos` e `saldos`.
 

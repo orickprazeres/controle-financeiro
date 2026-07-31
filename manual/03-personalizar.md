@@ -42,6 +42,18 @@ Três detalhes importantes:
 
 ---
 
+## Voltar a aba "Novo" no lugar do modal
+
+Se preferir o formulário como página fixa, em `docs/index.html`:
+
+1. No `<nav>`, acrescente `<button data-p="novo">Novo</button>`
+2. No JavaScript, ponha `novo:'pgNovo'` de volta no objeto `mapa`
+3. Troque `<div id="modalNovo" class="modal hide">` por `<div id="pgNovo" class="pg hide">`
+
+Dá para ter os dois ao mesmo tempo, mas aí o formulário existiria duplicado e os IDs colidiriam. Escolha um.
+
+---
+
 ## Trocar as cores
 
 No topo do `<style>` de `docs/index.html` e `docs/importar.html`:

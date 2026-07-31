@@ -122,4 +122,6 @@ Depois disso, a aba **Minha carteira** mostra patrimônio, quanto foi seu bolso 
 
 ---
 
-**Anterior:** [`04-problemas-comuns.md`](04-problemas-comuns.md)
+**Já usava a v1.0.0?** As três abas não existem na sua planilha ainda — veja [`06-atualizar-versao.md`](06-atualizar-versao.md) antes. Não reimporte o `.xlsx`.
+
+**Anterior:** [`04-problemas-comuns.md`](04-problemas-comuns.md) · **Próximo:** [`06-atualizar-versao.md`](06-atualizar-versao.md)

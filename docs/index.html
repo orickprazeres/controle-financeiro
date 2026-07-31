@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Custos da Casa v1.1.0 -->
+<!-- Custos da Casa v1.2.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <title>Custos da Casa</title>
@@ -75,6 +75,25 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 .sep{border:0;border-top:1px solid var(--line);margin:20px 0}
 .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:9px;cursor:pointer}
 .chk input{width:auto;margin:0}
+
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:100;
+  display:flex;align-items:flex-start;justify-content:center;padding:22px 14px;overflow-y:auto;
+  animation:fadeIn .12s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;
+  width:100%;max-width:660px;margin:auto;box-shadow:0 24px 60px rgba(0,0,0,.55)}
+.modal-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.modal-head h2{font-size:17px;font-weight:700;color:var(--txt);
+  text-transform:none;letter-spacing:-.2px;margin:0}
+.x{background:transparent;border:1px solid var(--line);color:var(--mut);
+  width:34px;height:34px;padding:0;border-radius:9px;font-size:15px;line-height:1;flex:none}
+.x:hover{color:var(--txt);border-color:var(--mut);filter:none}
+#btAbrirNovo{white-space:nowrap;font-weight:600}
+@media(max-width:640px){
+  .modal{padding:0}
+  .modal-box{border-radius:0;min-height:100%;max-width:none;border:0}
+}
 </style>
 </head>
 <body>
@@ -83,6 +102,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 <header>
   <h1>Custos da <span>Casa</span></h1>
   <div class="sp"></div>
+  <button id="btAbrirNovo" class="hide">+ Novo lançamento</button>
   <div style="width:150px"><select id="selMes"></select></div>
   <button class="gh" id="btRec">Atualizar</button>
   <button class="gh" id="btCfg">⚙</button>
@@ -102,7 +122,6 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 <nav id="nav" class="hide">
   <button data-p="painel" class="on">Painel</button>
   <button data-p="lanc">Lançamentos</button>
-  <button data-p="novo">Novo</button>
   <button data-p="orc">Orçamento</button>
   <button data-p="fut">Parcelas futuras</button>
   <button data-p="inv">Investimentos</button>
@@ -155,10 +174,14 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
   </div>
 </div>
 
-<!-- ================= NOVO ================= -->
-<div id="pgNovo" class="pg hide">
-  <div class="card" style="max-width:620px">
-    <h2>Novo lançamento</h2>
+<!-- ================= MODAL: NOVO LANÇAMENTO ================= -->
+<div id="modalNovo" class="modal hide">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Novo lançamento</h2>
+      <div class="sp"></div>
+      <button class="x" id="btFecharNovo" title="Fechar (Esc)">&#10005;</button>
+    </div>
     <div id="msgNovo"></div>
     <div class="g3">
       <div class="fld"><label>Tipo</label><select id="nTipo"><option>Saída</option><option>Entrada</option></select></div>
@@ -184,7 +207,12 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
     </div>
     <div class="fld"><label>Observação (opcional)</label><input id="nObs"></div>
     <div id="previa" class="msg i hide"></div>
-    <button id="btSalvarLanc">Lançar</button>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button id="btSalvarLanc">Lançar</button>
+      <button class="gh" id="btCancelarNovo">Cancelar</button>
+      <div class="sp"></div>
+      <span class="nota" style="margin:0">Esc fecha</span>
+    </div>
   </div>
 </div>
 
@@ -348,7 +376,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 
 <script>
 /* ============================================================ estado */
-var VERSAO = '1.1.0';
+var VERSAO = '1.2.0';
 var CFG = { url: localStorage.getItem('cc_url') || '', token: localStorage.getItem('cc_tok') || '' };
 var DB = { lancamentos: [], categorias: [], cartoes: [], orcamento: [] };
 var MES = '';
@@ -401,6 +429,7 @@ function carregar(){
     DB = res;
     aviso('');
     $('nav').classList.remove('hide');
+    $('btAbrirNovo').classList.remove('hide');
     $('pgCfg').classList.add('hide');
     prepararMeses();
     preencherSelects();
@@ -413,6 +442,7 @@ function carregar(){
 function mostrarCfg(){
   $('cfgUrl').value = CFG.url; $('cfgTok').value = CFG.token;
   $('pgCfg').classList.remove('hide');
+  $('btAbrirNovo').classList.add('hide');
   document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
 }
 
@@ -958,7 +988,7 @@ document.querySelectorAll('#nav button[data-p]').forEach(function(b){
     document.querySelectorAll('#nav button').forEach(function(x){ x.classList.remove('on'); });
     b.classList.add('on');
     document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
-    var mapa = { painel:'pgPainel', lanc:'pgLanc', novo:'pgNovo', orc:'pgOrc', fut:'pgFut', inv:'pgInv' };
+    var mapa = { painel:'pgPainel', lanc:'pgLanc', orc:'pgOrc', fut:'pgFut', inv:'pgInv' };
     $(mapa[b.dataset.p]).classList.remove('hide');
     $('pgCfg').classList.add('hide');
   };
@@ -1027,12 +1057,45 @@ $('btSalvarLanc').onclick = function(){
   var bt = this;
   apiPost(d).then(function(r){
     if (!r.ok) throw new Error(r.erro);
-    msgEm('msgNovo', r.inseridas + ' lançamento(s) gravado(s) na planilha.','s');
+    fecharNovo();
+    aviso(r.inseridas + (r.inseridas > 1 ? ' lançamentos gravados' : ' lançamento gravado')
+          + ' na planilha.', 's');
     $('nDesc').value=''; $('nValor').value=''; $('nObs').value=''; $('nParc').value=1;
     atualizaPrevia(); carregar();
   }).catch(function(e){ msgEm('msgNovo','Erro: '+e.message,'e'); })
     .then(function(){ bt.disabled=false; bt.textContent='Lançar'; });
 };
+
+/* --- modal de novo lançamento --- */
+
+function abrirNovo(){
+  msgEm('msgNovo','');
+  if (!$('nData').value) $('nData').value = hoje();
+  // já entra no mês que você está olhando no painel
+  $('nComp').value = MES || hoje().slice(0,7);
+  atualizaPrevia();
+  $('modalNovo').classList.remove('hide');
+  setTimeout(function(){ $('nDesc').focus(); }, 60);
+}
+function fecharNovo(){ $('modalNovo').classList.add('hide'); }
+
+$('btAbrirNovo').onclick    = abrirNovo;
+$('btFecharNovo').onclick   = fecharNovo;
+$('btCancelarNovo').onclick = fecharNovo;
+
+// clicar no fundo escuro fecha
+$('modalNovo').addEventListener('click', function(ev){
+  if (ev.target === this) fecharNovo();
+});
+
+document.addEventListener('keydown', function(ev){
+  if (ev.key === 'Escape' && !$('modalNovo').classList.contains('hide')) fecharNovo();
+  // Enter dentro do modal salva, exceto se o foco estiver num select
+  if (ev.key === 'Enter' && !$('modalNovo').classList.contains('hide')
+      && ev.target.tagName === 'INPUT') {
+    ev.preventDefault(); $('btSalvarLanc').click();
+  }
+});
 
 $('btSalvarOrc').onclick = function(){
   var lista = [];

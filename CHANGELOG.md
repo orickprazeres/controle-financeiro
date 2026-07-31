@@ -9,6 +9,30 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.2.0] — 2026-07-31
+
+Lançar virou um botão. Só o site muda — planilha e Apps Script continuam na v1.1.0, nada a reimplantar.
+
+### Alterado
+
+- **Botão "+ Novo lançamento" fixo no topo**, ao lado do seletor de mês. Abre um modal sobre a tela atual, de qualquer aba.
+- **A aba "Novo" saiu do menu.** O formulário é o mesmo, agora dentro do modal — nenhum campo mudou.
+- **A competência já vem no mês que você está olhando.** Se o painel está em jul/2026, o lançamento nasce em 2026-07 em vez do mês corrente.
+- Ao salvar, o modal fecha sozinho e a confirmação aparece no topo da página, não escondida dentro do formulário.
+
+### Adicionado
+
+- Fechar o modal por **Esc**, pelo **✕**, pelo **Cancelar** ou clicando no fundo escurecido.
+- **Enter** dentro de qualquer campo de texto salva o lançamento.
+- Foco automático na Descrição ao abrir — dá para abrir e já digitar.
+- Em tela de celular o modal ocupa a tela inteira, sem bordas.
+
+### Motivo
+
+Lançar é a ação mais frequente do sistema, e estava a dois cliques e uma troca de contexto de distância: sair do painel, ir na aba Novo, preencher, voltar. Agora é um clique de onde você estiver, e você não perde de vista o mês que estava analisando.
+
+---
+
 ## [1.1.0] — 2026-07-31
 
 Módulo de investimentos. Compatível com a v1.0.0: nenhum dado existente precisa ser alterado.
@@ -36,9 +60,15 @@ Módulo de investimentos. Compatível com a v1.0.0: nenhum dado existente precis
 - *Minha carteira*: patrimônio, total aportado, rendimento acumulado, aporte médio mensal, evolução do patrimônio com aportes sobrepostos, composição por classe, quadro por ativo com rentabilidade, e comparativo entre a sobra do mês e o aporte efetivo.
 - *Registrar*: formulários de aporte/resgate, saldo mensal e cadastro de ativo.
 
+**Migração** (para quem já usava a v1.0.0)
+
+- `configurarInvestimentos()` cria as três abas novas na planilha existente, com cabeçalhos, formato de moeda e listas suspensas. Idempotente — rodar duas vezes não duplica nada.
+- `verificarInstalacao()` diz quais abas faltam e qual versão está rodando.
+- **Não substitua a planilha.** O Apps Script vive dentro dela; trocar o arquivo derruba a API e apaga os lançamentos. Guia em `manual/06-atualizar-versao.md`.
+
 **Documentação e testes**
 
-- Novo `manual/05-investimentos.md`.
+- Novo `manual/05-investimentos.md` e `manual/06-atualizar-versao.md`.
 - Seções novas em `03-personalizar.md` (adicionar tipo de investimento, ajustar taxas de referência) e `04-problemas-comuns.md` (aba vazia, rendimento estranho, aporte em dobro).
 - 34 testes novos: taxa mensal equivalente, composição IPCA + juro real, tabela regressiva de IR nas quatro faixas e fronteiras, projeção de aportes com e sem juros, crescimento anual do aporte, rendimento deduzido e consolidação da carteira. Total: **94 testes**.
 

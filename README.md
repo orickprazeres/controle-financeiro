@@ -1,4 +1,4 @@
-# Custos da Casa · v1.1.0
+# Custos da Casa · v1.2.0
 
 Controle de custos domésticos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -15,7 +15,7 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 ├── .gitignore                   o que o Git deve ignorar
 │
 ├── docs/                        ► O SITE (é desta pasta que o GitHub Pages publica)
-│   ├── index.html                 painel, lançamentos, orçamento, parcelas futuras
+│   ├── index.html                 painel, lançamentos, orçamento, investimentos
 │   └── importar.html              importador de CSV de fatura/extrato
 │
 ├── apps-script/                 ► O BACKEND (vai colado dentro da planilha)
@@ -32,7 +32,8 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 │   ├── 02-estrutura-de-dados.md   o que é cada aba e cada coluna
 │   ├── 03-personalizar.md         categorias, cores, regras de auto-classificação
 │   ├── 04-problemas-comuns.md     o que fazer quando algo não funciona
-│   └── 05-investimentos.md        simulador de aportes e carteira real
+│   ├── 05-investimentos.md        simulador de aportes e carteira real
+│   └── 06-atualizar-versao.md     como atualizar SEM trocar a planilha
 │
 └── testes/                      ► CONTROLE DE QUALIDADE
     ├── testes.js                  testes automatizados da lógica crítica
@@ -46,7 +47,9 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 
 ## Começar
 
-Vá direto para **[`manual/01-instalacao.md`](manual/01-instalacao.md)**. São 4 etapas, cerca de 15 minutos:
+**Já instalou uma versão anterior?** Não importe o `.xlsx` de novo — vá para **[`manual/06-atualizar-versao.md`](manual/06-atualizar-versao.md)**. Trocar a planilha faz você perder a API e os dados.
+
+**Instalando do zero?** Vá para **[`manual/01-instalacao.md`](manual/01-instalacao.md)**. São 4 etapas, cerca de 15 minutos:
 
 1. Subir a planilha para o Google Sheets
 2. Colar o `Codigo.gs` no Apps Script e publicar como App da Web
@@ -61,7 +64,7 @@ Vá direto para **[`manual/01-instalacao.md`](manual/01-instalacao.md)**. São 4
 
 **Lançamentos** — lista filtrável por texto, tipo, categoria, forma de pagamento e status de pagamento, com exclusão.
 
-**Novo** — formulário de lançamento. Se você informar parcelas, ele mostra a prévia ("vou criar 10 linhas de R$ 420,00, de jan/26 até out/26") e grava cada parcela no mês em que ela cai.
+**+ Novo lançamento** — botão fixo no topo, disponível de qualquer aba. Abre um modal sobre a tela atual; Esc ou clique fora fecha. A competência já vem no mês que você está olhando. Se você informar parcelas, mostra a prévia ("vou criar 10 linhas de R$ 420,00, de jan/26 até out/26") e grava cada parcela no mês em que ela cai.
 
 **Orçamento** — limite mensal por categoria, salvo na planilha.
 
@@ -99,4 +102,4 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 ## Versão
 
-`1.1.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`1.2.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.

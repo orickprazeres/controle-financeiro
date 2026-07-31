@@ -22,6 +22,8 @@ var COLS = ['id','data','competencia','tipo','descricao','categoria','grupo',
 
 var COLS_INV = ['id','data','competencia','ativo','tipo','valor','obs'];
 var COLS_SLD = ['id','competencia','ativo','saldo','obs'];
+var COLS_ATV = ['ativo','classe','indexador','taxa_contratada',
+                'instituicao','vencimento','liquidez','em_uso'];
 
 /* ------------------------------------------------------------------ utils */
 
@@ -405,4 +407,97 @@ function invExcluir_(aba, id) {
     if (String(ids[i][0]) === String(id)) { sh.deleteRow(i + 1); return { ok: true }; }
   }
   throw new Error('Registro não encontrado: ' + id);
+}
+
+/* ==================================================================
+   MIGRAÇÃO v1.0.0 → v1.1.0
+
+   Rode UMA VEZ, direto no editor do Apps Script:
+   escolha "configurarInvestimentos" na lista de funções e clique em Executar.
+
+   Cria as abas Ativos, Investimentos e Saldos na planilha que você já usa.
+   Não toca em nada que já existe. Rodar de novo por engano não faz mal:
+   a função apenas confere e segue adiante.
+   ================================================================== */
+
+function configurarInvestimentos() {
+  var ss = ss_();
+  var criadas = [], existiam = [];
+
+  var PLANO = [
+    { nome: ABA_ATV, cols: COLS_ATV,   larg: [260, 150, 140, 130, 180, 120, 140, 80] },
+    { nome: ABA_INV, cols: COLS_INV,   larg: [130, 100, 110, 260, 100, 120, 200] },
+    { nome: ABA_SLD, cols: COLS_SLD,   larg: [130, 110, 260, 130, 200] }
+  ];
+
+  PLANO.forEach(function (p) {
+    var sh = ss.getSheetByName(p.nome);
+    if (sh) { existiam.push(p.nome); return; }
+
+    sh = ss.insertSheet(p.nome);
+    sh.getRange(1, 1, 1, p.cols.length).setValues([p.cols]);
+    sh.getRange(1, 1, 1, p.cols.length)
+      .setFontFamily('Arial').setFontSize(10).setFontWeight('bold')
+      .setFontColor('#FFFFFF').setBackground('#1E6B45')
+      .setHorizontalAlignment('center');
+    sh.setFrozenRows(1);
+    sh.setRowHeight(1, 24);
+    for (var i = 0; i < p.larg.length; i++) sh.setColumnWidth(i + 1, p.larg[i]);
+    criadas.push(p.nome);
+  });
+
+  // formatos e listas suspensas (aplicados sempre, são idempotentes)
+  var atv = ss.getSheetByName(ABA_ATV);
+  var inv = ss.getSheetByName(ABA_INV);
+  var sld = ss.getSheetByName(ABA_SLD);
+
+  atv.getRange('C2:C500').setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(
+      ['% do CDI', 'Selic +', 'IPCA +', 'Prefixado', 'Não se aplica'], true)
+      .setAllowInvalid(true).build());
+  atv.getRange('H2:H500').setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['Sim', 'Não'], true)
+      .setAllowInvalid(true).build());
+
+  var listaAtivos = SpreadsheetApp.newDataValidation()
+    .requireValueInRange(atv.getRange('A2:A500'), true)
+    .setAllowInvalid(true).build();
+
+  inv.getRange('D2:D3000').setDataValidation(listaAtivos);
+  inv.getRange('E2:E3000').setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['Aporte', 'Resgate'], true)
+      .setAllowInvalid(true).build());
+  inv.getRange('F2:F3000').setNumberFormat('R$ #,##0.00');
+
+  sld.getRange('C2:C3000').setDataValidation(listaAtivos);
+  sld.getRange('D2:D3000').setNumberFormat('R$ #,##0.00');
+
+  var msg = '';
+  if (criadas.length)  msg += 'Abas criadas: ' + criadas.join(', ') + '. ';
+  if (existiam.length) msg += 'Já existiam: ' + existiam.join(', ') + '. ';
+  msg += 'Formatos e listas suspensas aplicados.';
+
+  try { ss.toast(msg, 'Investimentos configurados', 10); } catch (e) {}
+  Logger.log(msg);
+  return msg;
+}
+
+/**
+ * Confere se a planilha está pronta para a v1.1.0.
+ * Rode esta função se a aba Investimentos do site aparecer vazia.
+ */
+function verificarInstalacao() {
+  var ss = ss_();
+  var faltando = [];
+  [ABA_LANC, ABA_CAT, ABA_CARD, ABA_ORC, ABA_ATV, ABA_INV, ABA_SLD].forEach(function (n) {
+    if (!ss.getSheetByName(n)) faltando.push(n);
+  });
+
+  var msg = faltando.length
+    ? 'FALTAM as abas: ' + faltando.join(', ') + '. Rode configurarInvestimentos().'
+    : 'Tudo certo. Versão ' + VERSAO + '. Abas encontradas: 7 de 7.';
+
+  try { ss.toast(msg, 'Verificação', 10); } catch (e) {}
+  Logger.log(msg);
+  return msg;
 }
