@@ -89,6 +89,14 @@ O botão "+ Novo lançamento" aparece no topo e a aba "Novo" some do menu. Se o 
 
 ---
 
+## Atualizar para a v1.3.0 e v1.4.0
+
+Como a v1.2.0: **só a pasta `docs/` mudou.** Suba `index.html` e `importar.html` no GitHub e dê `Ctrl+F5`.
+
+Na v1.4.1 o botão **Planilha ↗** já vem com o endereço da sua planilha — nada a configurar.
+
+---
+
 ## E nas próximas versões?
 
 O mesmo princípio, sempre:

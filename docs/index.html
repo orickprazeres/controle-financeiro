@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Custos da Casa v1.3.0 -->
+<!-- Custos da Casa v1.4.1 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <title>Custos da Casa</title>
@@ -103,6 +103,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
   <h1>Custos da <span>Casa</span></h1>
   <div class="sp"></div>
   <button id="btAbrirNovo" class="hide">+ Novo lançamento</button>
+  <button class="gh hide" id="btPlanilha" title="Abrir a planilha no Google Sheets">Planilha ↗</button>
   <div style="width:150px"><select id="selMes"></select></div>
   <button class="gh" id="btRec">Atualizar</button>
   <button class="gh" id="btCfg">⚙</button>
@@ -116,6 +117,13 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
   <div class="msg i">Cole aqui a URL do App da Web gerada pelo Apps Script e a senha que você definiu na variável <code>TOKEN</code>. Fica salvo só neste navegador.</div>
   <div class="fld"><label>URL do App da Web</label><input id="cfgUrl" placeholder="https://script.google.com/macros/s/AKfy.../exec"></div>
   <div class="fld"><label>Token</label><input id="cfgTok" placeholder="a senha que você pôs no Codigo.gs"></div>
+  <div class="fld">
+    <label>Link da planilha no Google Sheets (opcional)</label>
+    <input id="cfgSheet" placeholder="https://docs.google.com/spreadsheets/d/.../edit">
+    <div class="nota">Já vem preenchido com a sua planilha. Só mexa se trocar de planilha, ou apague para esconder o botão.
+      Isso pode ficar no código porque o compartilhamento dela está <b>Restrito</b>: saber o endereço não dá acesso.
+      Se um dia você mudar para "qualquer pessoa com o link", tire daqui e do arquivo.</div>
+  </div>
   <button id="btSalvarCfg">Salvar e conectar</button>
 </div>
 
@@ -186,7 +194,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
     <div class="g3">
       <div class="fld"><label>Tipo</label><select id="nTipo"><option>Saída</option><option>Entrada</option></select></div>
       <div class="fld"><label>Data</label><input type="date" id="nData"></div>
-      <div class="fld"><label>Competência</label><input id="nComp" placeholder="2026-01"></div>
+      <div class="fld"><label>Competência</label><select id="nComp"></select></div>
     </div>
     <div class="fld"><label>Descrição</label><input id="nDesc" placeholder="Compra do mês no Assaí"></div>
     <div class="g3">
@@ -337,7 +345,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
         <div class="nota" style="margin-top:0;margin-bottom:13px">Uma vez por mês, copie da corretora quanto cada aplicação vale e registre aqui. É isso que permite calcular o rendimento. Lançar de novo o mesmo ativo no mesmo mês <b>corrige</b> o valor, não duplica.</div>
         <div class="fld"><label>Ativo</label><select id="sdAtivo"></select></div>
         <div class="g3">
-          <div class="fld"><label>Competência</label><input id="sdComp" placeholder="2026-07"></div>
+          <div class="fld"><label>Competência</label><select id="sdComp"></select></div>
           <div class="fld"><label>Saldo (R$)</label><input type="number" step="0.01" id="sdValor"></div>
         </div>
         <button id="btSaldo">Registrar saldo</button>
@@ -376,8 +384,16 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 
 <script>
 /* ============================================================ estado */
-var VERSAO = '1.3.0';
-var CFG = { url: localStorage.getItem('cc_url') || '', token: localStorage.getItem('cc_tok') || '' };
+var VERSAO = '1.4.1';
+/* Endereço da planilha. Pode ficar aqui porque o compartilhamento dela está
+   RESTRITO — saber o endereço não dá acesso a nada. Se algum dia você mudar
+   para "qualquer pessoa com o link", apague esta linha e use só o campo do ⚙. */
+var SHEET_PADRAO = 'https://docs.google.com/spreadsheets/d/10pH6DLWFdvBzoGiFn4QNXJ2B_cEMpypO_scqN18O2Ic/edit';
+
+var _sheetSalvo = localStorage.getItem('cc_sheet');
+var CFG = { url: localStorage.getItem('cc_url') || '',
+            token: localStorage.getItem('cc_tok') || '',
+            sheet: (_sheetSalvo === null ? SHEET_PADRAO : _sheetSalvo) };
 var DB = { lancamentos: [], categorias: [], cartoes: [], orcamento: [] };
 var MES = '';
 var CH = {};
@@ -392,9 +408,29 @@ function pct(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'percent',m
 function hoje(){ return new Date().toISOString().slice(0,10); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function somaMes(c,n){ var p=String(c).split('-'),a=+p[0],m=+p[1]-1+n; a+=Math.floor(m/12); m=((m%12)+12)%12; return a+'-'+('0'+(m+1)).slice(-2); }
+var MESES_CURTOS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+/** 2026-07 -> jul/26 */
 function nomeMes(c){
-  var M=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-  var p=String(c).split('-'); return M[(+p[1])-1]+'/'+p[0];
+  var p=String(c).split('-');
+  if (p.length<2 || isNaN(+p[1])) return String(c);
+  return MESES_CURTOS[(+p[1])-1] + '/' + String(p[0]).slice(-2);
+}
+
+/** Preenche um <select> de competência mostrando jul/26 e guardando 2026-07. */
+function preencherMeses(sel, valor){
+  var base = (valor && /^\d{4}-\d{2}$/.test(valor)) ? valor : hoje().slice(0,7);
+  var lista = {};
+  for (var i=-30; i<=18; i++) lista[somaMes(hoje().slice(0,7), i)] = 1;
+  lista[base] = 1;
+  (DB.lancamentos||[]).forEach(function(l){ if(l.competencia) lista[l.competencia]=1; });
+  (DB.saldos||[]).forEach(function(l){ if(l.competencia) lista[l.competencia]=1; });
+  var ks = Object.keys(lista).sort();
+  sel.innerHTML = '';
+  ks.forEach(function(m){
+    var o=document.createElement('option'); o.value=m; o.textContent=nomeMes(m); sel.appendChild(o);
+  });
+  sel.value = base;
 }
 function aviso(txt,tipo){
   $('alerta').innerHTML = txt ? '<div class="msg '+(tipo||'i')+'">'+esc(txt)+'</div>' : '';
@@ -430,6 +466,7 @@ function carregar(){
     aviso('');
     $('nav').classList.remove('hide');
     $('btAbrirNovo').classList.remove('hide');
+    aplicarBotaoPlanilha();
     $('pgCfg').classList.add('hide');
     prepararMeses();
     preencherSelects();
@@ -440,7 +477,7 @@ function carregar(){
   });
 }
 function mostrarCfg(){
-  $('cfgUrl').value = CFG.url; $('cfgTok').value = CFG.token;
+  $('cfgUrl').value = CFG.url; $('cfgTok').value = CFG.token; $('cfgSheet').value = CFG.sheet;
   $('pgCfg').classList.remove('hide');
   $('btAbrirNovo').classList.add('hide');
   document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
@@ -962,6 +999,8 @@ function renderCarteira(){
     ativos.forEach(function(a){ var o=document.createElement('option'); o.value=o.textContent=a.ativo; sel.appendChild(o); });
     if (atual) sel.value = atual;
   });
+  preencherMeses($('sdComp'), $('sdComp').value || MES || hoje().slice(0,7));
+
   var dl = $('listaClasses'); dl.innerHTML='';
   var classes = {}; (DB.ativos||[]).forEach(function(a){ if(a.classe) classes[a.classe]=1; });
   ['Renda Fixa','Ações','FII','Fundo','Cripto','Previdência','Outros'].forEach(function(c){ classes[c]=1; });
@@ -973,12 +1012,24 @@ function renderInvestimentos(){ renderSimulador(); renderCarteira(); }
 /* ============================================================ eventos */
 $('btCfg').onclick = function(){
   var v = $('pgCfg').classList.toggle('hide');
-  if (!v){ $('cfgUrl').value=CFG.url; $('cfgTok').value=CFG.token; }
+  if (!v){ $('cfgUrl').value=CFG.url; $('cfgTok').value=CFG.token; $('cfgSheet').value=CFG.sheet; }
 };
 $('btSalvarCfg').onclick = function(){
-  CFG.url = $('cfgUrl').value.trim(); CFG.token = $('cfgTok').value.trim();
-  localStorage.setItem('cc_url',CFG.url); localStorage.setItem('cc_tok',CFG.token);
+  CFG.url   = $('cfgUrl').value.trim();
+  CFG.token = $('cfgTok').value.trim();
+  CFG.sheet = $('cfgSheet').value.trim();
+  localStorage.setItem('cc_url',CFG.url);
+  localStorage.setItem('cc_tok',CFG.token);
+  localStorage.setItem('cc_sheet',CFG.sheet);
+  aplicarBotaoPlanilha();
   carregar();
+};
+
+function aplicarBotaoPlanilha(){
+  $('btPlanilha').classList.toggle('hide', !CFG.sheet);
+}
+$('btPlanilha').onclick = function(){
+  if (CFG.sheet) window.open(CFG.sheet, '_blank', 'noopener');
 };
 $('btRec').onclick = carregar;
 $('selMes').onchange = function(){ MES = this.value; render(); };
@@ -1017,7 +1068,7 @@ $('nTipo').onchange = function(){
 $('nForma').onchange = function(){
   $('wrapCartao').classList.toggle('hide', this.value!=='Crédito');
 };
-$('nData').onchange = function(){ if (this.value) $('nComp').value = this.value.slice(0,7); };
+$('nData').onchange = function(){ if (this.value) preencherMeses($('nComp'), this.value.slice(0,7)); };
 function atualizaPrevia(){
   var n = Math.max(1, parseInt($('nParc').value||1,10));
   $('wrapModo').classList.toggle('hide', n<=1);
@@ -1072,7 +1123,7 @@ function abrirNovo(){
   msgEm('msgNovo','');
   if (!$('nData').value) $('nData').value = hoje();
   // já entra no mês que você está olhando no painel
-  $('nComp').value = MES || hoje().slice(0,7);
+  preencherMeses($('nComp'), MES || hoje().slice(0,7));
   atualizaPrevia();
   $('modalNovo').classList.remove('hide');
   setTimeout(function(){ $('nDesc').focus(); }, 60);
@@ -1188,9 +1239,10 @@ $('tbMov').addEventListener('click', function(ev){
 
 /* ============================================================ início */
 $('nData').value = hoje();
-$('nComp').value = hoje().slice(0,7);
 $('rData').value = hoje();
-$('sdComp').value = hoje().slice(0,7);
+preencherMeses($('nComp'), hoje().slice(0,7));
+preencherMeses($('sdComp'), hoje().slice(0,7));
+aplicarBotaoPlanilha();
 renderSimulador();
 carregar();
 </script>

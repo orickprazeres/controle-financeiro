@@ -9,6 +9,45 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.4.1] — 2026-07-31
+
+### Alterado
+
+- O botão **Planilha ↗** já vem com o endereço da planilha embutido — não precisa configurar nada. O campo do ⚙ continua existindo para trocar de planilha ou esconder o botão.
+
+### Por que agora pode ficar no código
+
+O compartilhamento da planilha está em **Restrito**: só quem foi autorizado abre, e saber o endereço não dá acesso a nada. Nesse cenário o ID não é segredo, e a configuração manual da v1.4.0 virava atrito sem ganho.
+
+**Se um dia você mudar o compartilhamento para "qualquer pessoa com o link"**, o endereço volta a ser a única proteção dos seus dados. Aí apague a linha `SHEET_PADRAO` do `index.html` antes de subir para o GitHub, e use só o campo do ⚙. Há um comentário no próprio arquivo lembrando disso.
+
+---
+
+## [1.4.0] — 2026-07-31
+
+Competência em formato brasileiro e atalho para a planilha. Só `docs/` mudou — nada a reimplantar.
+
+### Alterado
+
+- **Todo mês na tela agora aparece como `jul/26`**, não mais `2026-07`. Vale para o seletor do topo, gráficos, tabelas, comparativo e parcelas futuras.
+- **Os campos de competência viraram listas suspensas.** Antes eram caixas de texto onde se digitava `2026-07` — e digitar errado fazia o lançamento sumir num mês inexistente. Agora você escolhe `jul/26` e o sistema guarda `2026-07` por baixo.
+- A lista de meses inclui os que já têm lançamento, mais 30 meses para trás e 18 para frente.
+
+### Adicionado
+
+- **Botão `Planilha ↗` no topo**, abre o Google Sheets em nova aba.
+- Campo **"Link da planilha"** na tela de conexão (⚙), ao lado da URL e do token.
+
+### Por que o link fica na configuração e não no código
+
+O repositório do GitHub é **público**. Se o endereço da planilha estivesse escrito dentro do `index.html`, qualquer pessoa poderia lê-lo. Caso a planilha esteja compartilhada como "qualquer pessoa com o link", esse endereço é a única coisa que protege seus dados — publicá-lo equivaleria a deixar a porta aberta.
+
+Guardado no navegador, o botão funciona igual e o endereço não sai do seu computador.
+
+**Vale conferir:** na planilha, botão **Compartilhar**. Se estiver em "Qualquer pessoa com o link", troque para **"Restrito"** — o site continua funcionando, porque ele acessa os dados pelo Apps Script, não pelo link.
+
+---
+
 ## [1.3.0] — 2026-07-31
 
 Importador entende arquivos que já vêm no formato do sistema. Só `docs/importar.html` mudou — nada a reimplantar.

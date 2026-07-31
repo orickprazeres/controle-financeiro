@@ -1,4 +1,4 @@
-# Custos da Casa · v1.3.0
+# Custos da Casa · v1.4.1
 
 Controle de custos domésticos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -100,10 +100,12 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 - Os dados ficam **na sua conta do Google**, nunca no GitHub. O repositório só contém HTML.
 - O token fica no `Codigo.gs` (privado, dentro da sua planilha) e no navegador.
-- **Nunca** escreva o token dentro dos arquivos de `docs/` antes de subir para um repositório público.
+- **Nunca** escreva o token dentro dos arquivos de `docs/`. Ele fica no `Codigo.gs` (privado, dentro da planilha) e no navegador.
+- O endereço da planilha está no `index.html` (`SHEET_PADRAO`). Isso só é seguro porque o compartilhamento dela está **Restrito** — saber o endereço não dá acesso.
+- **Se você mudar o compartilhamento para "qualquer pessoa com o link"**, o endereço passa a ser a única proteção dos dados: apague a linha `SHEET_PADRAO` e use o campo do ⚙, que fica só no navegador.
 
 ---
 
 ## Versão
 
-`1.3.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`1.4.1` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.

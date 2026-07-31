@@ -54,6 +54,23 @@ Dá para ter os dois ao mesmo tempo, mas aí o formulário existiria duplicado e
 
 ---
 
+## Mudar o formato do mês na tela
+
+Hoje aparece `jul/26`. A conversão está numa função só, em `docs/index.html`:
+
+```js
+function nomeMes(c){
+  var p=String(c).split('-');
+  return MESES_CURTOS[(+p[1])-1] + '/' + String(p[0]).slice(-2);
+}
+```
+
+Para `jul/2026`, troque `String(p[0]).slice(-2)` por `p[0]`. Para `07/26`, troque `MESES_CURTOS[(+p[1])-1]` por `p[1]`.
+
+O valor guardado na planilha continua `2026-07` de qualquer jeito — isso é só apresentação.
+
+---
+
 ## Trocar as cores
 
 No topo do `<style>` de `docs/index.html` e `docs/importar.html`:

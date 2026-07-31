@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Custos da Casa v1.3.0 -->
+<!-- Custos da Casa v1.4.1 -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Importar fatura · Custos da Casa</title>
 <style>
@@ -82,7 +82,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
       <option>Crédito</option><option>Débito</option><option>Pix</option>
       <option>Dinheiro</option><option>Boleto</option><option>Transferência</option></select></div>
     <div class="fld" id="wCartao"><label>Cartão</label><select id="mCartao"></select></div>
-    <div class="fld"><label>Competência (mês em que pesa)</label><input id="mComp" placeholder="2026-01"></div>
+    <div class="fld"><label>Competência (mês em que pesa)</label><select id="mComp"></select></div>
     <div class="fld"><label>Já foi pago?</label><select id="mPago"><option>Não</option><option>Sim</option></select></div>
   </div>
   <div class="g" style="margin-top:6px">
@@ -111,7 +111,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 </div>
 
 <script>
-var VERSAO = '1.3.0';
+var VERSAO = '1.4.1';
 var CFG = { url: localStorage.getItem('cc_url')||'', token: localStorage.getItem('cc_tok')||'' };
 var CATS = [], CARTOES = [], HEAD = [], ROWS = [], PREV = [];
 
@@ -146,9 +146,26 @@ function $(id){ return document.getElementById(id); }
 function brl(n){ return (Number(n)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 function aviso(t,k){ $('alerta').innerHTML = t ? '<div class="msg '+(k||'i')+'">'+esc(t)+'</div>' : ''; }
+var MESES_CURTOS=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function nomeMes(c){
+  var p=String(c).split('-');
+  if (p.length<2 || isNaN(+p[1])) return String(c);
+  return MESES_CURTOS[(+p[1])-1] + '/' + String(p[0]).slice(-2);
+}
+function hoje(){ return new Date().toISOString().slice(0,10); }
+function preencherMeses(sel){
+  var base = hoje().slice(0,7);
+  sel.innerHTML = '<option value="">usar o mês da data de cada linha</option>';
+  for (var i=-24; i<=12; i++){
+    var m = somaMes(base, i);
+    var o = document.createElement('option'); o.value=m; o.textContent=nomeMes(m); sel.appendChild(o);
+  }
+}
 function somaMes(c,n){ var p=String(c).split('-'),a=+p[0],m=+p[1]-1+n; a+=Math.floor(m/12); m=((m%12)+12)%12; return a+'-'+('0'+(m+1)).slice(-2); }
 
 /* ------------------------------------------------ carrega listas da planilha */
+preencherMeses(document.getElementById('mComp'));
+
 if (!CFG.url || !CFG.token){
   aviso('Configure primeiro a conexão no painel (botão ⚙) e volte aqui.','e');
 } else {
