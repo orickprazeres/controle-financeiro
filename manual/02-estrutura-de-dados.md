@@ -80,6 +80,10 @@ Resumo de conferência dentro da própria planilha, com seletor de competência 
 
 **Amarelo = célula que você edita. O resto é fórmula; não digite por cima.**
 
+## Abas `Ativos`, `Investimentos` e `Saldos`
+
+O módulo de investimentos, explicado por completo em [`05-investimentos.md`](05-investimentos.md). Em uma frase: `Ativos` é o catálogo, `Investimentos` guarda aportes e resgates, `Saldos` guarda a foto mensal — e o rendimento é deduzido da diferença, nunca digitado.
+
 ## Aba `Leia-me`
 
 A mesma explicação deste arquivo, resumida, dentro da planilha.

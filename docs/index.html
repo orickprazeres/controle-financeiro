@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Custos da Casa v1.0.0 -->
+<!-- Custos da Casa v1.1.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <title>Custos da Casa</title>
@@ -67,6 +67,14 @@ tr:hover td{background:rgba(56,189,248,.05)}
 .scr{overflow-x:auto}
 footer{text-align:center;color:var(--dim);font-size:12px;padding:24px}
 code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
+.sub{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.sub button{background:transparent;color:var(--mut);border:1px solid var(--line);padding:6px 13px;font-size:13px;font-weight:500}
+.sub button.on{background:var(--ac);color:#062330;border-color:var(--ac)}
+.kpi.big .v{font-size:26px}
+.nota{font-size:11.5px;color:var(--dim);margin-top:6px;line-height:1.45}
+.sep{border:0;border-top:1px solid var(--line);margin:20px 0}
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:9px;cursor:pointer}
+.chk input{width:auto;margin:0}
 </style>
 </head>
 <body>
@@ -97,6 +105,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
   <button data-p="novo">Novo</button>
   <button data-p="orc">Orçamento</button>
   <button data-p="fut">Parcelas futuras</button>
+  <button data-p="inv">Investimentos</button>
   <button onclick="location.href='importar.html'">Importar fatura ↗</button>
 </nav>
 
@@ -201,12 +210,145 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
   </div>
 </div>
 
+
+<!-- ================= INVESTIMENTOS ================= -->
+<div id="pgInv" class="pg hide">
+  <div class="sub">
+    <button data-sub="sim" class="on">Simulador</button>
+    <button data-sub="cart">Minha carteira</button>
+    <button data-sub="reg">Registrar</button>
+  </div>
+
+  <!-- ---------- SIMULADOR ---------- -->
+  <div id="subSim">
+    <div class="card">
+      <h2>Quanto meu dinheiro vira</h2>
+      <div class="g3">
+        <div class="fld"><label>Valor inicial (R$)</label><input type="number" step="100" id="sIni" value="0"></div>
+        <div class="fld"><label>Aporte mensal (R$)</label><input type="number" step="100" id="sApt" value="1000"></div>
+        <div class="fld"><label>Prazo (anos)</label><input type="number" min="1" max="50" id="sAnos" value="10"></div>
+      </div>
+      <div class="g3">
+        <div class="fld"><label>Rendimento</label><select id="sModo">
+          <option value="cdi">% do CDI</option>
+          <option value="aa">% ao ano, fixo</option>
+          <option value="ipca">IPCA + % ao ano</option></select></div>
+        <div class="fld"><label id="sTaxaLab">Percentual do CDI</label><input type="number" step="1" id="sTaxa" value="110"></div>
+        <div class="fld"><label>Aumento do aporte por ano (%)</label><input type="number" step="1" id="sCres" value="0"></div>
+      </div>
+      <hr class="sep">
+      <div class="g3">
+        <div class="fld"><label>CDI hoje (% a.a.)</label><input type="number" step="0.01" id="sCDI" value="14.15"></div>
+        <div class="fld"><label>IPCA 12 meses (%)</label><input type="number" step="0.01" id="sIPCA" value="4.64"></div>
+        <div class="fld" style="display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:4px">
+          <label class="chk"><input type="checkbox" id="sIR" checked> Descontar Imposto de Renda</label>
+          <label class="chk"><input type="checkbox" id="sReal" checked> Mostrar em poder de compra de hoje</label>
+        </div>
+      </div>
+      <div class="nota">Referência: Selic em <b>14,25% a.a.</b> desde a reunião do Copom de 17/06/2026. O CDI costuma ficar um pouco abaixo da Selic — confira o número do dia na sua corretora e ajuste os campos acima. Isto é uma projeção matemática com taxa constante, não uma previsão: rendimento passado não garante rendimento futuro, e a taxa real varia todo mês.</div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi big"><div class="l">Você terá</div><div class="v pos" id="iFinal">—</div><div class="s" id="iFinalS"></div></div>
+      <div class="kpi"><div class="l">Do seu bolso</div><div class="v" id="iApt">—</div><div class="s" id="iAptS"></div></div>
+      <div class="kpi"><div class="l">Rendimento</div><div class="v" id="iRend">—</div><div class="s" id="iRendS"></div></div>
+      <div class="kpi"><div class="l">IR estimado</div><div class="v neg" id="iIR">—</div><div class="s" id="iIRS"></div></div>
+      <div class="kpi"><div class="l">Em valor de hoje</div><div class="v" id="iReal">—</div><div class="s">descontada a inflação</div></div>
+    </div>
+
+    <div class="card"><h2>Aporte × rendimento ao longo do tempo</h2><div class="chw" style="height:290px"><canvas id="chSim"></canvas></div></div>
+    <div class="card"><h2>Ano a ano</h2><div class="scr"><table id="tbSim"></table></div></div>
+  </div>
+
+  <!-- ---------- CARTEIRA ---------- -->
+  <div id="subCart" class="hide">
+    <div class="kpis">
+      <div class="kpi big"><div class="l">Patrimônio</div><div class="v" id="cPat">—</div><div class="s" id="cPatS"></div></div>
+      <div class="kpi"><div class="l">Total aportado</div><div class="v" id="cApt">—</div><div class="s" id="cAptS"></div></div>
+      <div class="kpi"><div class="l">Rendimento acumulado</div><div class="v" id="cRend">—</div><div class="s" id="cRendS"></div></div>
+      <div class="kpi"><div class="l">Aporte médio por mês</div><div class="v" id="cMed">—</div><div class="s" id="cMedS"></div></div>
+    </div>
+
+    <div class="g2">
+      <div class="card"><h2>Evolução do patrimônio</h2><div class="chw"><canvas id="chPat"></canvas></div></div>
+      <div class="card"><h2>Composição por classe</h2><div class="chw"><canvas id="chClasse"></canvas></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Por ativo</h2>
+      <div class="scr"><table id="tbAtivos"></table></div>
+      <div class="nota">Rendimento = saldo do mês − saldo do mês anterior − aportes + resgates. Você nunca digita quanto rendeu; basta manter os saldos em dia.</div>
+    </div>
+
+    <div class="card">
+      <h2>Aporte × sobra do mês</h2>
+      <div class="scr"><table id="tbSobra"></table></div>
+      <div class="nota">Compara o que sobrou no mês (entradas − saídas, da aba Painel) com o que você de fato aportou.</div>
+    </div>
+  </div>
+
+  <!-- ---------- REGISTRAR ---------- -->
+  <div id="subReg" class="hide">
+    <div class="g2">
+      <div class="card">
+        <h2>Aporte ou resgate</h2>
+        <div id="msgApt"></div>
+        <div class="fld"><label>Ativo</label><select id="rAtivo"></select></div>
+        <div class="g3">
+          <div class="fld"><label>Tipo</label><select id="rTipo"><option>Aporte</option><option>Resgate</option></select></div>
+          <div class="fld"><label>Data</label><input type="date" id="rData"></div>
+          <div class="fld"><label>Valor (R$)</label><input type="number" step="0.01" id="rValor"></div>
+        </div>
+        <div class="fld"><label>Observação</label><input id="rObs"></div>
+        <button id="btAporte">Registrar</button>
+      </div>
+
+      <div class="card">
+        <h2>Saldo do mês</h2>
+        <div id="msgSld"></div>
+        <div class="nota" style="margin-top:0;margin-bottom:13px">Uma vez por mês, copie da corretora quanto cada aplicação vale e registre aqui. É isso que permite calcular o rendimento. Lançar de novo o mesmo ativo no mesmo mês <b>corrige</b> o valor, não duplica.</div>
+        <div class="fld"><label>Ativo</label><select id="sdAtivo"></select></div>
+        <div class="g3">
+          <div class="fld"><label>Competência</label><input id="sdComp" placeholder="2026-07"></div>
+          <div class="fld"><label>Saldo (R$)</label><input type="number" step="0.01" id="sdValor"></div>
+        </div>
+        <button id="btSaldo">Registrar saldo</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Cadastrar um ativo novo</h2>
+      <div id="msgAtv"></div>
+      <div class="nota" style="margin-top:0;margin-bottom:13px">A classe é texto livre — comece com Renda Fixa e acrescente Ações, FII, Fundo, Cripto ou o que aparecer. Não precisa decidir tudo agora.</div>
+      <div class="g3">
+        <div class="fld"><label>Nome do ativo</label><input id="aNome" placeholder="CDB 2 anos Banco Y"></div>
+        <div class="fld"><label>Classe</label><input id="aClasse" list="listaClasses" placeholder="Renda Fixa">
+          <datalist id="listaClasses"></datalist></div>
+        <div class="fld"><label>Instituição</label><input id="aInst" placeholder="Banco Y"></div>
+      </div>
+      <div class="g3">
+        <div class="fld"><label>Indexador</label><select id="aIdx">
+          <option>% do CDI</option><option>Selic +</option><option>IPCA +</option>
+          <option>Prefixado</option><option>Não se aplica</option></select></div>
+        <div class="fld"><label>Taxa contratada</label><input type="number" step="0.01" id="aTaxa" placeholder="110"></div>
+        <div class="fld"><label>Vencimento</label><input type="date" id="aVenc"></div>
+      </div>
+      <button id="btAtivo">Cadastrar ativo</button>
+    </div>
+
+    <div class="card">
+      <h2>Movimentações registradas</h2>
+      <div class="scr"><table id="tbMov"></table></div>
+    </div>
+  </div>
+</div>
+
 <footer>Custos da Casa · dados na sua planilha do Google</footer>
 </div>
 
 <script>
 /* ============================================================ estado */
-var VERSAO = '1.0.0';
+var VERSAO = '1.1.0';
 var CFG = { url: localStorage.getItem('cc_url') || '', token: localStorage.getItem('cc_tok') || '' };
 var DB = { lancamentos: [], categorias: [], cartoes: [], orcamento: [] };
 var MES = '';
@@ -323,7 +465,7 @@ function limiteDe(cat){
 /* ============================================================ render */
 function render(){
   renderKPI(); renderGraficos(); renderTabelaCat(); renderComparativo();
-  renderLancamentos(); renderOrcamento(); renderFuturo();
+  renderLancamentos(); renderOrcamento(); renderFuturo(); renderInvestimentos();
 }
 
 function renderKPI(){
@@ -519,6 +661,285 @@ function renderFuturo(){
   $('tbFut').innerHTML = h;
 }
 
+
+/* ============================================================ investimentos */
+
+/* --- matemática --- */
+
+/** Taxa mensal equivalente a uma taxa anual (juros compostos, não divisão por 12). */
+function taxaMensal(anual){ return Math.pow(1 + anual, 1/12) - 1; }
+
+/** Combina dois índices: (1+a)*(1+b)-1. Usado em IPCA + juro real. */
+function combina(a, b){ return (1+a)*(1+b) - 1; }
+
+/** Tabela regressiva de IR da renda fixa, pelo prazo em dias. */
+function aliquotaIR(dias){
+  if (dias <= 180) return 0.225;
+  if (dias <= 360) return 0.20;
+  if (dias <= 720) return 0.175;
+  return 0.15;
+}
+
+/** Taxa anual efetiva conforme o modo escolhido no simulador. */
+function taxaAnualSim(){
+  var modo = $('sModo').value;
+  var t = Number($('sTaxa').value || 0) / 100;
+  var cdi = Number($('sCDI').value || 0) / 100;
+  var ipca = Number($('sIPCA').value || 0) / 100;
+  if (modo === 'cdi')  return cdi * t;   // 110% do CDI -> t = 1.10
+  if (modo === 'ipca') return combina(ipca, t);
+  return t;
+}
+
+/**
+ * Projeta mês a mês. Devolve uma linha por mês com saldo, aportado e rendimento.
+ * O aporte cresce uma vez por ano, se configurado.
+ */
+function simular(ini, aporte, anos, taxaAno, crescAno){
+  var im = taxaMensal(taxaAno);
+  var saldo = ini, aportado = ini, apt = aporte;
+  var linhas = [{ mes:0, saldo:saldo, aportado:aportado, rendimento:0 }];
+  for (var m = 1; m <= anos*12; m++){
+    if (m > 1 && (m-1) % 12 === 0) apt = apt * (1 + crescAno);
+    saldo = saldo * (1 + im) + apt;
+    aportado += apt;
+    linhas.push({ mes:m, saldo:saldo, aportado:aportado, rendimento: saldo - aportado });
+  }
+  return linhas;
+}
+
+/* --- simulador --- */
+
+function renderSimulador(){
+  var modo = $('sModo').value;
+  $('sTaxaLab').textContent = modo==='cdi' ? 'Percentual do CDI'
+    : modo==='ipca' ? 'Juro real acima do IPCA (% a.a.)' : 'Rendimento (% a.a.)';
+
+  var ini   = Number($('sIni').value || 0);
+  var apt   = Number($('sApt').value || 0);
+  var anos  = Math.max(1, Math.min(50, parseInt($('sAnos').value || 1, 10)));
+  var cresc = Number($('sCres').value || 0) / 100;
+  var ta    = taxaAnualSim();
+
+  var L = simular(ini, apt, anos, ta, cresc);
+  var fim = L[L.length-1];
+  var rend = fim.rendimento;
+
+  var ir = $('sIR').checked ? rend * aliquotaIR(anos * 365) : 0;
+  var liquido = fim.saldo - ir;
+  var ipca = Number($('sIPCA').value || 0) / 100;
+  var real = liquido / Math.pow(1 + ipca, anos);
+
+  $('iFinal').textContent = brl(liquido);
+  $('iFinalS').textContent = 'em ' + anos + (anos>1?' anos':' ano') + ' · ' + pct(ta) + ' a.a.';
+  $('iApt').textContent  = brl(fim.aportado);
+  $('iAptS').textContent = fim.saldo>0 ? pct(fim.aportado/fim.saldo) + ' do total' : '';
+  $('iRend').textContent = brl(rend);
+  $('iRendS').textContent = fim.saldo>0 ? pct(rend/fim.saldo) + ' do total' : '';
+  $('iIR').textContent   = $('sIR').checked ? '− ' + brl(ir) : 'isento/não';
+  $('iIRS').textContent  = $('sIR').checked ? 'alíquota de ' + pct(aliquotaIR(anos*365)) : 'sem desconto';
+  $('iReal').textContent = $('sReal').checked ? brl(real) : brl(liquido);
+
+  var anosLbl = [], dApt = [], dRen = [];
+  for (var a = 0; a <= anos; a++){
+    var x = L[a*12];
+    anosLbl.push(a === 0 ? 'hoje' : 'ano ' + a);
+    dApt.push(x.aportado);
+    dRen.push(x.rendimento);
+  }
+  grafico('chSim', {
+    type:'bar',
+    data:{ labels:anosLbl, datasets:[
+      { label:'Do seu bolso', data:dApt, backgroundColor:'#38bdf8', borderRadius:4 },
+      { label:'Rendimento',   data:dRen, backgroundColor:'#34d399', borderRadius:4 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom',labels:{boxWidth:12,padding:14}},
+        tooltip:{ callbacks:{
+          label:function(c){ return c.dataset.label+': '+brl(c.parsed.y); },
+          footer:function(it){ var t=it.reduce(function(a,b){return a+b.parsed.y;},0); return 'Total: '+brl(t); } } } },
+      scales:{ x:{stacked:true, grid:{display:false}},
+               y:{stacked:true, grid:{color:'rgba(51,65,85,.5)'},
+                  ticks:{callback:function(v){ return v>=1000000 ? 'R$'+(v/1000000).toFixed(1)+'M' : 'R$'+(v/1000).toFixed(0)+'k'; }}} } }
+  });
+
+  var h = '<tr><th>Ano</th><th class="r">Aportado</th><th class="r">Rendimento</th><th class="r">Saldo</th><th class="r">Rendeu no ano</th></tr>';
+  for (var y = 1; y <= anos; y++){
+    var at = L[y*12], ant = L[(y-1)*12];
+    h += '<tr><td>'+y+'</td><td class="r mut">'+brl(at.aportado)+'</td>'
+       + '<td class="r pos">'+brl(at.rendimento)+'</td>'
+       + '<td class="r" style="font-weight:600">'+brl(at.saldo)+'</td>'
+       + '<td class="r pos">'+brl(at.rendimento-ant.rendimento)+'</td></tr>';
+  }
+  $('tbSim').innerHTML = h;
+}
+
+/* --- carteira real --- */
+
+function mesesComDados(){
+  var set = {};
+  (DB.saldos||[]).forEach(function(s){ if(s.competencia) set[s.competencia]=1; });
+  (DB.investimentos||[]).forEach(function(i){ if(i.competencia) set[i.competencia]=1; });
+  return Object.keys(set).sort();
+}
+function saldoDe(ativo, comp){
+  var r = (DB.saldos||[]).filter(function(s){ return s.ativo===ativo && s.competencia===comp; })[0];
+  return r ? Number(r.saldo)||0 : null;
+}
+function saldoTotal(comp){
+  return (DB.saldos||[]).filter(function(s){ return s.competencia===comp; })
+    .reduce(function(a,b){ return a+(Number(b.saldo)||0); },0);
+}
+function movDe(comp, ativo){
+  return (DB.investimentos||[]).filter(function(i){
+    return i.competencia===comp && (!ativo || i.ativo===ativo);
+  });
+}
+function somaMov(lista, tipo){
+  return lista.filter(function(i){ return i.tipo===tipo; })
+              .reduce(function(a,b){ return a+(Number(b.valor)||0); },0);
+}
+function classeDe(ativo){
+  var a = (DB.ativos||[]).filter(function(x){ return x.ativo===ativo; })[0];
+  return a ? (a.classe||'Outros') : 'Outros';
+}
+
+function renderCarteira(){
+  var meses = mesesComDados();
+  var ultimo = meses.length ? meses[meses.length-1] : null;
+  var patrimonio = ultimo ? saldoTotal(ultimo) : 0;
+
+  var todos = DB.investimentos || [];
+  var aportado = somaMov(todos,'Aporte') - somaMov(todos,'Resgate');
+  var rendimento = patrimonio - aportado;
+
+  $('cPat').textContent  = brl(patrimonio);
+  $('cPat').className    = 'v ' + (patrimonio>0?'pos':'');
+  $('cPatS').textContent = ultimo ? 'saldo de ' + nomeMes(ultimo) : 'registre um saldo para começar';
+  $('cApt').textContent  = brl(aportado);
+  $('cAptS').textContent = todos.length + ' movimentação(ões)';
+  $('cRend').textContent = brl(rendimento);
+  $('cRend').className   = 'v ' + (rendimento>=0?'pos':'neg');
+  $('cRendS').textContent= aportado>0 ? pct(rendimento/aportado) + ' sobre o aportado' : '';
+
+  var mesesApt = {};
+  todos.filter(function(i){ return i.tipo==='Aporte'; })
+       .forEach(function(i){ mesesApt[i.competencia]=(mesesApt[i.competencia]||0)+Number(i.valor||0); });
+  var ks = Object.keys(mesesApt);
+  var medio = ks.length ? ks.reduce(function(a,k){ return a+mesesApt[k]; },0)/ks.length : 0;
+  $('cMed').textContent  = brl(medio);
+  $('cMedS').textContent = ks.length ? 'em ' + ks.length + ' mês(es) com aporte' : '';
+
+  // evolução
+  grafico('chPat', {
+    type:'bar',
+    data:{ labels: meses.map(nomeMes), datasets:[
+      { type:'line', label:'Patrimônio', data: meses.map(saldoTotal),
+        borderColor:'#34d399', backgroundColor:'rgba(52,211,153,.12)', fill:true, tension:.3, order:0 },
+      { type:'bar', label:'Aporte do mês', data: meses.map(function(m){ return somaMov(movDe(m),'Aporte'); }),
+        backgroundColor:'#38bdf8', borderRadius:4, order:1 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'bottom',labels:{boxWidth:12,padding:14}},
+        tooltip:{callbacks:{label:function(c){ return c.dataset.label+': '+brl(c.parsed.y); }}} },
+      scales:{ y:{ grid:{color:'rgba(51,65,85,.5)'}, ticks:{callback:function(v){ return 'R$'+(v/1000).toFixed(0)+'k'; }} },
+               x:{ grid:{display:false} } } }
+  });
+
+  // composição
+  var porClasse = {};
+  if (ultimo) (DB.saldos||[]).filter(function(s){ return s.competencia===ultimo; })
+    .forEach(function(s){ var c=classeDe(s.ativo); porClasse[c]=(porClasse[c]||0)+Number(s.saldo||0); });
+  var ck = Object.keys(porClasse);
+  grafico('chClasse', {
+    type:'doughnut',
+    data:{ labels: ck.length?ck:['sem dados'],
+           datasets:[{ data: ck.length?ck.map(function(k){return porClasse[k];}):[1],
+                       backgroundColor: ck.length?PAL:['#334155'], borderWidth:0 }]},
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'58%',
+      plugins:{ legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:11}}},
+        tooltip:{callbacks:{label:function(c){ return ck.length ? c.label+': '+brl(c.parsed) : 'sem saldos registrados'; }}} } }
+  });
+
+  // por ativo
+  var nomes = {};
+  (DB.ativos||[]).forEach(function(a){ nomes[a.ativo]=1; });
+  (DB.saldos||[]).forEach(function(s){ nomes[s.ativo]=1; });
+  (DB.investimentos||[]).forEach(function(i){ nomes[i.ativo]=1; });
+
+  var h = '<tr><th>Ativo</th><th>Classe</th><th class="r">Aportado</th><th class="r">Saldo</th><th class="r">Rendimento</th><th class="r">Rentab.</th></tr>';
+  var lista = Object.keys(nomes).map(function(nome){
+    var movs = todos.filter(function(i){ return i.ativo===nome; });
+    var ap = movs.filter(function(i){return i.tipo==='Aporte';}).reduce(function(a,b){return a+Number(b.valor||0);},0)
+           - movs.filter(function(i){return i.tipo==='Resgate';}).reduce(function(a,b){return a+Number(b.valor||0);},0);
+    var sd = ultimo ? (saldoDe(nome, ultimo) || 0) : 0;
+    return { nome:nome, ap:ap, sd:sd, rd:sd-ap };
+  }).filter(function(x){ return x.ap!==0 || x.sd!==0; })
+    .sort(function(a,b){ return b.sd-a.sd; });
+
+  if (!lista.length) h += '<tr><td colspan="6" class="empty">Nenhum investimento registrado ainda. Comece pela aba <b>Registrar</b>.</td></tr>';
+  lista.forEach(function(x){
+    var r = x.ap>0 ? x.rd/x.ap : 0;
+    h += '<tr><td>'+esc(x.nome)+'</td><td class="mut">'+esc(classeDe(x.nome))+'</td>'
+       + '<td class="r mut">'+brl(x.ap)+'</td><td class="r" style="font-weight:600">'+brl(x.sd)+'</td>'
+       + '<td class="r '+(x.rd>=0?'pos':'neg')+'">'+brl(x.rd)+'</td>'
+       + '<td class="r '+(x.rd>=0?'pos':'neg')+'">'+(x.ap>0?pct(r):'—')+'</td></tr>';
+  });
+  if (lista.length){
+    h += '<tr><td colspan="2" style="font-weight:700">TOTAL</td>'
+       + '<td class="r" style="font-weight:700">'+brl(aportado)+'</td>'
+       + '<td class="r" style="font-weight:700">'+brl(patrimonio)+'</td>'
+       + '<td class="r '+(rendimento>=0?'pos':'neg')+'" style="font-weight:700">'+brl(rendimento)+'</td>'
+       + '<td class="r '+(rendimento>=0?'pos':'neg')+'" style="font-weight:700">'+(aportado>0?pct(rendimento/aportado):'—')+'</td></tr>';
+  }
+  $('tbAtivos').innerHTML = h;
+
+  // aporte x sobra
+  var mm = {};
+  DB.lancamentos.forEach(function(l){ if(l.competencia) mm[l.competencia]=1; });
+  Object.keys(mesesApt).forEach(function(k){ mm[k]=1; });
+  var todosMeses = Object.keys(mm).sort().slice(-12);
+  var h2 = '<tr><th>Mês</th><th class="r">Sobrou</th><th class="r">Aportou</th><th class="r">% da sobra</th></tr>';
+  if (!todosMeses.length) h2 += '<tr><td colspan="4" class="empty">Sem dados ainda.</td></tr>';
+  todosMeses.forEach(function(m){
+    var sobra = soma(entradas(m)) - soma(saidas(m));
+    var ap = mesesApt[m] || 0;
+    var p = sobra>0 ? ap/sobra : null;
+    h2 += '<tr><td>'+nomeMes(m)+'</td>'
+       + '<td class="r '+(sobra>=0?'pos':'neg')+'">'+brl(sobra)+'</td>'
+       + '<td class="r">'+brl(ap)+'</td>'
+       + '<td class="r '+(p===null?'mut':p>=1?'pos':'')+'">'+(p===null?'—':pct(p))+'</td></tr>';
+  });
+  $('tbSobra').innerHTML = h2;
+
+  // movimentações
+  var h3 = '<tr><th>Data</th><th>Ativo</th><th>Tipo</th><th class="r">Valor</th><th></th></tr>';
+  var ord = todos.slice().sort(function(a,b){ return String(b.data).localeCompare(String(a.data)); });
+  if (!ord.length) h3 += '<tr><td colspan="5" class="empty">Nenhuma movimentação registrada.</td></tr>';
+  ord.forEach(function(i){
+    h3 += '<tr><td class="mut">'+esc(i.data)+'</td><td>'+esc(i.ativo)+'</td>'
+       + '<td><span class="tag '+(i.tipo==='Aporte'?'pg':'np')+'">'+esc(i.tipo)+'</span></td>'
+       + '<td class="r">'+brl(i.valor)+'</td>'
+       + '<td class="r"><button class="dg" data-delinv="'+esc(i.id)+'">excluir</button></td></tr>';
+  });
+  $('tbMov').innerHTML = h3;
+
+  // selects de ativo
+  var ativos = (DB.ativos||[]).filter(function(a){ return a.em_uso!=='Não'; });
+  [['rAtivo'],['sdAtivo']].forEach(function(par){
+    var sel = $(par[0]); var atual = sel.value;
+    sel.innerHTML = '';
+    ativos.forEach(function(a){ var o=document.createElement('option'); o.value=o.textContent=a.ativo; sel.appendChild(o); });
+    if (atual) sel.value = atual;
+  });
+  var dl = $('listaClasses'); dl.innerHTML='';
+  var classes = {}; (DB.ativos||[]).forEach(function(a){ if(a.classe) classes[a.classe]=1; });
+  ['Renda Fixa','Ações','FII','Fundo','Cripto','Previdência','Outros'].forEach(function(c){ classes[c]=1; });
+  Object.keys(classes).sort().forEach(function(c){ var o=document.createElement('option'); o.value=c; dl.appendChild(o); });
+}
+
+function renderInvestimentos(){ renderSimulador(); renderCarteira(); }
+
 /* ============================================================ eventos */
 $('btCfg').onclick = function(){
   var v = $('pgCfg').classList.toggle('hide');
@@ -537,7 +958,7 @@ document.querySelectorAll('#nav button[data-p]').forEach(function(b){
     document.querySelectorAll('#nav button').forEach(function(x){ x.classList.remove('on'); });
     b.classList.add('on');
     document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
-    var mapa = { painel:'pgPainel', lanc:'pgLanc', novo:'pgNovo', orc:'pgOrc', fut:'pgFut' };
+    var mapa = { painel:'pgPainel', lanc:'pgLanc', novo:'pgNovo', orc:'pgOrc', fut:'pgFut', inv:'pgInv' };
     $(mapa[b.dataset.p]).classList.remove('hide');
     $('pgCfg').classList.add('hide');
   };
@@ -626,9 +1047,88 @@ $('btSalvarOrc').onclick = function(){
     .then(function(){ bt.disabled=false; bt.textContent='Salvar orçamento'; });
 };
 
+
+/* --- investimentos: eventos --- */
+
+document.querySelectorAll('.sub button[data-sub]').forEach(function(b){
+  b.onclick = function(){
+    document.querySelectorAll('.sub button').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    ['subSim','subCart','subReg'].forEach(function(id){ $(id).classList.add('hide'); });
+    $({ sim:'subSim', cart:'subCart', reg:'subReg' }[b.dataset.sub]).classList.remove('hide');
+  };
+});
+
+['sIni','sApt','sAnos','sTaxa','sCres','sCDI','sIPCA','sModo','sIR','sReal'].forEach(function(id){
+  $(id).addEventListener('input', renderSimulador);
+  $(id).addEventListener('change', renderSimulador);
+});
+
+$('btAporte').onclick = function(){
+  var d = { acao:'inv_lancar', dados:{
+    data: $('rData').value, ativo: $('rAtivo').value, tipo: $('rTipo').value,
+    valor: Number($('rValor').value), obs: $('rObs').value.trim() } };
+  if (!d.dados.data || !d.dados.ativo || !d.dados.valor){
+    msgEm('msgApt','Preencha ativo, data e valor.','e'); return;
+  }
+  var bt=this; bt.disabled=true; bt.textContent='Salvando…';
+  apiPost(d).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    msgEm('msgApt', d.dados.tipo+' registrado.','s');
+    $('rValor').value=''; $('rObs').value='';
+    carregar();
+  }).catch(function(e){ msgEm('msgApt','Erro: '+e.message,'e'); })
+    .then(function(){ bt.disabled=false; bt.textContent='Registrar'; });
+};
+
+$('btSaldo').onclick = function(){
+  var comp = $('sdComp').value.trim();
+  if (!/^\d{4}-\d{2}$/.test(comp)){ msgEm('msgSld','Competência precisa estar no formato 2026-07.','e'); return; }
+  var d = { acao:'inv_saldo', dados:{
+    competencia: comp, ativo: $('sdAtivo').value, saldo: Number($('sdValor').value) } };
+  if (!d.dados.ativo || isNaN(d.dados.saldo)){ msgEm('msgSld','Escolha o ativo e informe o saldo.','e'); return; }
+  var bt=this; bt.disabled=true; bt.textContent='Salvando…';
+  apiPost(d).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    msgEm('msgSld', r.atualizado ? 'Saldo corrigido para esse mês.' : 'Saldo registrado.','s');
+    $('sdValor').value='';
+    carregar();
+  }).catch(function(e){ msgEm('msgSld','Erro: '+e.message,'e'); })
+    .then(function(){ bt.disabled=false; bt.textContent='Registrar saldo'; });
+};
+
+$('btAtivo').onclick = function(){
+  var d = { acao:'inv_ativo', dados:{
+    ativo: $('aNome').value.trim(), classe: $('aClasse').value.trim() || 'Outros',
+    indexador: $('aIdx').value, taxa: Number($('aTaxa').value||0),
+    instituicao: $('aInst').value.trim(), vencimento: $('aVenc').value, liquidez: '' } };
+  if (!d.dados.ativo){ msgEm('msgAtv','Dê um nome ao ativo.','e'); return; }
+  var bt=this; bt.disabled=true; bt.textContent='Salvando…';
+  apiPost(d).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    msgEm('msgAtv', r.atualizado ? 'Ativo atualizado.' : 'Ativo cadastrado.','s');
+    $('aNome').value=''; $('aTaxa').value=''; $('aInst').value='';
+    carregar();
+  }).catch(function(e){ msgEm('msgAtv','Erro: '+e.message,'e'); })
+    .then(function(){ bt.disabled=false; bt.textContent='Cadastrar ativo'; });
+};
+
+$('tbMov').addEventListener('click', function(ev){
+  var id = ev.target.dataset && ev.target.dataset.delinv;
+  if (!id) return;
+  if (!confirm('Excluir esta movimentação?')) return;
+  apiPost({ acao:'inv_excluir', aba:'investimentos', id:id }).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    carregar();
+  }).catch(function(e){ aviso('Erro ao excluir: '+e.message,'e'); });
+});
+
 /* ============================================================ início */
 $('nData').value = hoje();
 $('nComp').value = hoje().slice(0,7);
+$('rData').value = hoje();
+$('sdComp').value = hoje().slice(0,7);
+renderSimulador();
 carregar();
 </script>
 </body>

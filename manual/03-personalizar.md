@@ -87,6 +87,25 @@ Só na aba **Cartoes**. O site lê de lá.
 
 ---
 
+## Adicionar um tipo de investimento
+
+Não precisa de nenhuma configuração. Na aba **Ativos**, a coluna `classe` é texto livre: escreva `Ações`, `FII`, `Cripto`, `Previdência` ou o que fizer sentido. A classe passa a existir, aparece nos gráficos de composição e vira sugestão no formulário. Você também pode cadastrar pelo próprio site, em **Investimentos → Registrar → Cadastrar um ativo novo**.
+
+Para aposentar uma aplicação vencida sem perder o histórico, ponha `Não` na coluna `em_uso` — ela some dos seletores e continua nos relatórios.
+
+---
+
+## Ajustar as taxas de referência do simulador
+
+Os campos **CDI hoje** e **IPCA 12 meses** são editáveis na própria tela. Para mudar o valor com que a página abre, procure em `docs/index.html`:
+
+```html
+<input type="number" step="0.01" id="sCDI" value="14.15">
+<input type="number" step="0.01" id="sIPCA" value="4.64">
+```
+
+---
+
 ## Depois de editar qualquer arquivo
 
 | Arquivo alterado | O que fazer |

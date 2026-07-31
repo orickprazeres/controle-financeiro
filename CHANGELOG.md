@@ -9,6 +9,52 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.1.0] — 2026-07-31
+
+Módulo de investimentos. Compatível com a v1.0.0: nenhum dado existente precisa ser alterado.
+
+### Adicionado
+
+**Planilha** (`planilha/Custos-Casa-v1.1.0.xlsx`)
+
+- Aba `Ativos`: catálogo das aplicações, com classe em texto livre (`Renda Fixa` hoje, `Ações` ou `FII` quando aparecerem), indexador, taxa contratada, instituição, vencimento e liquidez. Coluna `em_uso` aposenta um ativo vencido sem apagar o histórico.
+- Aba `Investimentos`: aportes e resgates. Rendimento não se lança aqui.
+- Aba `Saldos`: foto mensal de quanto cada aplicação vale.
+- Apêndice na aba `Leia-me` explicando as três e o risco de contar o aporte em dobro.
+
+**Backend** (`apps-script/Codigo.gs`)
+
+- `doGet` passa a devolver `ativos`, `investimentos` e `saldos`.
+- Novas ações: `inv_lancar` (aporte/resgate), `inv_saldo`, `inv_ativo` e `inv_excluir`.
+- `inv_saldo` e `inv_ativo` são idempotentes: repetir o mesmo ativo no mesmo mês **corrige** o valor em vez de duplicar.
+- Helpers `texto_` e `mes_` normalizam datas vindas do Sheets, para o site não depender do formato regional da planilha.
+
+**Site** (`docs/index.html`)
+
+- Aba **Investimentos** com três seções.
+- *Simulador*: projeção mês a mês com juros compostos, em `% do CDI`, `% ao ano` ou `IPCA + %`; aporte com crescimento anual opcional; IR pela tabela regressiva; conversão para poder de compra de hoje. Gráfico de barras empilhadas separando o que veio do bolso do que veio de juros, e tabela ano a ano.
+- *Minha carteira*: patrimônio, total aportado, rendimento acumulado, aporte médio mensal, evolução do patrimônio com aportes sobrepostos, composição por classe, quadro por ativo com rentabilidade, e comparativo entre a sobra do mês e o aporte efetivo.
+- *Registrar*: formulários de aporte/resgate, saldo mensal e cadastro de ativo.
+
+**Documentação e testes**
+
+- Novo `manual/05-investimentos.md`.
+- Seções novas em `03-personalizar.md` (adicionar tipo de investimento, ajustar taxas de referência) e `04-problemas-comuns.md` (aba vazia, rendimento estranho, aporte em dobro).
+- 34 testes novos: taxa mensal equivalente, composição IPCA + juro real, tabela regressiva de IR nas quatro faixas e fronteiras, projeção de aportes com e sem juros, crescimento anual do aporte, rendimento deduzido e consolidação da carteira. Total: **94 testes**.
+
+### Decisões de projeto
+
+- **Rendimento é deduzido, não digitado.** `saldo final − saldo inicial − aportes + resgates`. Você copia um saldo; a conta se vira. Funciona igual para renda fixa, ação ou fundo.
+- **Classe de ativo é texto livre.** Não há lista fechada de tipos de investimento — a intenção é justamente não obrigar ninguém a decidir hoje o que vai comprar daqui a dois anos.
+- **Aporte não é despesa.** Fica só na aba `Investimentos`, nunca em `Lancamentos`. A tabela *Aporte × sobra* existe para checar essa consistência.
+- **O simulador assume taxa constante e diz isso na tela.** É ferramenta de comparação de cenários, não previsão.
+
+### Referências das taxas padrão
+
+Selic em 14,25% a.a. (Copom de 17/06/2026), IPCA 12 meses em ~4,64%, CDI pré-preenchido em 14,15%. Todos os campos são editáveis — as fontes consultadas divergiram sobre o valor exato do CDI, então o número é uma referência a conferir, não um dado fechado.
+
+---
+
 ## [1.0.0] — 2026-07-31
 
 Primeira versão. Substitui a planilha `Controle-Custos-Casa.xlsx` (25 abas).

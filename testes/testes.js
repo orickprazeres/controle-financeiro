@@ -1,5 +1,5 @@
 /**
- * Custos da Casa — testes automatizados da lógica crítica · v1.0.0
+ * Custos da Casa — testes automatizados da lógica crítica · v1.1.0
  *
  * Rode com:   node testes/testes.js
  * Sai com código 0 se tudo passar, 1 se algo falhar.
@@ -109,6 +109,33 @@ function porChave(a, k) {
   a.forEach(function (l) { var x = l[k] || '(sem)'; o[x] = (o[x] || 0) + (Number(l.valor) || 0); });
   return Object.keys(o).map(function (x) { return { k: x, v: o[x] }; })
     .sort(function (p, q) { return q.v - p.v; });
+}
+
+
+// docs/index.html · matemática de investimento
+function taxaMensal(anual) { return Math.pow(1 + anual, 1 / 12) - 1; }
+function combina(a, b) { return (1 + a) * (1 + b) - 1; }
+function aliquotaIR(dias) {
+  if (dias <= 180) return 0.225;
+  if (dias <= 360) return 0.20;
+  if (dias <= 720) return 0.175;
+  return 0.15;
+}
+function simular(ini, aporte, anos, taxaAno, crescAno) {
+  var im = taxaMensal(taxaAno);
+  var saldo = ini, aportado = ini, apt = aporte;
+  var linhas = [{ mes: 0, saldo: saldo, aportado: aportado, rendimento: 0 }];
+  for (var m = 1; m <= anos * 12; m++) {
+    if (m > 1 && (m - 1) % 12 === 0) apt = apt * (1 + crescAno);
+    saldo = saldo * (1 + im) + apt;
+    aportado += apt;
+    linhas.push({ mes: m, saldo: saldo, aportado: aportado, rendimento: saldo - aportado });
+  }
+  return linhas;
+}
+// rendimento deduzido = saldo final - saldo inicial - aportes + resgates
+function rendimentoMes(saldoIni, saldoFim, aportes, resgates) {
+  return saldoFim - saldoIni - aportes + resgates;
 }
 
 /* ============================================================ runner */
@@ -229,6 +256,81 @@ t('valor total comprometido', soma(fut), 3780);
 t('até quando vai', fut.map(function (l) { return l.competencia; }).sort().pop(), '2027-08');
 t('não conta o mês corrente',
   fut.filter(function (l) { return l.competencia === M; }).length, 0);
+
+
+grupo('Investimentos — taxa equivalente');
+t('12% a.a. vira ~0,9489% ao mês',
+  Math.round(taxaMensal(0.12) * 1e6) / 1e6, 0.009489);
+t('taxa mensal composta reconstrói a anual',
+  Math.round(Math.pow(1 + taxaMensal(0.1415), 12) * 1e6) / 1e6, 1.1415);
+t('não é divisão simples por 12', taxaMensal(0.12) === 0.01, false);
+t('110% do CDI a 14,15%',
+  Math.round(0.1415 * 1.10 * 1e6) / 1e6, 0.15565);
+t('IPCA 4,64% + 6,20% real = 11,13% a.a., não 10,84%',
+  Math.round(combina(0.0464, 0.0620) * 1e6) / 1e6, 0.111277);
+t('composição rende mais que a soma simples',
+  combina(0.0464, 0.0620) > 0.0464 + 0.0620, true);
+t('taxa zero não rende', taxaMensal(0), 0);
+
+grupo('Investimentos — IR regressivo da renda fixa');
+t('até 180 dias', aliquotaIR(180), 0.225);
+t('181 a 360 dias', aliquotaIR(200), 0.20);
+t('361 a 720 dias', aliquotaIR(500), 0.175);
+t('acima de 720 dias', aliquotaIR(1000), 0.15);
+t('10 anos cai na menor faixa', aliquotaIR(10 * 365), 0.15);
+t('fronteira exata de 720', aliquotaIR(720), 0.175);
+t('fronteira exata de 721', aliquotaIR(721), 0.15);
+
+grupo('Investimentos — projeção de aportes');
+var S = simular(0, 1000, 10, 0.1415, 0);
+t('gera 121 pontos (0 a 120 meses)', S.length, 121);
+t('aportado = 120 x 1000', S[120].aportado, 120000);
+t('rendimento é o que sobra', Math.round(S[120].rendimento), Math.round(S[120].saldo - 120000));
+t('rendimento supera o aportado em 10 anos a 14,15%', S[120].rendimento > S[120].aportado, true);
+t('saldo cresce todo mês', S[60].saldo > S[59].saldo, true);
+
+var Z = simular(0, 1000, 1, 0, 0);
+t('sem juros, saldo = soma dos aportes', Z[12].saldo, 12000);
+t('sem juros, rendimento zero', Z[12].rendimento, 0);
+
+var I = simular(10000, 0, 1, 0.10, 0);
+t('só valor inicial a 10% a.a. rende 10% no ano',
+  Math.round(I[12].saldo), 11000);
+
+var C = simular(0, 1000, 3, 0, 0.10);
+t('aporte cresce 10% por ano', C[36].aportado, 12000 + 13200 + 14520);
+t('crescimento começa só no 13º mês', C[12].aportado, 12000);
+
+grupo('Investimentos — rendimento deduzido do saldo');
+t('mês simples', rendimentoMes(1000, 1120, 100, 0), 20);
+t('com resgate', rendimentoMes(5000, 4200, 0, 1000), 200);
+t('primeiro mês, sem saldo anterior',
+  Math.round(rendimentoMes(0, 1011.8, 1000, 0) * 100) / 100, 11.8);
+t('mês sem movimento', rendimentoMes(2000, 2025, 0, 0), 25);
+t('prejuízo aparece negativo', rendimentoMes(1000, 950, 0, 0), -50);
+t('aporte não vira rendimento', rendimentoMes(1000, 2000, 1000, 0), 0);
+
+grupo('Investimentos — carteira consolidada');
+var MOV = [
+  { competencia: '2026-07', ativo: 'CDB X', tipo: 'Aporte', valor: 1000 },
+  { competencia: '2026-07', ativo: 'Tesouro Selic', tipo: 'Aporte', valor: 500 },
+  { competencia: '2026-08', ativo: 'CDB X', tipo: 'Aporte', valor: 1000 },
+  { competencia: '2026-08', ativo: 'Tesouro Selic', tipo: 'Resgate', valor: 200 }
+];
+var SLD = [
+  { competencia: '2026-08', ativo: 'CDB X', saldo: 2035.20 },
+  { competencia: '2026-08', ativo: 'Tesouro Selic', saldo: 306.10 }
+];
+function somaMov(l, tipo) {
+  return l.filter(function (i) { return i.tipo === tipo; })
+          .reduce(function (a, b) { return a + b.valor; }, 0);
+}
+var aportado = somaMov(MOV, 'Aporte') - somaMov(MOV, 'Resgate');
+var patrimonio = SLD.reduce(function (a, b) { return a + b.saldo; }, 0);
+t('total aportado líquido', aportado, 2300);
+t('patrimônio atual', Math.round(patrimonio * 100) / 100, 2341.30);
+t('rendimento acumulado', Math.round((patrimonio - aportado) * 100) / 100, 41.30);
+t('resgate reduz o aportado, não vira perda', aportado < somaMov(MOV, 'Aporte'), true);
 
 /* ============================================================ resultado */
 

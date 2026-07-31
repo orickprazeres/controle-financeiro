@@ -6,12 +6,13 @@ Quatro etapas, cerca de 15 minutos. Faça na ordem.
 
 ## Etapa 1 — Subir a planilha para o Google Sheets
 
-1. Abra <https://drive.google.com> → **Novo** → **Upload de arquivo** → escolha `planilha/Custos-Casa-v1.0.0.xlsx`.
+1. Abra <https://drive.google.com> → **Novo** → **Upload de arquivo** → escolha `planilha/Custos-Casa-v1.1.0.xlsx`.
 2. Clique com o botão direito no arquivo → **Abrir com** → **Planilhas Google**.
 3. Menu **Arquivo** → **Salvar como Planilhas Google**. Isso cria a versão nativa; o `.xlsx` no Drive pode ser apagado depois.
 4. Renomeie a planilha para `Custos da Casa`.
 5. Na aba **Lancamentos**, apague as 5 linhas que começam com `EXEMPLO`.
 6. Na aba **Cartoes**, ajuste os cartões, titulares e dias de fechamento/vencimento.
+7. Nas abas **Ativos**, **Investimentos** e **Saldos**, apague as linhas de `EXEMPLO`. Se ainda não investe, deixe-as vazias — o site funciona normalmente sem elas.
 
 > A aba **Leia-me** dentro da própria planilha explica cada coluna em uma tela.
 
@@ -103,4 +104,4 @@ As parcelas futuras são criadas automaticamente, cada uma no mês em que vai ca
 
 ---
 
-**Próximo:** [`02-estrutura-de-dados.md`](02-estrutura-de-dados.md)
+**Próximo:** [`02-estrutura-de-dados.md`](02-estrutura-de-dados.md) · Para a parte de investimentos, veja [`05-investimentos.md`](05-investimentos.md).

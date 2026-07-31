@@ -1,6 +1,6 @@
 # Testes
 
-60 testes cobrindo a lógica onde um erro passaria despercebido — aritmética de meses, leitura de valores, parsing de CSV, geração de parcelas e as somas do painel.
+94 testes cobrindo a lógica onde um erro passaria despercebido — aritmética de meses, leitura de valores, parsing de CSV, geração de parcelas, somas do painel e a matemática de investimento.
 
 ## Rodar
 
@@ -13,7 +13,7 @@ node testes/testes.js
 Saída esperada no fim:
 
 ```
-60 testes passaram, 0 falharam
+94 testes passaram, 0 falharam
 ```
 
 Sai com código `0` se tudo passar, `1` se algo falhar.
@@ -29,6 +29,10 @@ Sai com código `0` se tudo passar, `1` se algo falhar.
 | CSV | Vírgula dentro de aspas quebra parsers ingênuos |
 | Geração de parcelas | Rateio com dízima, virada de ano, e só a 1ª herdar "pago" |
 | Agregações do painel | Confere que cartão **não** é contado como categoria |
+| Taxa equivalente | 12% a.a. não é 1% ao mês — a diferença compõe ao longo de anos |
+| IR regressivo | As quatro faixas e as fronteiras exatas (720 vs 721 dias) |
+| Projeção de aportes | Com e sem juros, e o aporte crescendo só a partir do 13º mês |
+| Rendimento deduzido | Garante que um aporte nunca seja confundido com rendimento |
 
 ## Ao alterar o código
 

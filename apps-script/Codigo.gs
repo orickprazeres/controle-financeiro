@@ -4,7 +4,7 @@
  * Passo a passo completo no README.md
  */
 
-var VERSAO = '1.0.0';
+var VERSAO = '1.1.0';
 
 // ⚠️ TROQUE por uma senha sua. A mesma vai no site.
 var TOKEN = 'troque-esta-senha';
@@ -13,9 +13,15 @@ var ABA_LANC = 'Lancamentos';
 var ABA_CAT  = 'Categorias';
 var ABA_CARD = 'Cartoes';
 var ABA_ORC  = 'Orcamento';
+var ABA_ATV  = 'Ativos';
+var ABA_INV  = 'Investimentos';
+var ABA_SLD  = 'Saldos';
 
 var COLS = ['id','data','competencia','tipo','descricao','categoria','grupo',
             'forma_pagamento','cartao','parcela','parcelas_total','valor','pago','obs'];
+
+var COLS_INV = ['id','data','competencia','ativo','tipo','valor','obs'];
+var COLS_SLD = ['id','competencia','ativo','saldo','obs'];
 
 /* ------------------------------------------------------------------ utils */
 
@@ -43,6 +49,22 @@ function tabela_(nome) {
     out.push(obj);
   }
   return out;
+}
+
+/** Qualquer data vira texto AAAA-MM-DD; o resto vira string. */
+function texto_(v) {
+  if (v instanceof Date) {
+    return Utilities.formatDate(v, ss_().getSpreadsheetTimeZone(), 'yyyy-MM-dd');
+  }
+  return String(v == null ? '' : v);
+}
+
+/** Qualquer competência vira texto AAAA-MM. */
+function mes_(v) {
+  if (v instanceof Date) {
+    return Utilities.formatDate(v, ss_().getSpreadsheetTimeZone(), 'yyyy-MM');
+  }
+  return String(v == null ? '' : v).slice(0, 7);
 }
 
 /** Datas viram sempre texto AAAA-MM-DD, valores viram sempre número. */
@@ -130,7 +152,48 @@ function doGet(e) {
       }),
       orcamento: tabela_(ABA_ORC).map(function (o) {
         return { categoria: String(o.categoria), limite: Number(o.limite_mensal || 0) };
-      })
+      }),
+
+      ativos: tabela_(ABA_ATV)
+        .filter(function (a) { return String(a.ativo || '').indexOf('EXEMPLO') !== 0; })
+        .map(function (a) {
+          return {
+            ativo: String(a.ativo || ''),
+            classe: String(a.classe || 'Outros'),
+            indexador: String(a.indexador || ''),
+            taxa: Number(a.taxa_contratada || 0),
+            instituicao: String(a.instituicao || ''),
+            vencimento: texto_(a.vencimento),
+            liquidez: String(a.liquidez || ''),
+            em_uso: String(a.em_uso || 'Sim')
+          };
+        }),
+
+      investimentos: tabela_(ABA_INV)
+        .filter(function (i) { return String(i.id || '').indexOf('EXEMPLO') !== 0; })
+        .map(function (i) {
+          return {
+            id: String(i.id || ''),
+            data: texto_(i.data),
+            competencia: mes_(i.competencia),
+            ativo: String(i.ativo || ''),
+            tipo: String(i.tipo || 'Aporte'),
+            valor: Number(i.valor || 0),
+            obs: String(i.obs || '')
+          };
+        }),
+
+      saldos: tabela_(ABA_SLD)
+        .filter(function (s) { return String(s.id || '').indexOf('EXEMPLO') !== 0; })
+        .map(function (s) {
+          return {
+            id: String(s.id || ''),
+            competencia: mes_(s.competencia),
+            ativo: String(s.ativo || ''),
+            saldo: Number(s.saldo || 0),
+            obs: String(s.obs || '')
+          };
+        })
     });
   } catch (err) {
     return json_({ ok: false, erro: String(err.message || err) });
@@ -150,6 +213,10 @@ function doPost(e) {
       case 'atualizar':return json_(atualizar_(body.dados));
       case 'excluir':  return json_(excluir_(body.id));
       case 'orcamento':return json_(salvaOrcamento_(body.dados));
+      case 'inv_lancar': return json_(invLancar_(body.dados));
+      case 'inv_saldo':  return json_(invSaldo_(body.dados));
+      case 'inv_excluir':return json_(invExcluir_(body.aba, body.id));
+      case 'inv_ativo':  return json_(invAtivo_(body.dados));
       default: throw new Error('Ação desconhecida: ' + body.acao);
     }
   } catch (err) {
@@ -263,4 +330,79 @@ function salvaOrcamento_(lista) {
   }
   sh.getRange(1, 1, vals.length, 2).setValues(vals);
   return { ok: true };
+}
+
+
+/* ==================================================================
+   INVESTIMENTOS
+   ================================================================== */
+
+/** Registra um aporte ou resgate. */
+function invLancar_(d) {
+  var sh = ss_().getSheetByName(ABA_INV);
+  var comp = d.competencia || String(d.data).slice(0, 7);
+  var linha = [
+    novoId_().replace('L', 'V'),
+    d.data,
+    comp,
+    d.ativo,
+    d.tipo || 'Aporte',
+    Number(d.valor || 0),
+    d.obs || ''
+  ];
+  sh.getRange(sh.getLastRow() + 1, 1, 1, COLS_INV.length).setValues([linha]);
+  return { ok: true, inseridas: 1 };
+}
+
+/**
+ * Registra o saldo de um ativo num mês.
+ * Se já existir saldo daquele ativo naquela competência, substitui — assim
+ * corrigir um número é só lançar de novo, sem duplicar.
+ */
+function invSaldo_(d) {
+  var sh = ss_().getSheetByName(ABA_SLD);
+  var comp = String(d.competencia);
+  var ativo = String(d.ativo);
+  var vals = sh.getDataRange().getValues();
+
+  for (var i = 1; i < vals.length; i++) {
+    if (mes_(vals[i][1]) === comp && String(vals[i][2]) === ativo) {
+      sh.getRange(i + 1, 4).setValue(Number(d.saldo || 0));
+      if (d.obs) sh.getRange(i + 1, 5).setValue(d.obs);
+      return { ok: true, atualizado: true };
+    }
+  }
+  sh.getRange(sh.getLastRow() + 1, 1, 1, COLS_SLD.length).setValues([[
+    novoId_().replace('L', 'S'), comp, ativo, Number(d.saldo || 0), d.obs || ''
+  ]]);
+  return { ok: true, atualizado: false };
+}
+
+/** Cadastra um ativo novo (ou atualiza, se o nome já existir). */
+function invAtivo_(d) {
+  var sh = ss_().getSheetByName(ABA_ATV);
+  var linha = [
+    d.ativo, d.classe || 'Outros', d.indexador || '', Number(d.taxa || 0),
+    d.instituicao || '', d.vencimento || '', d.liquidez || '', 'Sim'
+  ];
+  var vals = sh.getRange(1, 1, sh.getLastRow(), 1).getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]) === String(d.ativo)) {
+      sh.getRange(i + 1, 1, 1, linha.length).setValues([linha]);
+      return { ok: true, atualizado: true };
+    }
+  }
+  sh.getRange(sh.getLastRow() + 1, 1, 1, linha.length).setValues([linha]);
+  return { ok: true, atualizado: false };
+}
+
+/** Exclui uma linha de Investimentos ou de Saldos pelo id. */
+function invExcluir_(aba, id) {
+  var nome = (aba === 'saldos') ? ABA_SLD : ABA_INV;
+  var sh = ss_().getSheetByName(nome);
+  var ids = sh.getRange(1, 1, sh.getLastRow(), 1).getValues();
+  for (var i = 1; i < ids.length; i++) {
+    if (String(ids[i][0]) === String(id)) { sh.deleteRow(i + 1); return { ok: true }; }
+  }
+  throw new Error('Registro não encontrado: ' + id);
 }

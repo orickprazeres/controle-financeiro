@@ -45,9 +45,28 @@ Não há proteção contra duplicata: cada importação gera IDs novos. Na aba *
 
 A exclusão pelo site remove uma linha por vez. Para apagar a compra inteira, filtre pela descrição na aba **Lancamentos** da planilha e apague as linhas de uma vez.
 
+### A aba Investimentos aparece vazia
+
+Você atualizou o `index.html` mas não o `Codigo.gs`. As duas partes precisam estar na v1.1.0: cole o novo `Codigo.gs` no Apps Script **e reimplante** (Implantar → Gerenciar implantações → lápis → Nova versão).
+
+Para conferir, abra a URL da API com `?token=SUA-SENHA` no navegador: o JSON precisa ter as chaves `ativos`, `investimentos` e `saldos`.
+
+### O rendimento da carteira está estranho
+
+Quase sempre é saldo faltando. O rendimento sai de `saldo final − saldo inicial − aportes + resgates`, então:
+
+- Se falta o saldo do mês anterior, o aporte inteiro parece rendimento.
+- Se falta o saldo do mês atual, o ativo aparece com patrimônio zero.
+
+Registre o saldo de **todos** os ativos em **todo** mês, mesmo os que não receberam aporte.
+
+### Aportei R$ 1.000 e minha sobra do mês caiu R$ 1.000 a mais do que devia
+
+Você lançou o aporte duas vezes: na aba `Investimentos` e também como Saída em `Investimento/Reserva` na aba `Lancamentos`. Apague a linha dos `Lancamentos` — aporte não é despesa.
+
 ### O painel da planilha mostra `#REF!` ou `#NAME?`
 
-Alguma aba foi renomeada. Os nomes têm que ser exatamente `Lancamentos`, `Categorias`, `Cartoes`, `Orcamento` — sem acento, como estão.
+Alguma aba foi renomeada. Os nomes têm que ser exatamente `Lancamentos`, `Categorias`, `Cartoes`, `Orcamento`, `Ativos`, `Investimentos` e `Saldos` — sem acento, como estão.
 
 ### Está lento com muitos lançamentos
 

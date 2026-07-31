@@ -1,4 +1,4 @@
-# Custos da Casa · v1.0.0
+# Custos da Casa · v1.1.0
 
 Controle de custos domésticos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -23,7 +23,7 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 │   └── appsscript.json            configuração do projeto Apps Script
 │
 ├── planilha/                    ► O BANCO DE DADOS
-│   ├── Custos-Casa-v1.0.0.xlsx    modelo para importar no Google Sheets
+│   ├── Custos-Casa-v1.1.0.xlsx    modelo para importar no Google Sheets
 │   └── anterior/                  a planilha antiga de 25 abas, guardada
 │       └── Controle-Custos-Casa-ORIGINAL.xlsx
 │
@@ -31,7 +31,8 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 │   ├── 01-instalacao.md           passo a passo completo, do zero
 │   ├── 02-estrutura-de-dados.md   o que é cada aba e cada coluna
 │   ├── 03-personalizar.md         categorias, cores, regras de auto-classificação
-│   └── 04-problemas-comuns.md     o que fazer quando algo não funciona
+│   ├── 04-problemas-comuns.md     o que fazer quando algo não funciona
+│   └── 05-investimentos.md        simulador de aportes e carteira real
 │
 └── testes/                      ► CONTROLE DE QUALIDADE
     ├── testes.js                  testes automatizados da lógica crítica
@@ -66,6 +67,8 @@ Vá direto para **[`manual/01-instalacao.md`](manual/01-instalacao.md)**. São 4
 
 **Parcelas futuras** — gráfico do que já está comprometido nos próximos 12 meses e a lista de compras parceladas em aberto.
 
+**Investimentos** — três telas. O *simulador* projeta aportes mensais com juros compostos, em % do CDI, % ao ano ou IPCA+, com IR regressivo e conversão para poder de compra de hoje. *Minha carteira* mostra patrimônio, quanto foi seu bolso e quanto foi juros, rentabilidade por ativo, composição por classe e a comparação entre a sobra do mês e o que você aportou. *Registrar* recebe aportes, resgates, saldos mensais e o cadastro de ativos novos.
+
 **Importar fatura** — lê o CSV do banco, adivinha as colunas, categoriza sozinho por palavra-chave (Assaí → Mercado, iFood → Restaurantes/Delivery, Netflix → Assinaturas…), detecta parcelas do tipo `3/10` e gera as futuras.
 
 ---
@@ -96,4 +99,4 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 ## Versão
 
-`1.0.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`1.1.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
