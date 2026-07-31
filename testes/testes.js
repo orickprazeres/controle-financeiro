@@ -426,6 +426,34 @@ t('pagou igual',    difPagamento(690.78, 690.78), 0);
 t('sem valor informado usa o previsto',
   (function(){ var vp=null; return vp===null ? 690.78 : vp; })(), 690.78);
 
+
+grupo('Rodapé da lista — sinal do saldo (bug da v1.7.0)');
+function rodape(lista){
+  var ent = lista.filter(function(l){ return l.tipo==='Entrada'; })
+                 .reduce(function(a,b){ return a+b.valor; },0);
+  var sai = lista.filter(function(l){ return l.tipo!=='Entrada'; })
+                 .reduce(function(a,b){ return a+b.valor; },0);
+  return { entradas:Math.round(ent*100)/100, saidas:Math.round(sai*100)/100,
+           saldo:Math.round((ent-sai)*100)/100 };
+}
+var JUL = [
+  { tipo:'Entrada', valor:9650.24 }, { tipo:'Saída', valor:965.02 },
+  { tipo:'Saída',   valor:1276.48 }, { tipo:'Saída', valor:38.82 },
+  { tipo:'Saída',   valor:41.00 },   { tipo:'Entrada', valor:1300.00 }
+];
+var r = rodape(JUL);
+t('entradas somadas', r.entradas, 10950.24);
+t('saídas somadas',   r.saidas,   2321.32);
+t('saldo é POSITIVO quando entrou mais do que saiu', r.saldo, 8628.92);
+t('saldo não é saídas menos entradas', r.saldo === -8628.92, false);
+t('só saídas dá saldo negativo',
+  rodape([{tipo:'Saída',valor:100},{tipo:'Saída',valor:50}]).saldo, -150);
+t('só entradas dá saldo positivo',
+  rodape([{tipo:'Entrada',valor:100}]).saldo, 100);
+t('lista vazia dá zero', rodape([]).saldo, 0);
+t('entradas e saídas iguais zeram',
+  rodape([{tipo:'Entrada',valor:500},{tipo:'Saída',valor:500}]).saldo, 0);
+
 /* ============================================================ resultado */
 
 console.log('\n' + '-'.repeat(46));

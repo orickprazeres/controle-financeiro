@@ -1,4 +1,4 @@
-# Controle Financeiro · v1.7.0
+# Controle Financeiro · v1.7.1
 
 Controle de custos domésticos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -109,4 +109,4 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 ## Versão
 
-`1.7.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`1.7.1` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.

@@ -9,6 +9,19 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.7.1] — 2026-07-31
+
+### Corrigido
+
+- **O rodapé da lista de Lançamentos mostrava o saldo com o sinal trocado.** A conta era `saídas − entradas`, sob o rótulo ambíguo "Resultado dos filtros". Um mês com R$ 10.950,24 de entradas e R$ 2.321,32 de saídas — ou seja, R$ 8.628,92 sobrando — aparecia como **−R$ 8.628,92**, dando a impressão de prejuízo.
+- O rodapé agora mostra **três linhas**: Entradas, Saídas e SALDO, cada uma com o sinal e a cor certos. Quando há filtros aplicados, o rótulo avisa que o saldo é só do recorte visível.
+
+### Como passou despercebido
+
+A fórmula era usada só naquele rodapé, e o KPI "Saldo do mês" do Painel — que sempre esteve correto — usa outro caminho. Os dois números discordavam entre si e ninguém comparava. Foram acrescentados 8 testes de regressão cobrindo o sinal em todos os casos.
+
+---
+
 ## [1.7.0] — 2026-07-31
 
 Faxina de interface, a partir de uma auditoria da própria estrutura. Só `docs/` mudou — nada a reimplantar.
