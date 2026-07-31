@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Custos da Casa v1.1.0 -->
+<!-- Custos da Casa v1.3.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Importar fatura · Custos da Casa</title>
 <style>
@@ -65,6 +65,11 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 </div>
 
 <div class="card hide" id="c2">
+  <div id="direto" class="msg s hide" style="margin-bottom:16px">
+    <b>Este arquivo já está no formato do sistema.</b>
+    <div id="diretoInfo" style="margin:6px 0 10px"></div>
+    <button id="btDireto">Importar direto, sem mapear nada</button>
+  </div>
   <h2><span class="step">2</span> Diga qual coluna é o quê</h2>
   <div class="g">
     <div class="fld"><label>Data</label><select id="mData"></select></div>
@@ -106,7 +111,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 </div>
 
 <script>
-var VERSAO = '1.1.0';
+var VERSAO = '1.3.0';
 var CFG = { url: localStorage.getItem('cc_url')||'', token: localStorage.getItem('cc_tok')||'' };
 var CATS = [], CARTOES = [], HEAD = [], ROWS = [], PREV = [];
 
@@ -226,6 +231,60 @@ function detectaParcela(desc){
   return { num:a, total:b };
 }
 
+/* ------------------------------------------------ formato do sistema */
+
+var COLMAP = null;
+
+/** Se o CSV já traz as colunas do sistema, devolve o índice de cada uma. */
+function detectarFormatoSistema(head){
+  var norm = head.map(function(h){
+    return String(h).toLowerCase().trim()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  });
+  var m = {};
+  ['id','data','competencia','tipo','descricao','categoria','grupo',
+   'forma_pagamento','cartao','parcela','parcelas_total','valor','pago','obs']
+    .forEach(function(c){ var i = norm.indexOf(c); if (i >= 0) m[c] = i; });
+
+  var essenciais = ['data','tipo','descricao','categoria','valor'];
+  var falta = essenciais.filter(function(c){ return m[c] === undefined; });
+  return falta.length ? null : m;
+}
+
+/** Monta a pré-visualização lendo cada coluna linha a linha. */
+function preverDireto(){
+  PREV = [];
+  ROWS.forEach(function(r){
+    function v(c){ return COLMAP[c] === undefined ? '' : (r[COLMAP[c]] || ''); }
+    var valor = numero(v('valor'));
+    if (valor === 0) return;
+    var data = dataISO(v('data'));
+    var comp = /^\d{4}-\d{2}/.test(String(v('competencia')))
+      ? String(v('competencia')).slice(0,7) : data.slice(0,7);
+    PREV.push({
+      data: data,
+      competencia: comp,
+      tipo: String(v('tipo')) === 'Entrada' ? 'Entrada' : 'Saída',
+      descricao: String(v('descricao')).replace(/\s+/g,' ').trim(),
+      categoria: String(v('categoria')),
+      auto: false, doArquivo: true,
+      // estorno mantém o sinal negativo: é despesa que voltou, não receita
+      valor: valor,
+      parcela: Math.max(1, parseInt(v('parcela') || 1, 10)),
+      parcelas_total: Math.max(1, parseInt(v('parcelas_total') || 1, 10)),
+      gerarFuturas: false,
+      forma: String(v('forma_pagamento')) || '',
+      cartao: String(v('cartao')) || '',
+      pago: String(v('pago')) === 'Sim' ? 'Sim' : 'Não',
+      obs: String(v('obs')) || '',
+      pular: false
+    });
+  });
+  desenhar();
+  $('c3').classList.remove('hide');
+  $('c3').scrollIntoView({behavior:'smooth'});
+}
+
 /* ------------------------------------------------ passo 1 */
 $('arq').onchange = function(){
   var f=this.files[0]; if(!f) return;
@@ -262,10 +321,22 @@ $('btLer').onclick = function(){
   $('mDesc').value  = acha(['descri','title','histor','estabelec','lancamento','lançamento','memo'],1);
   $('mValor').value = acha(['valor','amount','value','montante'],HEAD.length-1);
   $('mCat').value   = acha(['categ'],-1);
-  aviso(ROWS.length+' linhas lidas. Confira o mapeamento das colunas abaixo.','s');
+  COLMAP = detectarFormatoSistema(HEAD);
+  if (COLMAP){
+    var achadas = Object.keys(COLMAP).length;
+    $('diretoInfo').textContent = 'Encontrei ' + achadas + ' das 14 colunas do sistema, e '
+      + ROWS.length + ' linhas. Tipo, categoria, cartão, competência, parcelas e status '
+      + 'vêm prontos de cada linha — não precisa escolher nada aqui embaixo.';
+    $('direto').classList.remove('hide');
+  } else {
+    $('direto').classList.add('hide');
+  }
+  aviso(ROWS.length+' linhas lidas.'+(COLMAP?' Dá para importar direto.':' Confira o mapeamento das colunas abaixo.'),'s');
   $('c2').classList.remove('hide');
   $('c2').scrollIntoView({behavior:'smooth'});
 };
+
+$('btDireto').onclick = preverDireto;
 
 $('mForma').onchange = function(){ $('wCartao').classList.toggle('hide', this.value!=='Crédito'); };
 
@@ -314,12 +385,19 @@ function desenhar(){
   var ativos = PREV.filter(function(p){ return !p.pular; });
   var semCat = ativos.filter(function(p){ return !p.categoria; }).length;
   var tot = ativos.reduce(function(a,b){ return a + (b.tipo==='Entrada'?0:b.valor); },0);
+  var estornos = ativos.filter(function(p){ return p.valor < 0; }).length;
+  var cartoesNo = {};
+  ativos.forEach(function(p){ if (p.cartao) cartoesNo[p.cartao] = 1; });
+  var nCard = Object.keys(cartoesNo).length;
   var futuras = ativos.reduce(function(a,b){ return a + (b.gerarFuturas ? (b.parcelas_total-b.parcela) : 0); },0);
   $('resumo').innerHTML = '<b>'+ativos.length+'</b> lançamentos · saídas somando <b>'+brl(tot)+'</b>'
     + (semCat ? ' · <b style="color:#fbbf24">'+semCat+' sem categoria</b>' : ' · todos categorizados')
-    + (futuras ? ' · <b>'+futuras+'</b> parcelas futuras serão criadas' : '');
+    + (futuras ? ' · <b>'+futuras+'</b> parcelas futuras serão criadas' : '')
+    + (nCard ? ' · '+nCard+' cartão(ões): '+Object.keys(cartoesNo).join(', ') : '')
+    + (estornos ? ' · '+estornos+' estorno(s) mantido(s) com valor negativo' : '');
 
-  var h = '<tr><th class="c">Usar</th><th>Data</th><th>Descrição</th><th>Categoria</th><th class="c">Parcela</th><th class="r">Valor</th><th class="c">Tipo</th></tr>';
+  var h = '<tr><th class="c">Usar</th><th>Data</th><th>Descrição</th><th>Categoria</th>'
+        + '<th class="c">Pagamento</th><th class="c">Parcela</th><th class="r">Valor</th><th class="c">Tipo</th></tr>';
   PREV.forEach(function(p,i){
     var parc = p.parcelas_total>1
       ? p.parcela+'/'+p.parcelas_total + (p.gerarFuturas ? ' <span class="tag au">+'+(p.parcelas_total-p.parcela)+'</span>' : '')
@@ -329,9 +407,14 @@ function desenhar(){
       + '<td class="mut">'+esc(p.data)+'</td>'
       + '<td>'+esc(p.descricao)+'</td>'
       + '<td><select data-cat="'+i+'">'+optsCat(p.categoria,p.tipo)+'</select>'
-        + (p.auto?' <span class="tag au">auto</span>':(p.categoria?'':' <span class="tag pd">falta</span>'))+'</td>'
+        + (p.doArquivo?' <span class="tag au">do arquivo</span>'
+           : p.auto?' <span class="tag au">auto</span>'
+           : (p.categoria?'':' <span class="tag pd">falta</span>'))+'</td>'
+      + '<td class="c">'+(p.forma
+           ? '<span class="tag'+(p.forma==='Crédito'?' au':'')+'">'+esc(p.cartao||p.forma)+'</span>'
+           : '<span class="mut">—</span>')+'</td>'
       + '<td class="c">'+parc+'</td>'
-      + '<td class="r'+(p.tipo==='Entrada'?' pos':'')+'">'+brl(p.valor)+'</td>'
+      + '<td class="r'+(p.tipo==='Entrada'?' pos':(p.valor<0?' pos':''))+'">'+brl(p.valor)+'</td>'
       + '<td class="c"><span class="tag">'+esc(p.tipo)+'</span></td></tr>';
   });
   $('tb').innerHTML = h;
@@ -355,14 +438,17 @@ $('btImportar').onclick = function(){
   if (!ativos.length){ aviso('Nada selecionado para importar.','e'); return; }
   if (semCat.length && !confirm(semCat.length+' lançamento(s) estão sem categoria e vão entrar como "Outros". Continuar?')) return;
 
-  var forma = $('mForma').value;
-  var cartao = forma==='Crédito' ? $('mCartao').value : '';
-  var pago = $('mPago').value;
+  var formaFixa = $('mForma').value;
+  var cartaoFixo = formaFixa==='Crédito' ? $('mCartao').value : '';
+  var pagoFixo = $('mPago').value;
   var grupoDe = {}; CATS.forEach(function(c){ grupoDe[c.categoria]=c.grupo; });
 
   var lista = [];
   ativos.forEach(function(p){
     var cat = p.categoria || 'Outros';
+    var forma  = p.forma  || formaFixa;
+    var cartao = (p.forma ? (p.cartao || '') : cartaoFixo);
+    var pago   = p.pago   || pagoFixo;
     var base = 'I'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
     var n = p.gerarFuturas ? (p.parcelas_total - p.parcela + 1) : 1;
     for (var i=0;i<n;i++){
@@ -380,7 +466,7 @@ $('btImportar').onclick = function(){
         parcelas_total: p.parcelas_total,
         valor: p.valor,
         pago: i===0 ? pago : 'Não',
-        obs: 'importado'
+        obs: p.obs || 'importado'
       });
     }
   });

@@ -1,4 +1,4 @@
-# Custos da Casa · v1.2.0
+# Custos da Casa · v1.3.0
 
 Controle de custos domésticos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -34,6 +34,10 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 │   ├── 04-problemas-comuns.md     o que fazer quando algo não funciona
 │   ├── 05-investimentos.md        simulador de aportes e carteira real
 │   └── 06-atualizar-versao.md     como atualizar SEM trocar a planilha
+│
+├── importar/                    ► MIGRAÇÃO DA PLANILHA ANTIGA
+│   ├── lancamentos-julho-agosto.csv   185 lançamentos prontos
+│   └── COMO-IMPORTAR.md               o passo a passo e o que foi convertido
 │
 └── testes/                      ► CONTROLE DE QUALIDADE
     ├── testes.js                  testes automatizados da lógica crítica
@@ -72,7 +76,7 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 
 **Investimentos** — três telas. O *simulador* projeta aportes mensais com juros compostos, em % do CDI, % ao ano ou IPCA+, com IR regressivo e conversão para poder de compra de hoje. *Minha carteira* mostra patrimônio, quanto foi seu bolso e quanto foi juros, rentabilidade por ativo, composição por classe e a comparação entre a sobra do mês e o que você aportou. *Registrar* recebe aportes, resgates, saldos mensais e o cadastro de ativos novos.
 
-**Importar fatura** — lê o CSV do banco, adivinha as colunas, categoriza sozinho por palavra-chave (Assaí → Mercado, iFood → Restaurantes/Delivery, Netflix → Assinaturas…), detecta parcelas do tipo `3/10` e gera as futuras.
+**Importar fatura** — lê o CSV do banco, adivinha as colunas, categoriza sozinho por palavra-chave (Assaí → Mercado, iFood → Restaurantes/Delivery, Netflix → Assinaturas…), detecta parcelas do tipo `3/10` e gera as futuras. Se o arquivo já vier no formato do sistema, detecta e importa direto, lendo cartão, tipo e competência de cada linha.
 
 ---
 
@@ -102,4 +106,4 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 ## Versão
 
-`1.2.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`1.3.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.

@@ -9,6 +9,24 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.3.0] — 2026-07-31
+
+Importador entende arquivos que já vêm no formato do sistema. Só `docs/importar.html` mudou — nada a reimplantar.
+
+### Adicionado
+
+- **Modo direto.** Se o CSV traz as colunas do sistema (`data`, `tipo`, `descricao`, `categoria`, `valor` no mínimo), o importador detecta sozinho e oferece um botão que pula todo o mapeamento.
+- **Cartão, tipo, competência, forma de pagamento e status lidos linha a linha.** Antes esses cinco eram fixos para o arquivo inteiro — impossível importar uma planilha com três cartões e entradas misturadas com saídas numa tacada só.
+- **Categoria vinda do arquivo é usada como está**, sem passar pela adivinhação por palavra-chave. A prévia marca a origem: "do arquivo" ou "auto".
+- **Estornos mantêm o sinal negativo.** Uma compra estornada é despesa que voltou, não receita; somar como entrada distorceria os dois indicadores.
+- A prévia agora mostra a coluna de pagamento, quantos cartões distintos existem e quantos estornos foram encontrados.
+
+### Motivo
+
+Migrar a planilha antiga expôs o limite: 185 lançamentos, 3 cartões, entradas e saídas juntas, competência diferente da data em toda a fatura. Pelo caminho antigo seriam 6 importações separadas, cada uma com risco de errar um seletor.
+
+---
+
 ## [1.2.0] — 2026-07-31
 
 Lançar virou um botão. Só o site muda — planilha e Apps Script continuam na v1.1.0, nada a reimplantar.
