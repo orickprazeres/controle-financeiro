@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Controle Financeiro v1.6.0 -->
+<!-- Controle Financeiro v1.7.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <title>Controle Financeiro</title>
@@ -80,11 +80,16 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 .sep{border:0;border-top:1px solid var(--line);margin:20px 0}
 .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:9px;cursor:pointer}
 .chk input{width:auto;margin:0}
+.orcin{padding:5px 8px;font-size:12.5px;text-align:right;background:transparent;border-color:transparent}
+.orcin:hover{border-color:var(--line)}
+.orcin:focus{background:var(--card2);border-color:var(--ac)}
 .tag.atr{background:rgba(248,113,113,.18);color:var(--bad)}
 .tag.hj{background:rgba(251,191,36,.18);color:var(--warn)}
 .tag.fut{background:rgba(56,189,248,.15);color:var(--ac)}
 button.mini{padding:5px 12px;font-size:12px}
 tr.atrasada td{background:rgba(248,113,113,.06)}
+tr.clicavel{cursor:pointer}
+tr.clicavel:hover td{background:rgba(56,189,248,.09)}
 
 /* ---------- modal ---------- */
 .modal{position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:100;
@@ -150,8 +155,6 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
   <button data-p="painel" class="on">Painel</button>
   <button data-p="lanc">Lançamentos</button>
   <button data-p="pagar">Contas a pagar</button>
-  <button data-p="orc">Orçamento</button>
-  <button data-p="fut">Parcelas futuras</button>
   <button data-p="inv">Investimentos</button>
   <button onclick="location.href='importar.html'">Importar fatura ↗</button>
 </nav>
@@ -163,7 +166,6 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
     <div class="kpi"><div class="l">Saídas</div><div class="v neg" id="kSai">—</div></div>
     <div class="kpi"><div class="l">Saldo do mês</div><div class="v" id="kSal">—</div><div class="s" id="kSalS"></div></div>
     <div class="kpi"><div class="l">No cartão</div><div class="v" id="kCar">—</div><div class="s" id="kCarS"></div></div>
-    <div class="kpi"><div class="l">Ainda a pagar</div><div class="v" id="kPag">—</div><div class="s" id="kPagS"></div></div>
   </div>
 
   <div class="g2">
@@ -171,19 +173,25 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
     <div class="card"><h2>Para onde foi o dinheiro</h2><div class="chw"><canvas id="chCat"></canvas></div></div>
   </div>
 
-  <div class="g2">
-    <div class="card"><h2>Por grupo</h2><div class="chw"><canvas id="chGrp"></canvas></div></div>
-    <div class="card"><h2>Como você pagou</h2><div class="chw"><canvas id="chFor"></canvas></div></div>
-  </div>
-
   <div class="card">
-    <h2>Categorias do mês</h2>
+    <h2>Categorias do mês · orçamento editável</h2>
     <div class="scr"><table id="tbCat"></table></div>
+    <div class="nota">Clique num campo da coluna Orçamento, digite o limite e saia do campo — salva sozinho, só aquela categoria. Deixe vazio para não ter limite.</div>
   </div>
 
-  <div class="card">
-    <h2>Comparativo com o mês anterior</h2>
-    <div class="scr"><table id="tbComp"></table></div>
+  <div style="margin-bottom:16px">
+    <button class="gh" id="btDetalhes">▸ mais detalhes</button>
+  </div>
+
+  <div id="detalhes" class="hide">
+    <div class="g2">
+      <div class="card"><h2>Por grupo</h2><div class="chw"><canvas id="chGrp"></canvas></div></div>
+      <div class="card"><h2>Como você pagou</h2><div class="chw"><canvas id="chFor"></canvas></div></div>
+    </div>
+    <div class="card">
+      <h2>Comparativo com o mês anterior</h2>
+      <div class="scr"><table id="tbComp"></table></div>
+    </div>
   </div>
 </div>
 
@@ -199,17 +207,23 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
       <select id="fPago"><option value="">Status: todos</option><option>Sim</option><option>Não</option></select>
     </div>
     <div class="scr"><table id="tbLanc"></table></div>
+    <div class="nota">Clique em qualquer linha para editar ou excluir.</div>
   </div>
 </div>
 
 
 <!-- ================= CONTAS A PAGAR ================= -->
 <div id="pgPagar" class="pg hide">
+  <div class="sub">
+    <button data-esc="mes">Só <span class="escMes"></span></button>
+    <button data-esc="tudo" class="on">Tudo em aberto</button>
+  </div>
+
   <div class="kpis">
     <div class="kpi"><div class="l">Vencidas</div><div class="v neg" id="pVenc">—</div><div class="s" id="pVencS"></div></div>
     <div class="kpi"><div class="l">Vence em 7 dias</div><div class="v" id="pProx">—</div><div class="s" id="pProxS"></div></div>
-    <div class="kpi"><div class="l">Em aberto no mês</div><div class="v" id="pAber">—</div><div class="s" id="pAberS"></div></div>
-    <div class="kpi"><div class="l">Pago no mês</div><div class="v pos" id="pPago">—</div><div class="s" id="pPagoS"></div></div>
+    <div class="kpi"><div class="l">Total em aberto</div><div class="v" id="pAber">—</div><div class="s" id="pAberS"></div></div>
+    <div class="kpi"><div class="l">Já pago</div><div class="v pos" id="pPago">—</div><div class="s" id="pPagoS"></div></div>
   </div>
 
   <div class="card">
@@ -222,6 +236,13 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
   <div class="card">
     <h2>Pago em <span id="lblMesPago"></span></h2>
     <div class="scr"><table id="tbPagas"></table></div>
+  </div>
+
+  <div class="card">
+    <h2>Já comprometido nos próximos meses</h2>
+    <div class="chw"><canvas id="chFut"></canvas></div>
+    <div class="scr" style="margin-top:16px"><table id="tbFut"></table></div>
+    <div class="nota">Parcelas de compras já feitas que ainda vão cair. Não aparecem na lista acima porque ainda não venceram.</div>
   </div>
 
   <div class="card">
@@ -278,7 +299,7 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
 <div id="modalNovo" class="modal hide">
   <div class="modal-box">
     <div class="modal-head">
-      <h2>Novo lançamento</h2>
+      <h2 id="tituloNovo">Novo lançamento</h2>
       <div class="sp"></div>
       <button class="x" id="btFecharNovo" title="Fechar (Esc)">&#10005;</button>
     </div>
@@ -299,7 +320,7 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
     </div>
     <div class="g3">
       <div class="fld"><label>Valor (R$)</label><input type="number" step="0.01" id="nValor" placeholder="0,00"></div>
-      <div class="fld"><label>Nº de parcelas</label><input type="number" min="1" step="1" id="nParc" value="1"></div>
+      <div class="fld" id="wrapParc"><label>Nº de parcelas</label><input type="number" min="1" step="1" id="nParc" value="1"></div>
       <div class="fld"><label>Já foi pago?</label><select id="nPago"><option>Não</option><option>Sim</option></select></div>
     </div>
     <div class="fld hide" id="wrapModo">
@@ -311,31 +332,10 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
     <div style="display:flex;gap:10px;align-items:center">
       <button id="btSalvarLanc">Lançar</button>
       <button class="gh" id="btCancelarNovo">Cancelar</button>
+      <button class="dg hide" id="btExcluirLanc">Excluir</button>
       <div class="sp"></div>
       <span class="nota" style="margin:0">Esc fecha</span>
     </div>
-  </div>
-</div>
-
-<!-- ================= ORCAMENTO ================= -->
-<div id="pgOrc" class="pg hide">
-  <div class="card">
-    <h2>Orçamento mensal por categoria</h2>
-    <div id="msgOrc"></div>
-    <div class="scr"><table id="tbOrc"></table></div>
-    <div style="margin-top:14px"><button id="btSalvarOrc">Salvar orçamento</button></div>
-  </div>
-</div>
-
-<!-- ================= FUTURO ================= -->
-<div id="pgFut" class="pg hide">
-  <div class="card">
-    <h2>O que já está comprometido lá na frente</h2>
-    <div class="chw"><canvas id="chFut"></canvas></div>
-  </div>
-  <div class="card">
-    <h2>Compras parceladas em aberto</h2>
-    <div class="scr"><table id="tbFut"></table></div>
   </div>
 </div>
 
@@ -418,51 +418,14 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
 
   <!-- ---------- REGISTRAR ---------- -->
   <div id="subReg" class="hide">
-    <div class="g2">
-      <div class="card">
-        <h2>Aporte ou resgate</h2>
-        <div id="msgApt"></div>
-        <div class="fld"><label>Ativo</label><select id="rAtivo"></select></div>
-        <div class="g3">
-          <div class="fld"><label>Tipo</label><select id="rTipo"><option>Aporte</option><option>Resgate</option></select></div>
-          <div class="fld"><label>Data</label><input type="date" id="rData"></div>
-          <div class="fld"><label>Valor (R$)</label><input type="number" step="0.01" id="rValor"></div>
-        </div>
-        <div class="fld"><label>Observação</label><input id="rObs"></div>
-        <button id="btAporte">Registrar</button>
-      </div>
-
-      <div class="card">
-        <h2>Saldo do mês</h2>
-        <div id="msgSld"></div>
-        <div class="nota" style="margin-top:0;margin-bottom:13px">Uma vez por mês, copie da corretora quanto cada aplicação vale e registre aqui. É isso que permite calcular o rendimento. Lançar de novo o mesmo ativo no mesmo mês <b>corrige</b> o valor, não duplica.</div>
-        <div class="fld"><label>Ativo</label><select id="sdAtivo"></select></div>
-        <div class="g3">
-          <div class="fld"><label>Competência</label><select id="sdComp"></select></div>
-          <div class="fld"><label>Saldo (R$)</label><input type="number" step="0.01" id="sdValor"></div>
-        </div>
-        <button id="btSaldo">Registrar saldo</button>
-      </div>
-    </div>
-
     <div class="card">
-      <h2>Cadastrar um ativo novo</h2>
-      <div id="msgAtv"></div>
-      <div class="nota" style="margin-top:0;margin-bottom:13px">A classe é texto livre — comece com Renda Fixa e acrescente Ações, FII, Fundo, Cripto ou o que aparecer. Não precisa decidir tudo agora.</div>
-      <div class="g3">
-        <div class="fld"><label>Nome do ativo</label><input id="aNome" placeholder="CDB 2 anos Banco Y"></div>
-        <div class="fld"><label>Classe</label><input id="aClasse" list="listaClasses" placeholder="Renda Fixa">
-          <datalist id="listaClasses"></datalist></div>
-        <div class="fld"><label>Instituição</label><input id="aInst" placeholder="Banco Y"></div>
+      <h2>O que você quer registrar?</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button id="btAbrirAporte">+ Aporte ou resgate</button>
+        <button id="btAbrirSaldo">Saldo do mês</button>
+        <button class="gh" id="btAbrirAtivo">Cadastrar ativo novo</button>
       </div>
-      <div class="g3">
-        <div class="fld"><label>Indexador</label><select id="aIdx">
-          <option>% do CDI</option><option>Selic +</option><option>IPCA +</option>
-          <option>Prefixado</option><option>Não se aplica</option></select></div>
-        <div class="fld"><label>Taxa contratada</label><input type="number" step="0.01" id="aTaxa" placeholder="110"></div>
-        <div class="fld"><label>Vencimento</label><input type="date" id="aVenc"></div>
-      </div>
-      <button id="btAtivo">Cadastrar ativo</button>
+      <div class="nota">A rotina é: registrar cada aporte quando acontece, e uma vez por mês copiar da corretora quanto cada aplicação vale. O rendimento sai da diferença — você nunca digita.</div>
     </div>
 
     <div class="card">
@@ -472,12 +435,78 @@ tr.atrasada td{background:rgba(248,113,113,.06)}
   </div>
 </div>
 
+<!-- ================= MODAL: APORTE ================= -->
+<div id="modalAporte" class="modal hide">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-head"><h2>Aporte ou resgate</h2><div class="sp"></div>
+      <button class="x" data-fecha="modalAporte">&#10005;</button></div>
+    <div id="msgApt"></div>
+    <div class="fld"><label>Ativo</label><select id="rAtivo"></select></div>
+    <div class="g3">
+      <div class="fld"><label>Tipo</label><select id="rTipo"><option>Aporte</option><option>Resgate</option></select></div>
+      <div class="fld"><label>Data</label><input type="date" id="rData"></div>
+      <div class="fld"><label>Valor (R$)</label><input type="number" step="0.01" id="rValor"></div>
+    </div>
+    <div class="fld"><label>Observação</label><input id="rObs"></div>
+    <div style="display:flex;gap:10px">
+      <button id="btAporte">Registrar</button>
+      <button class="gh" data-fecha="modalAporte">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: SALDO ================= -->
+<div id="modalSaldo" class="modal hide">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-head"><h2>Saldo do mês</h2><div class="sp"></div>
+      <button class="x" data-fecha="modalSaldo">&#10005;</button></div>
+    <div id="msgSld"></div>
+    <div class="nota" style="margin-top:0;margin-bottom:14px">Copie da corretora quanto a aplicação vale hoje. Registrar o mesmo ativo no mesmo mês <b>corrige</b> o valor, não duplica.</div>
+    <div class="fld"><label>Ativo</label><select id="sdAtivo"></select></div>
+    <div class="g2" style="gap:12px">
+      <div class="fld"><label>Competência</label><select id="sdComp"></select></div>
+      <div class="fld"><label>Saldo (R$)</label><input type="number" step="0.01" id="sdValor"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button id="btSaldo">Registrar saldo</button>
+      <button class="gh" data-fecha="modalSaldo">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: ATIVO ================= -->
+<div id="modalAtivo" class="modal hide">
+  <div class="modal-box" style="max-width:620px">
+    <div class="modal-head"><h2>Cadastrar ativo</h2><div class="sp"></div>
+      <button class="x" data-fecha="modalAtivo">&#10005;</button></div>
+    <div id="msgAtv"></div>
+    <div class="nota" style="margin-top:0;margin-bottom:14px">A classe é texto livre — comece com Renda Fixa e acrescente Ações, FII, Cripto ou o que aparecer.</div>
+    <div class="g3">
+      <div class="fld"><label>Nome do ativo</label><input id="aNome" placeholder="CDB 2 anos Banco Y"></div>
+      <div class="fld"><label>Classe</label><input id="aClasse" list="listaClasses" placeholder="Renda Fixa">
+        <datalist id="listaClasses"></datalist></div>
+      <div class="fld"><label>Instituição</label><input id="aInst" placeholder="Banco Y"></div>
+    </div>
+    <div class="g3">
+      <div class="fld"><label>Indexador</label><select id="aIdx">
+        <option>% do CDI</option><option>Selic +</option><option>IPCA +</option>
+        <option>Prefixado</option><option>Não se aplica</option></select></div>
+      <div class="fld"><label>Taxa contratada</label><input type="number" step="0.01" id="aTaxa" placeholder="110"></div>
+      <div class="fld"><label>Vencimento</label><input type="date" id="aVenc"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button id="btAtivo">Cadastrar ativo</button>
+      <button class="gh" data-fecha="modalAtivo">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <footer>Controle Financeiro · dados na sua planilha do Google</footer>
 </div>
 
 <script>
 /* ============================================================ estado */
-var VERSAO = '1.6.0';
+var VERSAO = '1.7.0';
 /* Endereço da planilha. Pode ficar aqui porque o compartilhamento dela está
    RESTRITO — saber o endereço não dá acesso a nada. Se algum dia você mudar
    para "qualquer pessoa com o link", apague esta linha e use só o campo do ⚙. */
@@ -625,7 +654,7 @@ function limiteDe(cat){
 /* ============================================================ render */
 function render(){
   renderKPI(); renderGraficos(); renderTabelaCat(); renderComparativo();
-  renderLancamentos(); renderOrcamento(); renderFuturo(); renderInvestimentos();
+  renderLancamentos(); renderFuturo(); renderInvestimentos();
   renderContasAPagar();
 }
 
@@ -633,7 +662,6 @@ function renderKPI(){
   var e = soma(entradas(MES)), s = soma(saidas(MES)), sal = e - s;
   var lm = doMes(MES);
   var cred = soma(lm.filter(function(l){ return l.forma_pagamento==='Crédito' && l.tipo!=='Entrada'; }));
-  var apagar = soma(saidas(MES).filter(function(l){ return String(l.pago)!=='Sim'; }));
   $('kEnt').textContent = brl(e);
   $('kSai').textContent = brl(s);
   $('kSal').textContent = brl(sal);
@@ -641,10 +669,6 @@ function renderKPI(){
   $('kSalS').textContent = e>0 ? 'você guardou ' + pct(sal/e) + ' do que entrou' : '';
   $('kCar').textContent = brl(cred);
   $('kCarS').textContent = s>0 ? pct(cred/s) + ' das saídas' : '';
-  $('kPag').textContent = brl(apagar);
-  $('kPag').className = 'v ' + (apagar>0?'neg':'pos');
-  var qtd = saidas(MES).filter(function(l){ return String(l.pago)!=='Sim'; }).length;
-  $('kPagS').textContent = qtd ? qtd + ' lançamento(s) em aberto' : 'tudo quitado';
 }
 
 function grafico(id, cfg){
@@ -680,6 +704,8 @@ function renderGraficos(){
         tooltip:{callbacks:{label:function(c){return c.label+': '+brl(c.parsed);}}} } }
   });
 
+  if ($('detalhes').classList.contains('hide')) return;   // não desenha o que está recolhido
+
   // grupo
   var grp = porChave(saidas(MES),'grupo');
   grafico('chGrp', {
@@ -704,7 +730,8 @@ function renderGraficos(){
 function renderTabelaCat(){
   var lista = porChave(saidas(MES),'categoria');
   var tot = lista.reduce(function(a,b){ return a+b.v; },0);
-  var h = '<tr><th>Categoria</th><th class="r">Gasto</th><th class="r">% do mês</th><th class="r">Orçamento</th><th class="r">Situação</th></tr>';
+  var h = '<tr><th>Categoria</th><th class="r">Gasto</th><th class="r">% do mês</th>'
+        + '<th style="width:130px">Orçamento</th><th class="r">Situação</th></tr>';
   if (!lista.length) h += '<tr><td colspan="5" class="empty">Nenhuma saída lançada neste mês.</td></tr>';
   lista.forEach(function(c,i){
     var lim = limiteDe(c.k);
@@ -716,9 +743,24 @@ function renderTabelaCat(){
       : '<span class="mut">sem limite</span>';
     h += '<tr><td><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+PAL[i%PAL.length]+';margin-right:8px"></span>'
        + esc(c.k)+'</td><td class="r">'+brl(c.v)+'</td><td class="r mut">'+pct(tot?c.v/tot:0)
-       + '</td><td class="r mut">'+(lim?brl(lim):'—')+'</td><td class="r">'+sit+'</td></tr>';
+       + '</td><td><input type="number" step="0.01" min="0" class="orcin" data-orc="'+esc(c.k)+'"'
+       + ' value="'+(lim||'')+'" placeholder="sem limite"></td>'
+       + '<td class="r">'+sit+'</td></tr>';
   });
   $('tbCat').innerHTML = h;
+}
+
+/** Salva o limite de UMA categoria. A API aceita lista, então mandamos uma só. */
+function salvarOrcamentoDe(categoria, limite){
+  apiPost({ acao:'orcamento', dados:[{ categoria: categoria, limite: Number(limite||0) }] })
+    .then(function(r){
+      if (!r.ok) throw new Error(r.erro);
+      aviso('Orçamento de ' + categoria + ': ' + (Number(limite) ? brl(limite) : 'sem limite') + '.', 's');
+      var o = (DB.orcamento||[]).filter(function(x){ return x.categoria===categoria; })[0];
+      if (o) o.limite = Number(limite||0); else (DB.orcamento=DB.orcamento||[]).push({categoria:categoria,limite:Number(limite||0)});
+      renderTabelaCat();
+    })
+    .catch(function(e){ aviso('Erro ao salvar orçamento: '+e.message,'e'); });
 }
 
 function renderComparativo(){
@@ -762,29 +804,16 @@ function renderLancamentos(){
     var frm = l.forma_pagamento==='Crédito'
       ? '<span class="tag cr">'+esc(l.cartao||'Crédito')+'</span>'
       : '<span class="tag">'+esc(l.forma_pagamento)+'</span>';
-    h += '<tr><td class="mut">'+esc(String(l.data).slice(8,10)+'/'+String(l.data).slice(5,7))+'</td>'
+    h += '<tr class="clicavel" data-edit="'+esc(l.id)+'" title="Clique para editar">'
+       + '<td class="mut">'+esc(String(l.data).slice(8,10)+'/'+String(l.data).slice(5,7))+'</td>'
        + '<td>'+esc(l.descricao)+'</td><td class="mut">'+esc(l.categoria)+'</td><td>'+frm+'</td>'
        + '<td class="c mut">'+parc+'</td>'
        + '<td class="r '+(l.tipo==='Entrada'?'pos':'')+'">'+(l.tipo==='Entrada'?'+':'')+brl(l.valor)+'</td>'
        + '<td class="c">'+pgTag+'</td>'
-       + '<td class="r"><button class="dg" data-del="'+esc(l.id)+'">excluir</button></td></tr>';
+       + '<td class="r mut" style="font-size:11px">editar ›</td></tr>';
   });
   h += '<tr><td colspan="5" style="font-weight:700">Resultado dos filtros</td><td class="r" style="font-weight:700">'+brl(tot)+'</td><td colspan="2"></td></tr>';
   $('tbLanc').innerHTML = h;
-}
-
-function renderOrcamento(){
-  var saidasCat = DB.categorias.filter(function(c){ return c.tipo!=='Entrada'; });
-  var gasto = {}; porChave(saidas(MES),'categoria').forEach(function(c){ gasto[c.k]=c.v; });
-  var h = '<tr><th>Categoria</th><th style="width:150px">Limite mensal</th><th class="r">Gasto em '+nomeMes(MES)+'</th><th class="r">Sobra</th></tr>';
-  saidasCat.forEach(function(c){
-    var lim = limiteDe(c.categoria), g = gasto[c.categoria]||0, sobra = lim-g;
-    h += '<tr><td>'+esc(c.categoria)+'</td>'
-       + '<td><input type="number" step="0.01" min="0" data-orc="'+esc(c.categoria)+'" value="'+(lim||'')+'" placeholder="0,00"></td>'
-       + '<td class="r">'+brl(g)+'</td>'
-       + '<td class="r '+(lim===0?'mut':sobra<0?'neg':'pos')+'">'+(lim===0?'—':brl(sobra))+'</td></tr>';
-  });
-  $('tbOrc').innerHTML = h;
 }
 
 function renderFuturo(){
@@ -1111,9 +1140,13 @@ function diasAte(d){
   if (!d) return 0;
   return Math.round((new Date(d+'T00:00:00') - new Date(hoje()+'T00:00:00')) / 86400000);
 }
+var ESCOPO = 'tudo';   // 'tudo' = todos os meses · 'mes' = só a competência selecionada
+
+function noEscopo(l){ return ESCOPO === 'tudo' || l.competencia === MES; }
+
 function emAberto(){
   return DB.lancamentos.filter(function(l){
-    return l.tipo !== 'Entrada' && String(l.pago) !== 'Sim';
+    return l.tipo !== 'Entrada' && String(l.pago) !== 'Sim' && noEscopo(l);
   }).sort(function(a,b){ return String(vencDe(a)).localeCompare(String(vencDe(b))); });
 }
 function statusConta(l){
@@ -1132,30 +1165,30 @@ function renderContasAPagar(){
   var abertas = emAberto();
   var vencidas = abertas.filter(function(l){ return diasAte(vencDe(l)) < 0; });
   var proximas = abertas.filter(function(l){ var d=diasAte(vencDe(l)); return d>=0 && d<=7; });
-  var doMes    = abertas.filter(function(l){ return l.competencia === MES; });
   var pagas    = DB.lancamentos.filter(function(l){
-    return l.tipo!=='Entrada' && String(l.pago)==='Sim' && l.competencia===MES; });
+    return l.tipo!=='Entrada' && String(l.pago)==='Sim' && noEscopo(l); });
+  var rotulo   = ESCOPO === 'tudo' ? 'em todos os meses' : 'em ' + nomeMes(MES);
 
   function soma2(a,campo){ return a.reduce(function(x,y){ return x + (Number(y[campo])||0); },0); }
 
   $('pVenc').textContent  = brl(soma2(vencidas,'valor'));
-  $('pVencS').textContent = vencidas.length ? vencidas.length+' conta(s) em atraso' : 'nenhuma em atraso';
+  $('pVencS').textContent = (vencidas.length ? vencidas.length+' conta(s) em atraso' : 'nenhuma em atraso') + ' · ' + rotulo;
   $('pVenc').className    = 'v ' + (vencidas.length ? 'neg' : 'pos');
 
   $('pProx').textContent  = brl(soma2(proximas,'valor'));
   $('pProxS').textContent = proximas.length+' conta(s) nos próximos 7 dias';
+  $('pAber').textContent  = brl(soma2(abertas,'valor'));
+  $('pAberS').textContent = abertas.length+' em aberto ' + rotulo;
   $('pProx').className    = 'v ' + (proximas.length ? 'neg' : '');
-
-  $('pAber').textContent  = brl(soma2(doMes,'valor'));
-  $('pAberS').textContent = doMes.length+' em aberto em '+nomeMes(MES);
 
   var pagoReal = pagas.reduce(function(a,b){
     return a + (b.valor_pago === null || b.valor_pago === undefined ? Number(b.valor)||0 : Number(b.valor_pago));
   },0);
   $('pPago').textContent  = brl(pagoReal);
-  $('pPagoS').textContent = pagas.length+' conta(s) quitada(s)';
-  $('lblMesPago').textContent = nomeMes(MES);
+  $('pPagoS').textContent = pagas.length+' conta(s) quitada(s) ' + rotulo;
+  $('lblMesPago').textContent  = ESCOPO==='tudo' ? 'todos os meses' : nomeMes(MES);
   $('lblMesGerar').textContent = nomeMes(MES);
+  document.querySelectorAll('.escMes').forEach(function(e){ e.textContent = nomeMes(MES); });
 
   // ---- a pagar
   var h = '<tr><th>Vencimento</th><th></th><th>Conta</th><th>Categoria</th><th>Pagamento</th>'
@@ -1172,7 +1205,7 @@ function renderContasAPagar(){
        + '<td class="r">'+brl(l.valor)+'</td>'
        + '<td class="r"><button class="mini" data-pagar="'+esc(l.id)+'">Pagar</button></td></tr>';
   });
-  h += '<tr><td colspan="5" style="font-weight:700">TOTAL EM ABERTO</td>'
+  h += '<tr><td colspan="5" style="font-weight:700">TOTAL EM ABERTO · '+rotulo.toUpperCase()+'</td>'
      + '<td class="r" style="font-weight:700">'+brl(soma2(abertas,'valor'))+'</td><td></td></tr>';
   $('tbPagar').innerHTML = h;
 
@@ -1263,6 +1296,12 @@ function aplicarBotaoPlanilha(){
 $('btPlanilha').onclick = function(){
   if (CFG.sheet) window.open(CFG.sheet, '_blank', 'noopener');
 };
+$('btDetalhes').onclick = function(){
+  var oculto = $('detalhes').classList.toggle('hide');
+  this.textContent = oculto ? '▸ mais detalhes' : '▾ menos detalhes';
+  if (!oculto) renderGraficos();   // agora tem tamanho para desenhar
+};
+
 $('btRec').onclick = carregar;
 $('selMes').onchange = function(){ MES = this.value; render(); };
 
@@ -1271,10 +1310,15 @@ document.querySelectorAll('#nav button[data-p]').forEach(function(b){
     document.querySelectorAll('#nav button').forEach(function(x){ x.classList.remove('on'); });
     b.classList.add('on');
     document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
-    var mapa = { painel:'pgPainel', lanc:'pgLanc', pagar:'pgPagar', orc:'pgOrc', fut:'pgFut', inv:'pgInv' };
+    var mapa = { painel:'pgPainel', lanc:'pgLanc', pagar:'pgPagar', inv:'pgInv' };
     $(mapa[b.dataset.p]).classList.remove('hide');
     $('pgCfg').classList.add('hide');
   };
+});
+
+$('tbCat').addEventListener('change', function(ev){
+  var cat = ev.target.dataset && ev.target.dataset.orc;
+  if (cat) salvarOrcamentoDe(cat, ev.target.value);
 });
 
 ['fBusca','fTipo','fCat','fForma','fPago'].forEach(function(id){
@@ -1282,13 +1326,8 @@ document.querySelectorAll('#nav button[data-p]').forEach(function(b){
 });
 
 $('tbLanc').addEventListener('click', function(ev){
-  var id = ev.target.dataset && ev.target.dataset.del;
-  if (!id) return;
-  if (!confirm('Excluir este lançamento?')) return;
-  apiPost({ acao:'excluir', id:id }).then(function(r){
-    if (!r.ok) throw new Error(r.erro);
-    aviso('Lançamento excluído.','s'); carregar();
-  }).catch(function(e){ aviso('Erro ao excluir: '+e.message,'e'); });
+  var tr = ev.target.closest && ev.target.closest('tr[data-edit]');
+  if (tr) abrirNovo(tr.dataset.edit);
 });
 
 // formulário
@@ -1320,7 +1359,7 @@ function atualizaPrevia(){
 
 $('btSalvarLanc').onclick = function(){
   var d = {
-    acao:'inserir',
+    acao: EDITANDO ? 'atualizar' : 'inserir',
     dados:{
       data: $('nData').value,
       competencia: $('nComp').value.trim(),
@@ -1341,32 +1380,82 @@ $('btSalvarLanc').onclick = function(){
     msgEm('msgNovo','Preencha ao menos data, descrição e valor.','e'); return;
   }
   if (!/^\d{4}-\d{2}$/.test(d.dados.competencia)) d.dados.competencia = d.dados.data.slice(0,7);
+
+  if (EDITANDO){
+    // na edição a API recebe os campos soltos, com o id
+    var e = d.dados; e.id = EDITANDO.id;
+    e.grupo = (DB.categorias.filter(function(c){ return c.categoria===e.categoria; })[0]||{}).grupo || '';
+    delete e.parcelas_total; delete e.valor_total_informado;
+    d = { acao:'atualizar', dados:e };
+  }
+
   this.disabled = true; this.textContent = 'Salvando…';
-  var bt = this;
+  var bt = this, editava = !!EDITANDO;
   apiPost(d).then(function(r){
     if (!r.ok) throw new Error(r.erro);
     fecharNovo();
-    aviso(r.inseridas + (r.inseridas > 1 ? ' lançamentos gravados' : ' lançamento gravado')
-          + ' na planilha.', 's');
+    aviso(editava ? 'Lançamento atualizado.'
+      : (r.inseridas + (r.inseridas > 1 ? ' lançamentos gravados' : ' lançamento gravado')
+         + ' na planilha.'), 's');
     $('nDesc').value=''; $('nValor').value=''; $('nObs').value=''; $('nParc').value=1; $('nVenc').value='';
     atualizaPrevia(); carregar();
   }).catch(function(e){ msgEm('msgNovo','Erro: '+e.message,'e'); })
-    .then(function(){ bt.disabled=false; bt.textContent='Lançar'; });
+    .then(function(){ bt.disabled=false; bt.textContent = editava ? 'Salvar alterações' : 'Lançar'; });
+};
+
+$('btExcluirLanc').onclick = function(){
+  if (!EDITANDO) return;
+  if (!confirm('Excluir "'+EDITANDO.descricao+'" definitivamente?')) return;
+  var id = EDITANDO.id;
+  apiPost({ acao:'excluir', id:id }).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    fecharNovo(); aviso('Lançamento excluído.','s'); carregar();
+  }).catch(function(e){ msgEm('msgNovo','Erro ao excluir: '+e.message,'e'); });
 };
 
 /* --- modal de novo lançamento --- */
 
-function abrirNovo(){
+var EDITANDO = null;
+
+/** Abre o modal. Com id, entra em modo edição e preenche tudo. */
+function abrirNovo(id){
   msgEm('msgNovo','');
-  if (!$('nData').value) $('nData').value = hoje();
-  if (!$('nVenc').value) $('nVenc').value = $('nData').value;
-  // já entra no mês que você está olhando no painel
-  preencherMeses($('nComp'), MES || hoje().slice(0,7));
-  atualizaPrevia();
+  EDITANDO = id ? (DB.lancamentos.filter(function(l){ return l.id===id; })[0] || null) : null;
+
+  if (EDITANDO){
+    var l = EDITANDO;
+    $('tituloNovo').textContent  = 'Editar lançamento';
+    $('btSalvarLanc').textContent = 'Salvar alterações';
+    $('wrapParc').classList.add('hide');        // editar mexe nesta linha, não recria parcelas
+    $('previa').classList.add('hide');
+    $('btExcluirLanc').classList.remove('hide');
+
+    $('nTipo').value = l.tipo;  $('nTipo').onchange();
+    $('nData').value = String(l.data).slice(0,10);
+    $('nVenc').value = String(l.vencimento || l.data).slice(0,10);
+    preencherMeses($('nComp'), l.competencia);
+    $('nDesc').value  = l.descricao;
+    $('nCat').value   = l.categoria;
+    $('nForma').value = l.forma_pagamento; $('nForma').onchange();
+    if (l.cartao) $('nCartao').value = l.cartao;
+    $('nValor').value = l.valor;
+    $('nParc').value  = 1;
+    $('nPago').value  = String(l.pago)==='Sim' ? 'Sim' : 'Não';
+    $('nObs').value   = l.obs || '';
+  } else {
+    $('tituloNovo').textContent   = 'Novo lançamento';
+    $('btSalvarLanc').textContent = 'Lançar';
+    $('wrapParc').classList.remove('hide');
+    $('btExcluirLanc').classList.add('hide');
+    if (!$('nData').value) $('nData').value = hoje();
+    if (!$('nVenc').value) $('nVenc').value = $('nData').value;
+    preencherMeses($('nComp'), MES || hoje().slice(0,7));
+    atualizaPrevia();
+  }
   $('modalNovo').classList.remove('hide');
   setTimeout(function(){ $('nDesc').focus(); }, 60);
 }
-function fecharNovo(){ $('modalNovo').classList.add('hide'); }
+function fecharNovo(){ $('modalNovo').classList.add('hide'); EDITANDO = null; }
 
 $('btAbrirNovo').onclick    = abrirNovo;
 $('btFecharNovo').onclick   = fecharNovo;
@@ -1381,6 +1470,9 @@ document.addEventListener('keydown', function(ev){
   if (ev.key === 'Escape'){
     if (!$('modalNovo').classList.contains('hide'))  fecharNovo();
     if (!$('modalPagar').classList.contains('hide')) fecharPagar();
+    ['modalAporte','modalSaldo','modalAtivo'].forEach(function(id){
+      if (!$(id).classList.contains('hide')) fecharModal(id);
+    });
   }
   // Enter dentro do modal salva, exceto se o foco estiver num select
   if (ev.key === 'Enter' && !$('modalNovo').classList.contains('hide')
@@ -1388,19 +1480,6 @@ document.addEventListener('keydown', function(ev){
     ev.preventDefault(); $('btSalvarLanc').click();
   }
 });
-
-$('btSalvarOrc').onclick = function(){
-  var lista = [];
-  document.querySelectorAll('[data-orc]').forEach(function(i){
-    lista.push({ categoria:i.dataset.orc, limite:Number(i.value||0) });
-  });
-  var bt=this; bt.disabled=true; bt.textContent='Salvando…';
-  apiPost({ acao:'orcamento', dados:lista }).then(function(r){
-    if (!r.ok) throw new Error(r.erro);
-    msgEm('msgOrc','Orçamento salvo.','s'); carregar();
-  }).catch(function(e){ msgEm('msgOrc','Erro: '+e.message,'e'); })
-    .then(function(){ bt.disabled=false; bt.textContent='Salvar orçamento'; });
-};
 
 
 /* --- investimentos: eventos --- */
@@ -1429,7 +1508,8 @@ $('btAporte').onclick = function(){
   var bt=this; bt.disabled=true; bt.textContent='Salvando…';
   apiPost(d).then(function(r){
     if(!r.ok) throw new Error(r.erro);
-    msgEm('msgApt', d.dados.tipo+' registrado.','s');
+    fecharModal('modalAporte');
+    aviso(d.dados.tipo+' de '+brl(d.dados.valor)+' registrado em '+esc(d.dados.ativo)+'.','s');
     $('rValor').value=''; $('rObs').value='';
     carregar();
   }).catch(function(e){ msgEm('msgApt','Erro: '+e.message,'e'); })
@@ -1445,7 +1525,8 @@ $('btSaldo').onclick = function(){
   var bt=this; bt.disabled=true; bt.textContent='Salvando…';
   apiPost(d).then(function(r){
     if(!r.ok) throw new Error(r.erro);
-    msgEm('msgSld', r.atualizado ? 'Saldo corrigido para esse mês.' : 'Saldo registrado.','s');
+    fecharModal('modalSaldo');
+    aviso(r.atualizado ? 'Saldo corrigido para esse mês.' : 'Saldo registrado.','s');
     $('sdValor').value='';
     carregar();
   }).catch(function(e){ msgEm('msgSld','Erro: '+e.message,'e'); })
@@ -1461,7 +1542,8 @@ $('btAtivo').onclick = function(){
   var bt=this; bt.disabled=true; bt.textContent='Salvando…';
   apiPost(d).then(function(r){
     if(!r.ok) throw new Error(r.erro);
-    msgEm('msgAtv', r.atualizado ? 'Ativo atualizado.' : 'Ativo cadastrado.','s');
+    fecharModal('modalAtivo');
+    aviso(r.atualizado ? 'Ativo atualizado.' : 'Ativo cadastrado.','s');
     $('aNome').value=''; $('aTaxa').value=''; $('aInst').value='';
     carregar();
   }).catch(function(e){ msgEm('msgAtv','Erro: '+e.message,'e'); })
@@ -1479,7 +1561,36 @@ $('tbMov').addEventListener('click', function(ev){
 });
 
 
+/* --- modais de investimento --- */
+
+function abrirModal(id){
+  $(id).classList.remove('hide');
+  if (id==='modalAporte' && !$('rData').value) $('rData').value = hoje();
+  if (id==='modalSaldo')  preencherMeses($('sdComp'), MES || hoje().slice(0,7));
+}
+function fecharModal(id){ $(id).classList.add('hide'); }
+
+$('btAbrirAporte').onclick = function(){ msgEm('msgApt',''); abrirModal('modalAporte'); };
+$('btAbrirSaldo').onclick  = function(){ msgEm('msgSld',''); abrirModal('modalSaldo'); };
+$('btAbrirAtivo').onclick  = function(){ msgEm('msgAtv',''); abrirModal('modalAtivo'); };
+
+document.querySelectorAll('[data-fecha]').forEach(function(b){
+  b.onclick = function(){ fecharModal(b.dataset.fecha); };
+});
+['modalAporte','modalSaldo','modalAtivo'].forEach(function(id){
+  $(id).addEventListener('click', function(ev){ if (ev.target === this) fecharModal(id); });
+});
+
 /* --- contas a pagar: eventos --- */
+
+document.querySelectorAll('.sub button[data-esc]').forEach(function(b){
+  b.onclick = function(){
+    document.querySelectorAll('.sub button[data-esc]').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    ESCOPO = b.dataset.esc;
+    renderContasAPagar();
+  };
+});
 
 $('tbPagar').addEventListener('click', function(ev){
   var id = ev.target.dataset && ev.target.dataset.pagar;

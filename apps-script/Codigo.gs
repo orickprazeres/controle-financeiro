@@ -4,7 +4,7 @@
  * Passo a passo completo no README.md
  */
 
-var VERSAO = '1.6.0';
+var VERSAO = '1.7.0';
 
 // ⚠️ TROQUE por uma senha sua. A mesma vai no site.
 var TOKEN = 'troque-esta-senha';

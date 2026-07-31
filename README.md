@@ -1,4 +1,4 @@
-# Controle Financeiro · v1.6.0
+# Controle Financeiro · v1.7.0
 
 Controle de custos domésticos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -67,17 +67,13 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 
 ## O que o site faz
 
-**Painel** — entradas, saídas, saldo, quanto foi no cartão e quanto ainda está em aberto. Evolução de 12 meses, gasto por categoria, por grupo e por forma de pagamento, tabela de categorias com orçamento e barra de consumo, e comparativo com o mês anterior categoria a categoria.
+**Painel** — entradas, saídas, saldo e quanto foi no cartão. Tabela de categorias com **orçamento editável ali mesmo**, e uma seção recolhível com os gráficos secundários. Evolução de 12 meses, gasto por categoria, por grupo e por forma de pagamento, tabela de categorias com orçamento e barra de consumo, e comparativo com o mês anterior categoria a categoria.
 
-**Lançamentos** — lista filtrável por texto, tipo, categoria, forma de pagamento e status de pagamento, com exclusão.
+**Lançamentos** — o histórico completo, filtrável por texto, tipo, categoria, forma de pagamento e status. **Clique numa linha para editar ou excluir.**
 
 **+ Novo lançamento** — botão fixo no topo, disponível de qualquer aba. Abre um modal sobre a tela atual; Esc ou clique fora fecha. A competência já vem no mês que você está olhando. Se você informar parcelas, mostra a prévia ("vou criar 10 linhas de R$ 420,00, de jan/26 até out/26") e grava cada parcela no mês em que ela cai.
 
-**Contas a pagar** — o que vence quando, com as atrasadas em destaque. Botão Pagar registra data e valor efetivos e avisa se o valor difere do previsto. Cadastro de contas fixas com geração mensal em um clique.
-
-**Orçamento** — limite mensal por categoria, salvo na planilha.
-
-**Parcelas futuras** — gráfico do que já está comprometido nos próximos 12 meses e a lista de compras parceladas em aberto.
+**Contas a pagar** — o que vence quando, com as atrasadas em destaque e um seletor "só este mês / tudo em aberto". Inclui as parcelas já comprometidas nos próximos meses. Botão Pagar registra data e valor efetivos e avisa se o valor difere do previsto. Cadastro de contas fixas com geração mensal em um clique.
 
 **Investimentos** — três telas. O *simulador* projeta aportes mensais com juros compostos, em % do CDI, % ao ano ou IPCA+, com IR regressivo e conversão para poder de compra de hoje. *Minha carteira* mostra patrimônio, quanto foi seu bolso e quanto foi juros, rentabilidade por ativo, composição por classe e a comparação entre a sobra do mês e o que você aportou. *Registrar* recebe aportes, resgates, saldos mensais e o cadastro de ativos novos.
 
@@ -113,4 +109,4 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 ## Versão
 
-`1.6.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`1.7.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.

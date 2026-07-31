@@ -9,6 +9,36 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.7.0] — 2026-07-31
+
+Faxina de interface, a partir de uma auditoria da própria estrutura. Só `docs/` mudou — nada a reimplantar.
+
+### Adicionado
+
+- **Editar lançamento.** Clique em qualquer linha da lista e o modal abre preenchido. Salva pela ação `atualizar`, que existia na API desde a v1.0.0 e **nunca era chamada pelo site**. Até aqui, corrigir um valor exigia excluir e redigitar, ou abrir a planilha.
+- **Excluir passou para dentro do modal de edição**, junto do que se está editando, em vez de um botão solto na ponta da linha.
+- **Orçamento editável direto no Painel**, na coluna da tabela de categorias. Digita e sai do campo — salva sozinho, e salva **só aquela categoria**. Antes, mudar um limite reescrevia todos.
+- **Seletor "Só [mês] / Tudo em aberto"** na aba A pagar.
+- **Seção recolhível "mais detalhes"** no Painel.
+
+### Alterado
+
+- **Menu de 6 para 4 itens:** Painel · Lançamentos · Contas a pagar · Investimentos.
+- **Aba Orçamento removida** — virou a coluna editável do Painel, onde o número já era exibido.
+- **Aba Parcelas futuras removida** — virou uma seção dentro de A pagar. É a mesma pergunta: o que eu ainda devo.
+- **Painel enxugado:** o indicador "Ainda a pagar" saiu (a aba A pagar responde melhor, com vencimento), e os gráficos *Por grupo* e *Como você pagou* e o *Comparativo* foram para "mais detalhes". Os gráficos recolhidos nem são desenhados até você abrir, então a página carrega mais rápido.
+- **Investimentos → Registrar:** os três formulários empilhados viraram três botões que abrem modal, no mesmo padrão do lançamento. Fim da rolagem.
+
+### Corrigido
+
+- **A aba A pagar misturava escopos.** A lista mostrava tudo em aberto de qualquer mês, mas dos quatro indicadores acima dela dois eram de todos os meses e dois só do mês selecionado. Trocar o mês mudava metade dos números. Agora um seletor único rege lista e indicadores, e cada rótulo diz a que se refere.
+
+### O que a auditoria encontrou
+
+"O que eu devo" estava respondido em **quatro** telas diferentes: o KPI do Painel, o filtro `Pago = Não` em Lançamentos, a aba Contas a pagar e a aba Parcelas futuras — cada uma com um recorte distinto e nenhuma explicando qual era qual. Restaram duas, com papéis claros: Lançamentos é o histórico completo e filtrável; A pagar é o que vence.
+
+---
+
 ## [1.6.0] — 2026-07-31
 
 Contas a pagar. **Requer rodar uma função de migração e reimplantar** — é a primeira versão desde a 1.1.0 que mexe na estrutura.

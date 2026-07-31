@@ -125,6 +125,14 @@ Detalhes em [`07-contas-a-pagar.md`](07-contas-a-pagar.md).
 
 ---
 
+## Atualizar para a v1.7.0 (faxina de interface)
+
+Só `docs/index.html` mudou. Suba no GitHub, `Ctrl+F5`, pronto. Nada de Apps Script, nada de planilha.
+
+O menu passa a ter 4 itens. Orçamento e Parcelas futuras não sumiram: viraram, respectivamente, a coluna editável do Painel e uma seção dentro de A pagar.
+
+---
+
 ## E nas próximas versões?
 
 O mesmo princípio, sempre:
