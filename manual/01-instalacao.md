@@ -6,7 +6,7 @@ Quatro etapas, cerca de 15 minutos. Faça na ordem.
 
 ## Etapa 1 — Subir a planilha para o Google Sheets
 
-1. Abra <https://drive.google.com> → **Novo** → **Upload de arquivo** → escolha `planilha/Controle-Financeiro-v1.5.0.xlsx`.
+1. Abra <https://drive.google.com> → **Novo** → **Upload de arquivo** → escolha `planilha/Controle-Financeiro-v1.6.0.xlsx`.
 2. Clique com o botão direito no arquivo → **Abrir com** → **Planilhas Google**.
 3. Menu **Arquivo** → **Salvar como Planilhas Google**. Isso cria a versão nativa; o `.xlsx` no Drive pode ser apagado depois.
 4. Renomeie a planilha para `Controle Financeiro`.

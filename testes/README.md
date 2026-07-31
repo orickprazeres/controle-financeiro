@@ -1,6 +1,6 @@
 # Testes
 
-94 testes cobrindo a lógica onde um erro passaria despercebido — aritmética de meses, leitura de valores, parsing de CSV, geração de parcelas, somas do painel e a matemática de investimento.
+124 testes cobrindo a lógica onde um erro passaria despercebido — aritmética de meses, leitura de valores, parsing de CSV, geração de parcelas, somas do painel e a matemática de investimento.
 
 ## Rodar
 
@@ -13,7 +13,7 @@ node testes/testes.js
 Saída esperada no fim:
 
 ```
-94 testes passaram, 0 falharam
+124 testes passaram, 0 falharam
 ```
 
 Sai com código `0` se tudo passar, `1` se algo falhar.
@@ -33,6 +33,9 @@ Sai com código `0` se tudo passar, `1` se algo falhar.
 | IR regressivo | As quatro faixas e as fronteiras exatas (720 vs 721 dias) |
 | Projeção de aportes | Com e sem juros, e o aporte crescendo só a partir do 13º mês |
 | Rendimento deduzido | Garante que um aporte nunca seja confundido com rendimento |
+| Vencimento e atraso | Virada de mês e de ano, onde a conta de dias costuma errar |
+| Dia 31 em mês curto | Vencimento não pode escorregar de fevereiro para março |
+| Gerar contas fixas | Rodar duas vezes não pode duplicar |
 
 ## Ao alterar o código
 

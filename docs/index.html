@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Controle Financeiro v1.5.0 -->
+<!-- Controle Financeiro v1.6.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
 <title>Controle Financeiro</title>
@@ -80,6 +80,11 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 .sep{border:0;border-top:1px solid var(--line);margin:20px 0}
 .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mut);margin-bottom:9px;cursor:pointer}
 .chk input{width:auto;margin:0}
+.tag.atr{background:rgba(248,113,113,.18);color:var(--bad)}
+.tag.hj{background:rgba(251,191,36,.18);color:var(--warn)}
+.tag.fut{background:rgba(56,189,248,.15);color:var(--ac)}
+button.mini{padding:5px 12px;font-size:12px}
+tr.atrasada td{background:rgba(248,113,113,.06)}
 
 /* ---------- modal ---------- */
 .modal{position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:100;
@@ -144,6 +149,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 <nav id="nav" class="hide">
   <button data-p="painel" class="on">Painel</button>
   <button data-p="lanc">Lançamentos</button>
+  <button data-p="pagar">Contas a pagar</button>
   <button data-p="orc">Orçamento</button>
   <button data-p="fut">Parcelas futuras</button>
   <button data-p="inv">Investimentos</button>
@@ -196,6 +202,78 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
   </div>
 </div>
 
+
+<!-- ================= CONTAS A PAGAR ================= -->
+<div id="pgPagar" class="pg hide">
+  <div class="kpis">
+    <div class="kpi"><div class="l">Vencidas</div><div class="v neg" id="pVenc">—</div><div class="s" id="pVencS"></div></div>
+    <div class="kpi"><div class="l">Vence em 7 dias</div><div class="v" id="pProx">—</div><div class="s" id="pProxS"></div></div>
+    <div class="kpi"><div class="l">Em aberto no mês</div><div class="v" id="pAber">—</div><div class="s" id="pAberS"></div></div>
+    <div class="kpi"><div class="l">Pago no mês</div><div class="v pos" id="pPago">—</div><div class="s" id="pPagoS"></div></div>
+  </div>
+
+  <div class="card">
+    <h2>A pagar</h2>
+    <div id="msgPagar"></div>
+    <div class="scr"><table id="tbPagar"></table></div>
+    <div class="nota">Vencidas aparecem primeiro, com fundo avermelhado. O botão <b>Pagar</b> abre uma caixinha para você informar a data e o valor efetivamente pagos.</div>
+  </div>
+
+  <div class="card">
+    <h2>Pago em <span id="lblMesPago"></span></h2>
+    <div class="scr"><table id="tbPagas"></table></div>
+  </div>
+
+  <div class="card">
+    <h2>Contas fixas do mês</h2>
+    <div id="msgFixa"></div>
+    <div class="nota" style="margin-top:0;margin-bottom:14px">
+      Cadastre uma vez o que se repete todo mês. Depois, um clique em <b>Gerar contas</b> cria as do mês
+      selecionado, já em aberto, com o valor estimado — é só ajustar quando a conta real chegar.
+      Gerar duas vezes não duplica: contas com o mesmo nome no mesmo mês são puladas.
+    </div>
+    <div class="g3">
+      <div class="fld"><label>Nome da conta</label><input id="fNome" placeholder="ENERGIA"></div>
+      <div class="fld"><label>Categoria</label><select id="fCat2"></select></div>
+      <div class="fld"><label>Dia do vencimento</label><input type="number" min="1" max="31" id="fDia" value="10"></div>
+    </div>
+    <div class="g3">
+      <div class="fld"><label>Valor estimado (R$)</label><input type="number" step="0.01" id="fValor" placeholder="0,00"></div>
+      <div class="fld"><label>Forma de pagamento</label><select id="fForma2">
+        <option>Boleto</option><option>Débito</option><option>Pix</option>
+        <option>Dinheiro</option><option>Crédito</option><option>Transferência</option></select></div>
+      <div class="fld"><label>&nbsp;</label><button id="btSalvarFixa">Cadastrar conta fixa</button></div>
+    </div>
+    <div class="scr" style="margin-top:16px"><table id="tbFixas"></table></div>
+    <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button id="btGerar">Gerar contas de <span id="lblMesGerar"></span></button>
+      <span class="nota" style="margin:0">Cria em aberto, sem sobrescrever nada.</span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: PAGAR ================= -->
+<div id="modalPagar" class="modal hide">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-head">
+      <h2>Registrar pagamento</h2>
+      <div class="sp"></div>
+      <button class="x" id="btFecharPagar" title="Fechar (Esc)">&#10005;</button>
+    </div>
+    <div id="msgPag2"></div>
+    <div class="fld"><label>Conta</label><input id="pgDesc" disabled></div>
+    <div class="g2" style="gap:12px">
+      <div class="fld"><label>Data do pagamento</label><input type="date" id="pgData"></div>
+      <div class="fld"><label>Valor pago (R$)</label><input type="number" step="0.01" id="pgValor"></div>
+    </div>
+    <div id="pgDif" class="msg i hide"></div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button id="btConfirmarPag">Confirmar pagamento</button>
+      <button class="gh" id="btCancelarPag">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ================= MODAL: NOVO LANÇAMENTO ================= -->
 <div id="modalNovo" class="modal hide">
   <div class="modal-box">
@@ -208,6 +286,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
     <div class="g3">
       <div class="fld"><label>Tipo</label><select id="nTipo"><option>Saída</option><option>Entrada</option></select></div>
       <div class="fld"><label>Data</label><input type="date" id="nData"></div>
+      <div class="fld"><label>Vencimento</label><input type="date" id="nVenc"></div>
       <div class="fld"><label>Competência</label><select id="nComp"></select></div>
     </div>
     <div class="fld"><label>Descrição</label><input id="nDesc" placeholder="Compra do mês no Assaí"></div>
@@ -398,7 +477,7 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 
 <script>
 /* ============================================================ estado */
-var VERSAO = '1.5.0';
+var VERSAO = '1.6.0';
 /* Endereço da planilha. Pode ficar aqui porque o compartilhamento dela está
    RESTRITO — saber o endereço não dá acesso a nada. Se algum dia você mudar
    para "qualquer pessoa com o link", apague esta linha e use só o campo do ⚙. */
@@ -547,6 +626,7 @@ function limiteDe(cat){
 function render(){
   renderKPI(); renderGraficos(); renderTabelaCat(); renderComparativo();
   renderLancamentos(); renderOrcamento(); renderFuturo(); renderInvestimentos();
+  renderContasAPagar();
 }
 
 function renderKPI(){
@@ -1023,6 +1103,144 @@ function renderCarteira(){
 
 function renderInvestimentos(){ renderSimulador(); renderCarteira(); }
 
+
+/* ============================================================ contas a pagar */
+
+function vencDe(l){ return l.vencimento || l.data || ''; }
+function diasAte(d){
+  if (!d) return 0;
+  return Math.round((new Date(d+'T00:00:00') - new Date(hoje()+'T00:00:00')) / 86400000);
+}
+function emAberto(){
+  return DB.lancamentos.filter(function(l){
+    return l.tipo !== 'Entrada' && String(l.pago) !== 'Sim';
+  }).sort(function(a,b){ return String(vencDe(a)).localeCompare(String(vencDe(b))); });
+}
+function statusConta(l){
+  var d = diasAte(vencDe(l));
+  if (d < 0)  return { k:'atr', txt:Math.abs(d)+(Math.abs(d)===1?' dia atrasado':' dias atrasado'), ord:0 };
+  if (d === 0) return { k:'hj',  txt:'vence hoje', ord:1 };
+  if (d <= 7)  return { k:'hj',  txt:'em '+d+(d===1?' dia':' dias'), ord:2 };
+  return { k:'fut', txt:'em '+d+' dias', ord:3 };
+}
+function dataBR(d){
+  if (!/^\d{4}-\d{2}-\d{2}/.test(String(d))) return String(d||'—');
+  var p=String(d).slice(0,10).split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(-2);
+}
+
+function renderContasAPagar(){
+  var abertas = emAberto();
+  var vencidas = abertas.filter(function(l){ return diasAte(vencDe(l)) < 0; });
+  var proximas = abertas.filter(function(l){ var d=diasAte(vencDe(l)); return d>=0 && d<=7; });
+  var doMes    = abertas.filter(function(l){ return l.competencia === MES; });
+  var pagas    = DB.lancamentos.filter(function(l){
+    return l.tipo!=='Entrada' && String(l.pago)==='Sim' && l.competencia===MES; });
+
+  function soma2(a,campo){ return a.reduce(function(x,y){ return x + (Number(y[campo])||0); },0); }
+
+  $('pVenc').textContent  = brl(soma2(vencidas,'valor'));
+  $('pVencS').textContent = vencidas.length ? vencidas.length+' conta(s) em atraso' : 'nenhuma em atraso';
+  $('pVenc').className    = 'v ' + (vencidas.length ? 'neg' : 'pos');
+
+  $('pProx').textContent  = brl(soma2(proximas,'valor'));
+  $('pProxS').textContent = proximas.length+' conta(s) nos próximos 7 dias';
+  $('pProx').className    = 'v ' + (proximas.length ? 'neg' : '');
+
+  $('pAber').textContent  = brl(soma2(doMes,'valor'));
+  $('pAberS').textContent = doMes.length+' em aberto em '+nomeMes(MES);
+
+  var pagoReal = pagas.reduce(function(a,b){
+    return a + (b.valor_pago === null || b.valor_pago === undefined ? Number(b.valor)||0 : Number(b.valor_pago));
+  },0);
+  $('pPago').textContent  = brl(pagoReal);
+  $('pPagoS').textContent = pagas.length+' conta(s) quitada(s)';
+  $('lblMesPago').textContent = nomeMes(MES);
+  $('lblMesGerar').textContent = nomeMes(MES);
+
+  // ---- a pagar
+  var h = '<tr><th>Vencimento</th><th></th><th>Conta</th><th>Categoria</th><th>Pagamento</th>'
+        + '<th class="r">Previsto</th><th></th></tr>';
+  if (!abertas.length) h += '<tr><td colspan="7" class="empty">Nada em aberto. Tudo pago. 👍</td></tr>';
+  abertas.forEach(function(l){
+    var st = statusConta(l);
+    h += '<tr class="'+(st.k==='atr'?'atrasada':'')+'">'
+       + '<td>'+dataBR(vencDe(l))+'</td>'
+       + '<td><span class="tag '+st.k+'">'+st.txt+'</span></td>'
+       + '<td>'+esc(l.descricao)+'</td>'
+       + '<td class="mut">'+esc(l.categoria)+'</td>'
+       + '<td class="mut">'+esc(l.cartao || l.forma_pagamento)+'</td>'
+       + '<td class="r">'+brl(l.valor)+'</td>'
+       + '<td class="r"><button class="mini" data-pagar="'+esc(l.id)+'">Pagar</button></td></tr>';
+  });
+  h += '<tr><td colspan="5" style="font-weight:700">TOTAL EM ABERTO</td>'
+     + '<td class="r" style="font-weight:700">'+brl(soma2(abertas,'valor'))+'</td><td></td></tr>';
+  $('tbPagar').innerHTML = h;
+
+  // ---- pagas no mês
+  var h2 = '<tr><th>Pago em</th><th>Conta</th><th class="r">Previsto</th><th class="r">Pago</th><th class="r">Diferença</th><th></th></tr>';
+  if (!pagas.length) h2 += '<tr><td colspan="6" class="empty">Nenhuma conta quitada neste mês.</td></tr>';
+  pagas.slice().sort(function(a,b){ return String(b.data_pagamento).localeCompare(String(a.data_pagamento)); })
+    .forEach(function(l){
+      var vp = (l.valor_pago === null || l.valor_pago === undefined) ? Number(l.valor) : Number(l.valor_pago);
+      var dif = vp - Number(l.valor);
+      h2 += '<tr><td class="mut">'+(l.data_pagamento ? dataBR(l.data_pagamento) : '—')+'</td>'
+         + '<td>'+esc(l.descricao)+'</td>'
+         + '<td class="r mut">'+brl(l.valor)+'</td>'
+         + '<td class="r">'+brl(vp)+'</td>'
+         + '<td class="r '+(Math.abs(dif)<0.005?'mut':dif>0?'neg':'pos')+'">'
+           + (Math.abs(dif)<0.005 ? 'igual' : (dif>0?'+':'')+brl(dif))+'</td>'
+         + '<td class="r"><button class="dg" data-desfazer="'+esc(l.id)+'">desfazer</button></td></tr>';
+    });
+  $('tbPagas').innerHTML = h2;
+
+  // ---- contas fixas
+  var fixas = DB.contasFixas || [];
+  var h3 = '<tr><th>Conta</th><th>Categoria</th><th class="c">Vence dia</th><th class="r">Estimado</th><th>Pagamento</th><th class="c">Ativa</th></tr>';
+  if (!fixas.length) h3 += '<tr><td colspan="6" class="empty">Nenhuma conta fixa cadastrada ainda.</td></tr>';
+  fixas.forEach(function(f){
+    h3 += '<tr><td>'+esc(f.conta)+'</td><td class="mut">'+esc(f.categoria)+'</td>'
+       + '<td class="c">'+f.dia_vencimento+'</td>'
+       + '<td class="r">'+brl(f.valor_estimado)+'</td>'
+       + '<td class="mut">'+esc(f.forma_pagamento)+'</td>'
+       + '<td class="c">'+(f.em_uso==='Não'?'<span class="tag">não</span>':'<span class="tag pg">sim</span>')+'</td></tr>';
+  });
+  $('tbFixas').innerHTML = h3;
+
+  // seletor de categoria do cadastro
+  var sel=$('fCat2'), atual=sel.value;
+  sel.innerHTML='';
+  (DB.categorias||[]).filter(function(c){ return c.tipo!=='Entrada'; })
+    .forEach(function(c){ var o=document.createElement('option'); o.value=o.textContent=c.categoria; sel.appendChild(o); });
+  if (atual) sel.value = atual;
+}
+
+/* --- modal de pagamento --- */
+var PAGANDO = null;
+
+function abrirPagar(id){
+  var l = DB.lancamentos.filter(function(x){ return x.id===id; })[0];
+  if (!l) return;
+  PAGANDO = l;
+  $('pgDesc').value  = l.descricao;
+  $('pgData').value  = hoje();
+  $('pgValor').value = l.valor;
+  msgEm('msgPag2','');
+  conferirDif();
+  $('modalPagar').classList.remove('hide');
+  setTimeout(function(){ $('pgValor').focus(); $('pgValor').select(); }, 60);
+}
+function fecharPagar(){ $('modalPagar').classList.add('hide'); PAGANDO = null; }
+
+function conferirDif(){
+  if (!PAGANDO) return;
+  var dif = Number($('pgValor').value||0) - Number(PAGANDO.valor||0);
+  if (Math.abs(dif) < 0.005){ $('pgDif').classList.add('hide'); return; }
+  $('pgDif').classList.remove('hide');
+  $('pgDif').textContent = dif > 0
+    ? 'Você está pagando ' + brl(dif) + ' A MAIS do que o previsto.'
+    : 'Você está pagando ' + brl(-dif) + ' A MENOS do que o previsto.';
+}
+
 /* ============================================================ eventos */
 $('btCfg').onclick = function(){
   var v = $('pgCfg').classList.toggle('hide');
@@ -1053,7 +1271,7 @@ document.querySelectorAll('#nav button[data-p]').forEach(function(b){
     document.querySelectorAll('#nav button').forEach(function(x){ x.classList.remove('on'); });
     b.classList.add('on');
     document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
-    var mapa = { painel:'pgPainel', lanc:'pgLanc', orc:'pgOrc', fut:'pgFut', inv:'pgInv' };
+    var mapa = { painel:'pgPainel', lanc:'pgLanc', pagar:'pgPagar', orc:'pgOrc', fut:'pgFut', inv:'pgInv' };
     $(mapa[b.dataset.p]).classList.remove('hide');
     $('pgCfg').classList.add('hide');
   };
@@ -1082,7 +1300,11 @@ $('nTipo').onchange = function(){
 $('nForma').onchange = function(){
   $('wrapCartao').classList.toggle('hide', this.value!=='Crédito');
 };
-$('nData').onchange = function(){ if (this.value) preencherMeses($('nComp'), this.value.slice(0,7)); };
+$('nData').onchange = function(){
+  if (!this.value) return;
+  preencherMeses($('nComp'), this.value.slice(0,7));
+  if (!$('nVenc').value) $('nVenc').value = this.value;   // vencimento acompanha a data, se vazio
+};
 function atualizaPrevia(){
   var n = Math.max(1, parseInt($('nParc').value||1,10));
   $('wrapModo').classList.toggle('hide', n<=1);
@@ -1102,6 +1324,7 @@ $('btSalvarLanc').onclick = function(){
     dados:{
       data: $('nData').value,
       competencia: $('nComp').value.trim(),
+      vencimento: $('nVenc').value || $('nData').value,
       tipo: $('nTipo').value,
       descricao: $('nDesc').value.trim(),
       categoria: $('nCat').value,
@@ -1125,7 +1348,7 @@ $('btSalvarLanc').onclick = function(){
     fecharNovo();
     aviso(r.inseridas + (r.inseridas > 1 ? ' lançamentos gravados' : ' lançamento gravado')
           + ' na planilha.', 's');
-    $('nDesc').value=''; $('nValor').value=''; $('nObs').value=''; $('nParc').value=1;
+    $('nDesc').value=''; $('nValor').value=''; $('nObs').value=''; $('nParc').value=1; $('nVenc').value='';
     atualizaPrevia(); carregar();
   }).catch(function(e){ msgEm('msgNovo','Erro: '+e.message,'e'); })
     .then(function(){ bt.disabled=false; bt.textContent='Lançar'; });
@@ -1136,6 +1359,7 @@ $('btSalvarLanc').onclick = function(){
 function abrirNovo(){
   msgEm('msgNovo','');
   if (!$('nData').value) $('nData').value = hoje();
+  if (!$('nVenc').value) $('nVenc').value = $('nData').value;
   // já entra no mês que você está olhando no painel
   preencherMeses($('nComp'), MES || hoje().slice(0,7));
   atualizaPrevia();
@@ -1154,7 +1378,10 @@ $('modalNovo').addEventListener('click', function(ev){
 });
 
 document.addEventListener('keydown', function(ev){
-  if (ev.key === 'Escape' && !$('modalNovo').classList.contains('hide')) fecharNovo();
+  if (ev.key === 'Escape'){
+    if (!$('modalNovo').classList.contains('hide'))  fecharNovo();
+    if (!$('modalPagar').classList.contains('hide')) fecharPagar();
+  }
   // Enter dentro do modal salva, exceto se o foco estiver num select
   if (ev.key === 'Enter' && !$('modalNovo').classList.contains('hide')
       && ev.target.tagName === 'INPUT') {
@@ -1251,8 +1478,85 @@ $('tbMov').addEventListener('click', function(ev){
   }).catch(function(e){ aviso('Erro ao excluir: '+e.message,'e'); });
 });
 
+
+/* --- contas a pagar: eventos --- */
+
+$('tbPagar').addEventListener('click', function(ev){
+  var id = ev.target.dataset && ev.target.dataset.pagar;
+  if (id) abrirPagar(id);
+});
+
+$('tbPagas').addEventListener('click', function(ev){
+  var id = ev.target.dataset && ev.target.dataset.desfazer;
+  if (!id) return;
+  if (!confirm('Desfazer o pagamento? A conta volta para "em aberto" e a data e o valor pagos são apagados.')) return;
+  apiPost({ acao:'desfazer_pag', id:id }).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    aviso('Pagamento desfeito.','s'); carregar();
+  }).catch(function(e){ aviso('Erro: '+e.message,'e'); });
+});
+
+$('btFecharPagar').onclick  = fecharPagar;
+$('btCancelarPag').onclick  = fecharPagar;
+$('modalPagar').addEventListener('click', function(ev){ if (ev.target === this) fecharPagar(); });
+$('pgValor').addEventListener('input', conferirDif);
+
+$('btConfirmarPag').onclick = function(){
+  if (!PAGANDO) return;
+  var d = { acao:'pagar', dados:{
+    id: PAGANDO.id,
+    data_pagamento: $('pgData').value,
+    valor_pago: Number($('pgValor').value)
+  }};
+  if (!d.dados.data_pagamento || isNaN(d.dados.valor_pago)){
+    msgEm('msgPag2','Informe a data e o valor pagos.','e'); return;
+  }
+  var bt=this; bt.disabled=true; bt.textContent='Salvando…';
+  apiPost(d).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    var nome = PAGANDO.descricao;
+    fecharPagar();
+    aviso(nome + ' quitada: ' + brl(r.valor_pago) + ' em ' + dataBR(d.dados.data_pagamento) + '.', 's');
+    carregar();
+  }).catch(function(e){ msgEm('msgPag2','Erro: '+e.message,'e'); })
+    .then(function(){ bt.disabled=false; bt.textContent='Confirmar pagamento'; });
+};
+
+$('btSalvarFixa').onclick = function(){
+  var d = { acao:'conta_fixa', dados:{
+    conta: $('fNome').value.trim(),
+    categoria: $('fCat2').value,
+    forma_pagamento: $('fForma2').value,
+    dia_vencimento: Math.min(31, Math.max(1, parseInt($('fDia').value||1,10))),
+    valor_estimado: Number($('fValor').value||0)
+  }};
+  if (!d.dados.conta){ msgEm('msgFixa','Dê um nome à conta.','e'); return; }
+  var bt=this; bt.disabled=true; bt.textContent='Salvando…';
+  apiPost(d).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    msgEm('msgFixa', r.atualizado ? 'Conta fixa atualizada.' : 'Conta fixa cadastrada.','s');
+    $('fNome').value=''; $('fValor').value='';
+    carregar();
+  }).catch(function(e){ msgEm('msgFixa','Erro: '+e.message,'e'); })
+    .then(function(){ bt.disabled=false; bt.textContent='Cadastrar conta fixa'; });
+};
+
+$('btGerar').onclick = function(){
+  if (!confirm('Gerar as contas fixas de ' + nomeMes(MES) + '? As que já existirem nesse mês serão puladas.')) return;
+  var bt=this; bt.disabled=true; bt.textContent='Gerando…';
+  apiPost({ acao:'gerar_contas', competencia: MES }).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    aviso(r.criadas + ' conta(s) criada(s) em ' + nomeMes(MES)
+          + (r.puladas ? ' · ' + r.puladas + ' já existia(m) e foram puladas' : '')
+          + (r.motivo ? ' — ' + r.motivo : ''), r.criadas ? 's' : 'i');
+    carregar();
+  }).catch(function(e){ aviso('Erro ao gerar: '+e.message,'e'); })
+    .then(function(){ bt.disabled=false; bt.textContent='Gerar contas de '+nomeMes(MES); });
+};
+
 /* ============================================================ início */
 $('nData').value = hoje();
+$('nVenc').value = hoje();
 $('rData').value = hoje();
 preencherMeses($('nComp'), hoje().slice(0,7));
 preencherMeses($('sdComp'), hoje().slice(0,7));

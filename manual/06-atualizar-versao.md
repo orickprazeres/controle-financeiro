@@ -112,6 +112,19 @@ Não precisa reimplantar o Apps Script: nada funcional mudou.
 
 ---
 
+## Atualizar para a v1.6.0 (contas a pagar)
+
+Esta **mexe na estrutura** — são 4 passos, como foi na v1.1.0:
+
+1. Cole o `apps-script/Codigo.gs` novo no Apps Script (**reponha seu token**) e salve
+2. Rode a função **`configurarContasAPagar`**
+3. **Implantar → Gerenciar implantações → lápis → Nova versão → Implantar**
+4. Suba o `docs/index.html` no GitHub e dê `Ctrl+F5`
+
+Detalhes em [`07-contas-a-pagar.md`](07-contas-a-pagar.md).
+
+---
+
 ## E nas próximas versões?
 
 O mesmo princípio, sempre:

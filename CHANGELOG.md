@@ -9,6 +9,47 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.6.0] — 2026-07-31
+
+Contas a pagar. **Requer rodar uma função de migração e reimplantar** — é a primeira versão desde a 1.1.0 que mexe na estrutura.
+
+### Adicionado
+
+**Planilha**
+
+- Três colunas em `Lancamentos`: `vencimento`, `data_pagamento` e `valor_pago`.
+- Aba `ContasFixas`: o que se repete todo mês, com dia de vencimento e valor estimado.
+- `configurarContasAPagar()` cria as colunas, preenche o `vencimento` das linhas antigas com a data delas e cria a aba. Idempotente.
+
+**Backend**
+
+- `pagar` — grava data e valor do pagamento e vira o status.
+- `desfazer_pag` — devolve a conta para "em aberto" e limpa os campos.
+- `conta_fixa` — cadastra ou atualiza uma conta recorrente.
+- `gerar_contas` — cria as contas do mês a partir do cadastro, pulando as que já existem.
+
+**Site — aba "Contas a pagar"**
+
+- Indicadores de vencidas, a vencer em 7 dias, em aberto no mês e pago no mês.
+- Lista ordenada por vencimento, atrasadas primeiro com fundo avermelhado e a contagem de dias.
+- Botão **Pagar** com data e valor, avisando na hora se o valor difere do previsto.
+- Quadro do que foi pago no mês, com previsto, pago, diferença e opção de desfazer.
+- Cadastro de contas fixas e botão para gerar o mês.
+- Campo **Vencimento** no formulário de lançamento, que acompanha a data quando deixado em branco.
+
+### Decisões de projeto
+
+- **`vencimento` separado de `data`.** A energia é emitida dia 07 e vence dia 20; a compra no cartão acontece hoje e vence na fatura. Sem separar, não há como saber o que está atrasado.
+- **`valor_pago` separado de `valor`.** Conta de luz quase nunca vem no valor estimado. Guardar os dois permite ver o desvio; o indicador "Pago no mês" usa o real, não o previsto.
+- **Linhas antigas não quebram.** Sem `vencimento`, o sistema usa a `data`. Os 185 lançamentos importados continuam funcionando sem nenhum ajuste.
+- **Dia 31 em fevereiro vira 28** (ou 29 em bissexto), em vez de escorregar para março.
+
+### Testes
+
+30 testes novos: classificação de atraso incluindo virada de mês e de ano, dia de vencimento em meses curtos, geração sem duplicar, comparação ignorando maiúsculas e diferença entre previsto e pago. Total: **124 testes**.
+
+---
+
 ## [1.5.0] — 2026-07-31
 
 O projeto passa a se chamar **Controle Financeiro** e ganha identidade visual.

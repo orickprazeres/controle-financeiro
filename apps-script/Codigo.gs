@@ -283,7 +283,10 @@ function inserir_(d) {
       n,
       valorParcela,
       i === 0 ? (d.pago || 'Não') : 'Não',
-      d.obs || ''
+      d.obs || '',
+      d.vencimento || d.data,      // sem vencimento informado, vale a data
+      '',                          // data_pagamento
+      ''                           // valor_pago
     ]);
   }
   sh.getRange(sh.getLastRow() + 1, 1, linhas.length, COLS.length).setValues(linhas);
@@ -308,7 +311,10 @@ function importar_(lista) {
       Number(d.parcelas_total || 1),
       Number(d.valor),
       d.pago || 'Não',
-      d.obs || ''
+      d.obs || '',
+      d.vencimento || d.data,
+      d.data_pagamento || '',
+      (d.valor_pago === undefined || d.valor_pago === '') ? '' : Number(d.valor_pago)
     ];
   });
   if (!linhas.length) return { ok: true, inseridas: 0 };
@@ -514,15 +520,192 @@ function configurarInvestimentos() {
 function verificarInstalacao() {
   var ss = ss_();
   var faltando = [];
-  [ABA_LANC, ABA_CAT, ABA_CARD, ABA_ORC, ABA_ATV, ABA_INV, ABA_SLD].forEach(function (n) {
+  [ABA_LANC, ABA_CAT, ABA_CARD, ABA_ORC, ABA_ATV, ABA_INV, ABA_SLD, ABA_FIX].forEach(function (n) {
     if (!ss.getSheetByName(n)) faltando.push(n);
   });
 
   var msg = faltando.length
     ? 'FALTAM as abas: ' + faltando.join(', ') + '. Rode configurarInvestimentos().'
-    : 'Tudo certo. Versão ' + VERSAO + '. Abas encontradas: 7 de 7.';
+    : 'Tudo certo. Versão ' + VERSAO + '. Abas encontradas: 8 de 8.';
 
   try { ss.toast(msg, 'Verificação', 10); } catch (e) {}
   Logger.log(msg);
   return msg;
+}
+
+
+/* ==================================================================
+   CONTAS A PAGAR
+   ================================================================== */
+
+/** Marca uma conta como paga, guardando quando e quanto. */
+function pagar_(d) {
+  var sh = ss_().getSheetByName(ABA_LANC);
+  var row = achaLinha_(d.id);
+  if (row < 0) throw new Error('Lançamento não encontrado: ' + d.id);
+
+  var iPago = COLS.indexOf('pago') + 1;
+  var iData = COLS.indexOf('data_pagamento') + 1;
+  var iVal  = COLS.indexOf('valor_pago') + 1;
+  var iPrev = COLS.indexOf('valor') + 1;
+
+  var valor = (d.valor_pago === undefined || d.valor_pago === '' || d.valor_pago === null)
+    ? Number(sh.getRange(row, iPrev).getValue())
+    : Number(d.valor_pago);
+
+  sh.getRange(row, iPago).setValue('Sim');
+  sh.getRange(row, iData).setValue(d.data_pagamento || Utilities.formatDate(
+    new Date(), ss_().getSpreadsheetTimeZone(), 'yyyy-MM-dd'));
+  sh.getRange(row, iVal).setValue(valor);
+
+  return { ok: true, valor_pago: valor };
+}
+
+/** Desfaz o pagamento: volta para "Não pago" e limpa data e valor. */
+function desfazerPagamento_(id) {
+  var sh = ss_().getSheetByName(ABA_LANC);
+  var row = achaLinha_(id);
+  if (row < 0) throw new Error('Lançamento não encontrado: ' + id);
+  sh.getRange(row, COLS.indexOf('pago') + 1).setValue('Não');
+  sh.getRange(row, COLS.indexOf('data_pagamento') + 1).setValue('');
+  sh.getRange(row, COLS.indexOf('valor_pago') + 1).setValue('');
+  return { ok: true };
+}
+
+/** Cadastra ou atualiza uma conta fixa (a chave é o nome). */
+function salvaContaFixa_(d) {
+  var sh = ss_().getSheetByName(ABA_FIX);
+  var linha = [
+    d.conta, d.categoria || 'Outros', d.forma_pagamento || 'Boleto', d.cartao || '',
+    Number(d.dia_vencimento || 1), Number(d.valor_estimado || 0),
+    d.em_uso || 'Sim', d.obs || ''
+  ];
+  var vals = sh.getRange(1, 1, Math.max(1, sh.getLastRow()), 1).getValues();
+  for (var i = 1; i < vals.length; i++) {
+    if (String(vals[i][0]) === String(d.conta)) {
+      sh.getRange(i + 1, 1, 1, linha.length).setValues([linha]);
+      return { ok: true, atualizado: true };
+    }
+  }
+  sh.getRange(sh.getLastRow() + 1, 1, 1, linha.length).setValues([linha]);
+  return { ok: true, atualizado: false };
+}
+
+/** Último dia do mês — para o dia 31 não virar 03/03 em fevereiro. */
+function ultimoDia_(ano, mes) { return new Date(ano, mes, 0).getDate(); }
+
+/**
+ * Gera as contas do mês a partir do cadastro de contas fixas.
+ * Pula as que já existem naquela competência, então rodar duas vezes não duplica.
+ */
+function gerarContasDoMes_(comp) {
+  if (!/^\d{4}-\d{2}$/.test(String(comp))) throw new Error('Competência inválida: ' + comp);
+  var sh = ss_().getSheetByName(ABA_LANC);
+  var fixas = tabela_(ABA_FIX).filter(function (f) { return String(f.em_uso || 'Sim') !== 'Não'; });
+  if (!fixas.length) return { ok: true, criadas: 0, puladas: 0, motivo: 'nenhuma conta fixa cadastrada' };
+
+  var jaTem = {};
+  tabela_(ABA_LANC).forEach(function (l) {
+    if (mes_(l.competencia) === comp) jaTem[String(l.descricao).trim().toLowerCase()] = 1;
+  });
+
+  var ano = parseInt(comp.split('-')[0], 10);
+  var mes = parseInt(comp.split('-')[1], 10);
+  var linhas = [], puladas = 0;
+
+  fixas.forEach(function (f) {
+    var nome = String(f.conta).trim();
+    if (jaTem[nome.toLowerCase()]) { puladas++; return; }
+    var dia = Math.min(Math.max(1, Number(f.dia_vencimento || 1)), ultimoDia_(ano, mes));
+    var venc = comp + '-' + ('0' + dia).slice(-2);
+    linhas.push([
+      novoId_().replace('L', 'C'),
+      venc, comp, 'Saída', nome,
+      f.categoria || 'Outros', grupoDaCategoria_(f.categoria),
+      f.forma_pagamento || 'Boleto', f.cartao || '',
+      1, 1, Number(f.valor_estimado || 0), 'Não',
+      'conta fixa gerada',
+      venc, '', ''
+    ]);
+  });
+
+  if (linhas.length) {
+    sh.getRange(sh.getLastRow() + 1, 1, linhas.length, COLS.length).setValues(linhas);
+  }
+  return { ok: true, criadas: linhas.length, puladas: puladas };
+}
+
+/* ==================================================================
+   MIGRAÇÃO v1.5.0 -> v1.6.0
+
+   Rode UMA VEZ: escolha "configurarContasAPagar" na lista de funções
+   e clique em Executar. Acrescenta 3 colunas em Lancamentos e cria a
+   aba ContasFixas. Não apaga nem move nada. Rodar de novo é inofensivo.
+   ================================================================== */
+
+function configurarContasAPagar() {
+  var ss = ss_();
+  var sh = ss.getSheetByName(ABA_LANC);
+  var msg = [];
+
+  // 1) colunas novas no fim de Lancamentos
+  var head = sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), COLS.length)).getValues()[0]
+               .map(function (h) { return String(h).trim(); });
+  var criadas = [];
+  ['vencimento', 'data_pagamento', 'valor_pago'].forEach(function (c) {
+    if (head.indexOf(c) < 0) {
+      var col = COLS.indexOf(c) + 1;
+      sh.getRange(1, col).setValue(c)
+        .setFontFamily('Arial').setFontSize(10).setFontWeight('bold')
+        .setFontColor('#FFFFFF').setBackground('#1F3A5F')
+        .setHorizontalAlignment('center');
+      sh.setColumnWidth(col, 130);
+      criadas.push(c);
+    }
+  });
+  msg.push(criadas.length ? 'Colunas criadas: ' + criadas.join(', ') + '.' : 'Colunas já existiam.');
+
+  // 2) preencher vencimento das linhas antigas com a data delas
+  var n = sh.getLastRow() - 1;
+  if (n > 0) {
+    var iData = COLS.indexOf('data') + 1, iVenc = COLS.indexOf('vencimento') + 1;
+    var datas = sh.getRange(2, iData, n, 1).getValues();
+    var vencs = sh.getRange(2, iVenc, n, 1).getValues();
+    var mudou = 0;
+    for (var i = 0; i < n; i++) {
+      if (String(vencs[i][0]).trim() === '' && String(datas[i][0]).trim() !== '') {
+        vencs[i][0] = datas[i][0]; mudou++;
+      }
+    }
+    if (mudou) sh.getRange(2, iVenc, n, 1).setValues(vencs);
+    msg.push(mudou + ' lançamento(s) antigos receberam vencimento igual à data.');
+  }
+
+  // 3) formato de moeda no valor_pago
+  sh.getRange(2, COLS.indexOf('valor_pago') + 1, 3000, 1).setNumberFormat('R$ #,##0.00');
+
+  // 4) aba ContasFixas
+  var fx = ss.getSheetByName(ABA_FIX);
+  if (!fx) {
+    fx = ss.insertSheet(ABA_FIX);
+    fx.getRange(1, 1, 1, COLS_FIX.length).setValues([COLS_FIX]);
+    fx.getRange(1, 1, 1, COLS_FIX.length)
+      .setFontFamily('Arial').setFontSize(10).setFontWeight('bold')
+      .setFontColor('#FFFFFF').setBackground('#8A5A00')
+      .setHorizontalAlignment('center');
+    fx.setFrozenRows(1); fx.setRowHeight(1, 24);
+    [220, 220, 150, 150, 130, 140, 90, 200].forEach(function (w, i) { fx.setColumnWidth(i + 1, w); });
+    msg.push('Aba ContasFixas criada.');
+  } else {
+    msg.push('Aba ContasFixas já existia.');
+  }
+  fx.getRange('F2:F500').setNumberFormat('R$ #,##0.00');
+  fx.getRange('G2:G500').setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(['Sim', 'Não'], true)
+      .setAllowInvalid(true).build());
+
+  var txt = msg.join(' ');
+  try { ss.toast(txt, 'Contas a pagar configurado', 10); } catch (e) {}
+  Logger.log(txt);
+  return txt;
 }

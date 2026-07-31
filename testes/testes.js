@@ -1,5 +1,5 @@
 /**
- * Custos da Casa — testes automatizados da lógica crítica · v1.1.0
+ * Custos da Casa — testes automatizados da lógica crítica · v1.6.0
  *
  * Rode com:   node testes/testes.js
  * Sai com código 0 se tudo passar, 1 se algo falhar.
@@ -136,6 +136,42 @@ function simular(ini, aporte, anos, taxaAno, crescAno) {
 // rendimento deduzido = saldo final - saldo inicial - aportes + resgates
 function rendimentoMes(saldoIni, saldoFim, aportes, resgates) {
   return saldoFim - saldoIni - aportes + resgates;
+}
+
+
+// docs/index.html · contas a pagar
+function diasAte(d, hojeStr){
+  if (!d) return 0;
+  return Math.round((new Date(d+'T00:00:00') - new Date(hojeStr+'T00:00:00')) / 86400000);
+}
+function statusConta(venc, hojeStr){
+  var d = diasAte(venc, hojeStr);
+  if (d < 0)   return 'atrasada';
+  if (d === 0) return 'vence hoje';
+  if (d <= 7)  return 'próxima';
+  return 'futura';
+}
+function dataBR(d){
+  if (!/^\d{4}-\d{2}-\d{2}/.test(String(d))) return String(d||'—');
+  var p=String(d).slice(0,10).split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(-2);
+}
+// apps-script/Codigo.gs · geração das contas fixas
+function ultimoDia_(ano, mes){ return new Date(ano, mes, 0).getDate(); }
+function vencimentoDaConta(comp, diaDesejado){
+  var ano = +comp.split('-')[0], mes = +comp.split('-')[1];
+  var dia = Math.min(Math.max(1, diaDesejado), ultimoDia_(ano, mes));
+  return comp + '-' + ('0'+dia).slice(-2);
+}
+function gerarContas(fixas, jaExistem, comp){
+  var mapa = {};
+  jaExistem.forEach(function(n){ mapa[String(n).trim().toLowerCase()] = 1; });
+  var criadas = [], puladas = 0;
+  fixas.filter(function(f){ return f.em_uso !== 'Não'; }).forEach(function(f){
+    if (mapa[f.conta.trim().toLowerCase()]) { puladas++; return; }
+    criadas.push({ descricao: f.conta, vencimento: vencimentoDaConta(comp, f.dia_vencimento),
+                   valor: f.valor_estimado, pago: 'Não' });
+  });
+  return { criadas: criadas, puladas: puladas };
 }
 
 /* ============================================================ runner */
@@ -331,6 +367,64 @@ t('total aportado líquido', aportado, 2300);
 t('patrimônio atual', Math.round(patrimonio * 100) / 100, 2341.30);
 t('rendimento acumulado', Math.round((patrimonio - aportado) * 100) / 100, 41.30);
 t('resgate reduz o aportado, não vira perda', aportado < somaMov(MOV, 'Aporte'), true);
+
+
+grupo('Contas a pagar — status pelo vencimento');
+var HOJE = '2026-08-10';
+t('vencida ontem',      statusConta('2026-08-09', HOJE), 'atrasada');
+t('vencida há um mês',  statusConta('2026-07-10', HOJE), 'atrasada');
+t('vence hoje',         statusConta('2026-08-10', HOJE), 'vence hoje');
+t('vence amanhã',       statusConta('2026-08-11', HOJE), 'próxima');
+t('vence em 7 dias',    statusConta('2026-08-17', HOJE), 'próxima');
+t('vence em 8 dias',    statusConta('2026-08-18', HOJE), 'futura');
+t('dias de atraso',     diasAte('2026-08-03', HOJE), -7);
+t('não confunde virada de mês', statusConta('2026-09-01', HOJE), 'futura');
+t('atravessa a virada do ano',  diasAte('2027-01-10', '2026-12-31'), 10);
+
+grupo('Contas a pagar — data em formato brasileiro');
+t('ISO vira BR', dataBR('2026-08-09'), '09/08/26');
+t('primeiro do mês', dataBR('2026-01-01'), '01/01/26');
+t('vazio', dataBR(''), '—');
+
+grupo('Contas fixas — dia de vencimento em meses curtos');
+t('dia 10 em agosto',       vencimentoDaConta('2026-08', 10), '2026-08-10');
+t('dia 31 em fevereiro',    vencimentoDaConta('2026-02', 31), '2026-02-28');
+t('dia 31 em abril',        vencimentoDaConta('2026-04', 31), '2026-04-30');
+t('dia 31 em dezembro',     vencimentoDaConta('2026-12', 31), '2026-12-31');
+t('fevereiro bissexto',     vencimentoDaConta('2028-02', 30), '2028-02-29');
+t('dia 0 vira dia 1',       vencimentoDaConta('2026-05', 0),  '2026-05-01');
+
+grupo('Contas fixas — geração do mês');
+var FIXAS = [
+  { conta:'ENERGIA',        dia_vencimento:7,  valor_estimado:690.78, em_uso:'Sim' },
+  { conta:'PARCELA MRV',    dia_vencimento:9,  valor_estimado:1278.52, em_uso:'Sim' },
+  { conta:'HUMANAS SAUDE',  dia_vencimento:20, valor_estimado:745.53, em_uso:'Sim' },
+  { conta:'CEA ANTIGO',     dia_vencimento:15, valor_estimado:120,    em_uso:'Não' }
+];
+var g1 = gerarContas(FIXAS, [], '2026-09');
+t('gera só as ativas', g1.criadas.length, 3);
+t('nenhuma pulada na 1a vez', g1.puladas, 0);
+t('vencimentos corretos',
+  g1.criadas.map(function(c){ return c.vencimento; }),
+  ['2026-09-07','2026-09-09','2026-09-20']);
+t('nascem em aberto', g1.criadas.every(function(c){ return c.pago==='Não'; }), true);
+t('soma prevista do mês',
+  Math.round(g1.criadas.reduce(function(a,b){ return a+b.valor; },0)*100)/100, 2714.83);
+
+var g2 = gerarContas(FIXAS, g1.criadas.map(function(c){ return c.descricao; }), '2026-09');
+t('rodar de novo não duplica', g2.criadas.length, 0);
+t('e conta quantas pulou', g2.puladas, 3);
+
+var g3 = gerarContas(FIXAS, ['energia'], '2026-09');
+t('compara ignorando maiúsculas', g3.criadas.length, 2);
+
+grupo('Contas a pagar — previsto x pago');
+function difPagamento(previsto, pago){ return Math.round((pago - previsto)*100)/100; }
+t('pagou a mais',   difPagamento(690.78, 715.00), 24.22);
+t('pagou a menos',  difPagamento(690.78, 650.00), -40.78);
+t('pagou igual',    difPagamento(690.78, 690.78), 0);
+t('sem valor informado usa o previsto',
+  (function(){ var vp=null; return vp===null ? 690.78 : vp; })(), 690.78);
 
 /* ============================================================ resultado */
 
