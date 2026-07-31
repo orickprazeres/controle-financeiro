@@ -133,6 +133,14 @@ O menu passa a ter 4 itens. Orçamento e Parcelas futuras não sumiram: viraram,
 
 ---
 
+## Atualizar para a v1.7.1 e v1.8.0
+
+Só `docs/index.html`. Suba no GitHub e dê `Ctrl+F5`.
+
+A v1.7.1 corrige o sinal do saldo no rodapé da lista de Lançamentos. A v1.8.0 troca o Painel pela página **Resumo**, com patrimônio líquido e alertas.
+
+---
+
 ## E nas próximas versões?
 
 O mesmo princípio, sempre:

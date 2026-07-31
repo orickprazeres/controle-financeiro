@@ -1,6 +1,6 @@
 # Testes
 
-124 testes cobrindo a lógica onde um erro passaria despercebido — aritmética de meses, leitura de valores, parsing de CSV, geração de parcelas, somas do painel e a matemática de investimento.
+152 testes cobrindo a lógica onde um erro passaria despercebido — aritmética de meses, leitura de valores, parsing de CSV, geração de parcelas, somas do painel e a matemática de investimento.
 
 ## Rodar
 
@@ -13,7 +13,7 @@ node testes/testes.js
 Saída esperada no fim:
 
 ```
-124 testes passaram, 0 falharam
+152 testes passaram, 0 falharam
 ```
 
 Sai com código `0` se tudo passar, `1` se algo falhar.

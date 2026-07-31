@@ -454,6 +454,87 @@ t('lista vazia dá zero', rodape([]).saldo, 0);
 t('entradas e saídas iguais zeram',
   rodape([{tipo:'Entrada',valor:500},{tipo:'Saída',valor:500}]).saldo, 0);
 
+
+grupo('Resumo — patrimônio líquido e dívida');
+function dividaAberta(lanc){
+  return lanc.filter(function(l){ return l.tipo!=='Entrada' && String(l.pago)!=='Sim'; });
+}
+function patrimonioDe(saldos){
+  if (!saldos.length) return null;
+  var ult = saldos.map(function(s){ return s.competencia; }).sort().pop();
+  return saldos.filter(function(s){ return s.competencia===ult; })
+               .reduce(function(a,b){ return a+b.saldo; },0);
+}
+var LANC = [
+  { tipo:'Entrada', valor:9650.24, pago:'Sim' },
+  { tipo:'Saída', valor:1276.48, pago:'Sim' },
+  { tipo:'Saída', valor:690.78,  pago:'Não' },
+  { tipo:'Saída', valor:745.53,  pago:'Não' },
+  { tipo:'Saída', valor:420.00,  pago:'Não' }
+];
+var SALDOS = [
+  { competencia:'2026-07', ativo:'A', saldo:601 },
+  { competencia:'2026-08', ativo:'A', saldo:915.40 },
+  { competencia:'2026-08', ativo:'B', saldo:1200 }
+];
+t('dívida ignora o que já foi pago', dividaAberta(LANC).length, 3);
+t('soma da dívida',
+  Math.round(dividaAberta(LANC).reduce(function(a,b){ return a+b.valor; },0)*100)/100, 1856.31);
+t('entrada não vira dívida',
+  dividaAberta([{tipo:'Entrada',valor:5000,pago:'Não'}]).length, 0);
+t('patrimônio usa o mês MAIS RECENTE, somando os ativos', patrimonioDe(SALDOS), 2115.40);
+t('patrimônio sem saldo registrado é nulo', patrimonioDe([]), null);
+t('patrimônio líquido',
+  Math.round((patrimonioDe(SALDOS) - dividaAberta(LANC).reduce(function(a,b){ return a+b.valor; },0))*100)/100,
+  259.09);
+t('líquido fica negativo quando a dívida supera',
+  Math.round((601 - 1856.31)*100)/100, -1255.31);
+
+grupo('Resumo — alertas');
+function alertas(entradas, saidas, vencidas, orc, gasto, temAtivo, temSaldoMes){
+  var a = [];
+  if (vencidas) a.push('vencidas');
+  orc.forEach(function(o){ if (o.limite>0 && (gasto[o.categoria]||0) > o.limite) a.push('estouro:'+o.categoria); });
+  if (temAtivo && !temSaldoMes) a.push('sem saldo');
+  var sobra = entradas - saidas;
+  if (entradas>0 && sobra<0) a.push('gastou mais');
+  else if (entradas>0 && sobra/entradas < 0.05) a.push('guardou pouco');
+  return a;
+}
+t('mês saudável não gera alerta',
+  alertas(10000, 6000, 0, [], {}, false, false), []);
+t('conta vencida alerta',
+  alertas(10000, 6000, 2, [], {}, false, false), ['vencidas']);
+t('orçamento estourado alerta',
+  alertas(10000, 6000, 0, [{categoria:'Mercado',limite:800}], {Mercado:1200}, false, false),
+  ['estouro:Mercado']);
+t('orçamento dentro do limite não alerta',
+  alertas(10000, 6000, 0, [{categoria:'Mercado',limite:800}], {Mercado:700}, false, false), []);
+t('limite zero significa sem limite',
+  alertas(10000, 6000, 0, [{categoria:'Mercado',limite:0}], {Mercado:9999}, false, false), []);
+t('gastou mais do que entrou',
+  alertas(5000, 7000, 0, [], {}, false, false), ['gastou mais']);
+t('guardou menos de 5%',
+  alertas(10000, 9600, 0, [], {}, false, false), ['guardou pouco']);
+t('guardou exatamente 5% não alerta',
+  alertas(10000, 9500, 0, [], {}, false, false), []);
+t('tem ativo mas falta saldo do mês',
+  alertas(10000, 6000, 0, [], {}, true, false), ['sem saldo']);
+t('com saldo do mês não alerta',
+  alertas(10000, 6000, 0, [], {}, true, true), []);
+
+grupo('Resumo — acumulado mês a mês');
+function acumulado(meses){
+  var a = 0;
+  return meses.map(function(m){ a += m.entradas - m.saidas; return Math.round(a*100)/100; });
+}
+t('soma progressiva',
+  acumulado([{entradas:1000,saidas:400},{entradas:1000,saidas:1500},{entradas:2000,saidas:500}]),
+  [600, 100, 1600]);
+t('começa negativo e recupera',
+  acumulado([{entradas:0,saidas:500},{entradas:1000,saidas:200}]), [-500, 300]);
+t('mês vazio não altera', acumulado([{entradas:0,saidas:0}]), [0]);
+
 /* ============================================================ resultado */
 
 console.log('\n' + '-'.repeat(46));

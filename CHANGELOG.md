@@ -9,6 +9,41 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [1.8.0] — 2026-07-31
+
+O Painel virou **Resumo**: uma página só que responde "como eu estou?". Só `docs/index.html` mudou.
+
+### Adicionado
+
+- **Patrimônio líquido em destaque, no topo.** `Investimentos − Dívidas em aberto = Patrimônio líquido`, com a frase que traduz o número: *"se você quitasse hoje as 8 pendências em aberto, sobrariam R$ X"*. É o único número que junta as duas metades do sistema.
+- **Alertas acionáveis**, e só o que exige ação — some sozinho quando não há nada:
+  - contas vencidas, com valor e a data da mais antiga
+  - categoria que passou do orçamento
+  - mês sem saldo de investimento registrado (sem ele o rendimento não é calculado)
+  - mês em que você gastou mais do que entrou, ou guardou menos de 5%
+- **Resumo mês a mês**, 12 linhas: entradas, saídas, saldo, **acumulado**, aportes e patrimônio. O mês selecionado vem destacado.
+- **Gráfico de 12 meses combinado**: entradas e saídas em barras, patrimônio como linha por cima. Dá para ver se o patrimônio cresce mesmo nos meses apertados.
+- **Próximos vencimentos** — os 6 mais próximos, com a data colorida por urgência.
+- **Em aberto por cartão** — quanto de fatura não paga há em cada cartão.
+
+### Alterado
+
+- Aba renomeada de "Painel" para **"Resumo"**.
+- Os quatro indicadores do mês agora são Entradas · Saídas · **Sobrou** · No cartão, agrupados sob o título do mês, com blocos separados para Contas e Carteira.
+- "Para onde foi o dinheiro" foi para *mais detalhes*, junto com Por grupo, Como pagou e o Comparativo. O gráfico de 12 meses ocupou o lugar dele.
+
+### Decisões
+
+- **Dívida é tudo em aberto de qualquer mês**, não só do mês selecionado. Uma conta de junho não paga continua sendo dívida em agosto.
+- **Patrimônio é o último saldo registrado**, não a soma dos saldos. Somar todos os meses contaria o mesmo dinheiro várias vezes. Mês sem saldo aparece como "—", não como zero — zero seria mentira.
+- **Alerta de 5% de sobra** é um piso de atenção, não uma meta. O sistema não recomenda quanto guardar.
+
+### Testes
+
+20 testes novos: dívida ignorando o que já foi pago, patrimônio pelo mês mais recente, líquido negativo, cada uma das cinco condições de alerta com seus limites exatos, e o acumulado progressivo. Total: **152 testes**.
+
+---
+
 ## [1.7.1] — 2026-07-31
 
 ### Corrigido
