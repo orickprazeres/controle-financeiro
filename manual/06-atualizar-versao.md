@@ -97,6 +97,21 @@ Na v1.4.1 o botão **Planilha ↗** já vem com o endereço da sua planilha — 
 
 ---
 
+## Atualizar para a v1.5.0 (nome e logo)
+
+Só a pasta `docs/` mudou, mas agora com **arquivos novos**. Suba os seis:
+
+- `index.html` e `importar.html` (atualizados)
+- `favicon.svg`, `icone-180.png`, `icone-192.png`, `icone-512.png`, `manifest.webmanifest` (novos)
+
+Depois `Ctrl+F5`. Se o ícone antigo insistir na aba, feche e reabra a aba — favicon é o que o navegador mais teima em guardar em cache.
+
+Não precisa reimplantar o Apps Script: nada funcional mudou.
+
+**Opcional:** renomeie a planilha no Google Drive de "Custos da Casa" para "Controle Financeiro". É só cosmético — o Apps Script vive dentro dela e não depende do nome.
+
+---
+
 ## E nas próximas versões?
 
 O mesmo princípio, sempre:

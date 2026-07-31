@@ -6,10 +6,10 @@ Quatro etapas, cerca de 15 minutos. Faça na ordem.
 
 ## Etapa 1 — Subir a planilha para o Google Sheets
 
-1. Abra <https://drive.google.com> → **Novo** → **Upload de arquivo** → escolha `planilha/Custos-Casa-v1.1.0.xlsx`.
+1. Abra <https://drive.google.com> → **Novo** → **Upload de arquivo** → escolha `planilha/Controle-Financeiro-v1.5.0.xlsx`.
 2. Clique com o botão direito no arquivo → **Abrir com** → **Planilhas Google**.
 3. Menu **Arquivo** → **Salvar como Planilhas Google**. Isso cria a versão nativa; o `.xlsx` no Drive pode ser apagado depois.
-4. Renomeie a planilha para `Custos da Casa`.
+4. Renomeie a planilha para `Controle Financeiro`.
 5. Na aba **Lancamentos**, apague as 5 linhas que começam com `EXEMPLO`.
 6. Na aba **Cartoes**, ajuste os cartões, titulares e dias de fechamento/vencimento.
 7. Nas abas **Ativos**, **Investimentos** e **Saldos**, apague as linhas de `EXEMPLO`. Se ainda não investe, deixe-as vazias — o site funciona normalmente sem elas.
@@ -34,12 +34,12 @@ Quatro etapas, cerca de 15 minutos. Faça na ordem.
 5. Botão azul **Implantar** → **Nova implantação**.
 6. Na engrenagem ao lado de "Selecione o tipo", escolha **App da Web**.
 7. Preencha:
-   - **Descrição:** `API Custos da Casa`
+   - **Descrição:** `API Controle Financeiro`
    - **Executar como:** `Eu (seu@gmail.com)`
    - **Quem pode acessar:** `Qualquer pessoa`
 8. **Implantar**. O Google vai pedir autorização:
    - **Autorizar acesso** → escolha sua conta
-   - Aparece "O Google não verificou este app" → **Avançado** → **Acessar API Custos da Casa (não seguro)** → **Permitir**
+   - Aparece "O Google não verificou este app" → **Avançado** → **Acessar API Controle Financeiro (não seguro)** → **Permitir**
    - *É seguro: o app é seu, feito por você, e só acessa a sua planilha.*
 9. **Copie a URL do App da Web.** Ela termina em `/exec`:
 

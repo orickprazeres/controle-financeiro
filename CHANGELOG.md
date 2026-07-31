@@ -1,4 +1,4 @@
-# Histórico de versões
+# Histórico de versões · Controle Financeiro
 
 Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/).
 Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
@@ -6,6 +6,34 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 - **MAIOR** — muda a estrutura da planilha; exige migrar os dados.
 - **MENOR** — recurso novo, compatível com o que você já tem.
 - **CORREÇÃO** — conserto de bug, sem mudança de estrutura.
+
+---
+
+## [1.5.0] — 2026-07-31
+
+O projeto passa a se chamar **Controle Financeiro** e ganha identidade visual.
+
+### Alterado
+
+- **"Custos da Casa" virou "Controle Financeiro"** no título da aba do navegador, no cabeçalho das duas páginas, no rodapé, na documentação e no comentário do `Codigo.gs`.
+- O nome deixou de descrever só metade do que o sistema faz: desde a v1.1.0 ele também acompanha investimentos, patrimônio e rentabilidade.
+- Novo modelo `planilha/Controle-Financeiro-v1.5.0.xlsx`, com o Painel retitulado. Os modelos antigos foram para `planilha/anterior/`.
+
+### Adicionado
+
+- **Logo CF** — monograma em azul sobre fundo escuro, com uma linha ascendente verde na base. Desenhado em SVG, então fica nítido de 16px a 512px.
+- `docs/favicon.svg` — ícone da aba do navegador.
+- `docs/icone-180.png`, `icone-192.png`, `icone-512.png` — para "Adicionar à tela de início" no celular.
+- `docs/manifest.webmanifest` — instalado no celular, o app aparece como **CF · Controle Financeiro** com ícone próprio, abrindo em tela cheia.
+- A marca também aparece ao lado do título, dentro do site.
+
+### Sobre o desenho
+
+A primeira versão tinha a linha verde cruzando por cima das letras — bonito em 512px, ilegível em 16px. As letras foram para a faixa de cima e a linha para a base, separadas. Testado renderizando em 16, 32, 48 e 180px antes de fechar.
+
+### Não muda nada funcional
+
+Nenhum dado, coluna, fórmula ou endereço foi alterado. **Não precisa reimplantar o Apps Script** — o `VERSAO` dele subiu junto só para os números baterem, mas o comportamento é idêntico.
 
 ---
 

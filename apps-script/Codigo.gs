@@ -1,10 +1,10 @@
 /**
- * Custos da Casa — API do Google Sheets
+ * Controle Financeiro — API do Google Sheets
  * Cole este arquivo no Apps Script da sua planilha e publique como App da Web.
  * Passo a passo completo no README.md
  */
 
-var VERSAO = '1.1.0';
+var VERSAO = '1.6.0';
 
 // ⚠️ TROQUE por uma senha sua. A mesma vai no site.
 var TOKEN = 'troque-esta-senha';
@@ -16,14 +16,18 @@ var ABA_ORC  = 'Orcamento';
 var ABA_ATV  = 'Ativos';
 var ABA_INV  = 'Investimentos';
 var ABA_SLD  = 'Saldos';
+var ABA_FIX  = 'ContasFixas';
 
 var COLS = ['id','data','competencia','tipo','descricao','categoria','grupo',
-            'forma_pagamento','cartao','parcela','parcelas_total','valor','pago','obs'];
+            'forma_pagamento','cartao','parcela','parcelas_total','valor','pago','obs',
+            'vencimento','data_pagamento','valor_pago'];
 
 var COLS_INV = ['id','data','competencia','ativo','tipo','valor','obs'];
 var COLS_SLD = ['id','competencia','ativo','saldo','obs'];
 var COLS_ATV = ['ativo','classe','indexador','taxa_contratada',
                 'instituicao','vencimento','liquidez','em_uso'];
+var COLS_FIX = ['conta','categoria','forma_pagamento','cartao',
+                'dia_vencimento','valor_estimado','em_uso','obs'];
 
 /* ------------------------------------------------------------------ utils */
 
@@ -94,6 +98,10 @@ function normalizaLanc_(r) {
     valor: Number(r.valor || 0),
     pago: String(r.pago || 'Não'),
     obs: String(r.obs || ''),
+    // vazio cai de volta na data do lançamento, para as linhas antigas continuarem válidas
+    vencimento: texto_(r.vencimento) || String(d || ''),
+    data_pagamento: texto_(r.data_pagamento),
+    valor_pago: (r.valor_pago === '' || r.valor_pago == null) ? null : Number(r.valor_pago),
     _row: r._row
   };
 }
@@ -185,6 +193,19 @@ function doGet(e) {
           };
         }),
 
+      contasFixas: tabela_(ABA_FIX).map(function (f) {
+        return {
+          conta: String(f.conta || ''),
+          categoria: String(f.categoria || ''),
+          forma_pagamento: String(f.forma_pagamento || ''),
+          cartao: String(f.cartao || ''),
+          dia_vencimento: Number(f.dia_vencimento || 1),
+          valor_estimado: Number(f.valor_estimado || 0),
+          em_uso: String(f.em_uso || 'Sim'),
+          obs: String(f.obs || '')
+        };
+      }),
+
       saldos: tabela_(ABA_SLD)
         .filter(function (s) { return String(s.id || '').indexOf('EXEMPLO') !== 0; })
         .map(function (s) {
@@ -219,6 +240,10 @@ function doPost(e) {
       case 'inv_saldo':  return json_(invSaldo_(body.dados));
       case 'inv_excluir':return json_(invExcluir_(body.aba, body.id));
       case 'inv_ativo':  return json_(invAtivo_(body.dados));
+      case 'pagar':        return json_(pagar_(body.dados));
+      case 'desfazer_pag': return json_(desfazerPagamento_(body.id));
+      case 'conta_fixa':   return json_(salvaContaFixa_(body.dados));
+      case 'gerar_contas': return json_(gerarContasDoMes_(body.competencia));
       default: throw new Error('Ação desconhecida: ' + body.acao);
     }
   } catch (err) {

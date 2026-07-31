@@ -1,0 +1,186 @@
+﻿id;data;competencia;tipo;descricao;categoria;grupo;forma_pagamento;cartao;parcela;parcelas_total;valor;pago;obs
+IMP001;2026-07-05;2026-07;Entrada;SALARIO;Salário;Receita;Pix;;1;1;9650.24;Sim;importado da planilha antiga
+IMP002;2026-07-05;2026-07;Entrada;DIVIDENDO;Rendimentos/Investimentos;Receita;Pix;;1;1;1300.0;Sim;importado da planilha antiga
+IMP003;2026-07-06;2026-07;Saída;DIZIMO;Presentes/Doações;Pessoal;Débito;;1;1;965.02;Sim;importado da planilha antiga
+IMP004;2026-07-06;2026-07;Saída;PARCELA MRV;Aluguel/Condomínio;Moradia;Boleto;;1;1;1276.48;Sim;importado da planilha antiga
+IMP005;2026-07-06;2026-07;Saída;SEGURO MRV;Aluguel/Condomínio;Moradia;Boleto;;1;1;38.82;Sim;importado da planilha antiga
+IMP006;2026-07-06;2026-07;Saída;APCEF;Plano de Saúde;Saúde;Boleto;;1;1;41.0;Sim;importado da planilha antiga
+IMP007;2026-07-07;2026-07;Saída;ENERGIA;Contas da casa (luz/água/gás);Moradia;Boleto;;1;1;690.78;Sim;importado da planilha antiga
+IMP008;2026-07-10;2026-07;Saída;PASSAPORTE;Lazer;Pessoal;Débito;;1;1;257.25;Sim;importado da planilha antiga
+IMP009;2026-07-20;2026-07;Saída;HUMANAS DENTINHO;Plano de Saúde;Saúde;Boleto;;1;1;8.0;Sim;importado da planilha antiga
+IMP010;2026-07-20;2026-07;Saída;HUMANAS SAUDE;Plano de Saúde;Saúde;Boleto;;1;1;745.53;Sim;importado da planilha antiga
+IMP011;2026-07-20;2026-07;Saída;NUBAK HELENA;Outros;Outros;Crédito;NU HELENA;1;1;332.01;Sim;fatura sem detalhe
+IMP012;2026-07-15;2026-07;Saída;CEA;Lazer;Pessoal;Boleto;;1;1;120.0;Sim;importado da planilha antiga
+IMP013;2026-06-05;2026-07;Saída;Havan Sao Luiz;Manutenção/Móveis;Moradia;Crédito;NU RICARDO;3;4;64.99;Sim;fatura importada
+IMP014;2026-06-05;2026-07;Saída;Gol Linhas Aéreas;Viagem;Pessoal;Crédito;NU RICARDO;5;5;104.06;Sim;fatura importada
+IMP015;2026-06-05;2026-07;Saída;Riachuelo;Vestuário;Pessoal;Crédito;NU RICARDO;3;3;106.65;Sim;fatura importada
+IMP016;2026-06-05;2026-07;Saída;Farmácias Pague Menos;Saúde/Farmácia;Saúde;Crédito;NU RICARDO;5;5;57.78;Sim;fatura importada
+IMP017;2026-06-05;2026-07;Saída;Vivara;Vestuário;Pessoal;Crédito;NU RICARDO;8;10;474.0;Sim;fatura importada
+IMP018;2026-05-25;2026-07;Saída;IFD*BR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;-49.9;Sim;estorno
+IMP019;2026-06-08;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;31.47;Sim;fatura importada
+IMP020;2026-06-08;2026-07;Saída;EspetinDeRua;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;25.0;Sim;fatura importada
+IMP021;2026-06-09;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;73.35;Sim;fatura importada
+IMP022;2026-06-10;2026-07;Saída;VICKS BURGER ILHA;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;49.9;Sim;fatura importada
+IMP023;2026-06-10;2026-07;Saída;PAGUE MENOS 06;Saúde/Farmácia;Saúde;Crédito;VISA RICARDO;1;1;19.5;Sim;fatura importada
+IMP024;2026-06-10;2026-07;Saída;EspetinDeRua;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;25.0;Sim;fatura importada
+IMP025;2026-06-10;2026-07;Saída;SHOPPING ILHA SA CAVAL;Lazer;Pessoal;Crédito;VISA RICARDO;1;1;40.9;Sim;fatura importada
+IMP026;2026-06-11;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;18.03;Sim;fatura importada
+IMP027;2026-06-12;2026-07;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;23.98;Sim;fatura importada
+IMP028;2026-06-12;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;14.18;Sim;fatura importada
+IMP029;2026-06-12;2026-07;Saída;IFD*BR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;108.28;Sim;fatura importada
+IMP030;2026-06-13;2026-07;Saída;DAISO;Manutenção/Móveis;Moradia;Crédito;VISA RICARDO;1;1;67.96;Sim;fatura importada
+IMP031;2026-06-13;2026-07;Saída;BRASIL CACAU;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;42.98;Sim;fatura importada
+IMP032;2026-06-13;2026-07;Saída;LE BISCUIT;Manutenção/Móveis;Moradia;Crédito;VISA RICARDO;1;1;94.97;Sim;fatura importada
+IMP033;2026-06-13;2026-07;Saída;SHOPPING DA ILHA;Lazer;Pessoal;Crédito;VISA RICARDO;1;1;63.2;Sim;fatura importada
+IMP034;2026-06-13;2026-07;Saída;OUTBACK SHOPPING AMERI;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;263.98;Sim;fatura importada
+IMP035;2026-06-13;2026-07;Saída;Estacionamento;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;17.0;Sim;fatura importada
+IMP036;2026-06-15;2026-07;Saída;EspetinDeRua;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;50.0;Sim;fatura importada
+IMP037;2026-06-16;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;14.18;Sim;fatura importada
+IMP038;2026-06-16;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;21.46;Sim;fatura importada
+IMP039;2026-06-17;2026-07;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;6.9;Sim;fatura importada
+IMP040;2026-06-18;2026-07;Saída;Estacionamento;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;13.0;Sim;fatura importada
+IMP041;2026-06-19;2026-07;Saída;UBER *TRIP HELP.UBER.CO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;6.91;Sim;fatura importada
+IMP042;2026-06-19;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;14.08;Sim;fatura importada
+IMP043;2026-06-19;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;23.74;Sim;fatura importada
+IMP044;2026-06-19;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;24.81;Sim;fatura importada
+IMP045;2026-06-19;2026-07;Saída;IFD*BR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;102.41;Sim;fatura importada
+IMP046;2026-06-20;2026-07;Saída;OFICINA DE BOLOS RENAS;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;163.94;Sim;fatura importada
+IMP047;2026-06-20;2026-07;Saída;A. B. COLINS LIMA;Outros;Outros;Crédito;VISA RICARDO;1;1;51.9;Sim;fatura importada
+IMP048;2026-06-20;2026-07;Saída;PAGUE MENOS 08;Saúde/Farmácia;Saúde;Crédito;VISA RICARDO;1;1;50.37;Sim;fatura importada
+IMP049;2026-06-21;2026-07;Saída;SDL - SAO LUIZ DANIEL;Outros;Outros;Crédito;VISA RICARDO;1;1;101.8;Sim;fatura importada
+IMP050;2026-06-21;2026-07;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;59.95;Sim;fatura importada
+IMP051;2026-06-22;2026-07;Saída;AEROPORTO VIRACOPOS A;Viagem;Pessoal;Crédito;VISA RICARDO;1;1;39.8;Sim;fatura importada
+IMP052;2026-06-22;2026-07;Saída;PIAZZA;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;39.5;Sim;fatura importada
+IMP053;2026-06-24;2026-07;Saída;PARADA 163;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;45.0;Sim;fatura importada
+IMP054;2026-06-24;2026-07;Saída;MP*RAPHAEL;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;25.92;Sim;fatura importada
+IMP055;2026-06-25;2026-07;Saída;PARADA 163;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;24.0;Sim;fatura importada
+IMP056;2026-06-25;2026-07;Saída;MP*RAPHAEL;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;30.24;Sim;fatura importada
+IMP057;2026-06-26;2026-07;Saída;SHOW DE BEBE KIDS;Lazer;Pessoal;Crédito;VISA RICARDO;1;1;32.0;Sim;fatura importada
+IMP058;2026-06-26;2026-07;Saída;PARADA 163;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;41.0;Sim;fatura importada
+IMP059;2026-06-26;2026-07;Saída;MP*RAPHAEL;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;23.18;Sim;fatura importada
+IMP060;2026-06-26;2026-07;Saída;42908470Adriano;Outros;Outros;Crédito;VISA RICARDO;1;3;137.98;Sim;fatura importada
+IMP061;2026-06-27;2026-07;Saída;CAPPTA *R DE GOIS DALE;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;45.98;Sim;fatura importada
+IMP062;2026-06-28;2026-07;Saída;PARADA 163;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;58.0;Sim;fatura importada
+IMP063;2026-06-29;2026-07;Saída;PARADA 163;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;24.0;Sim;fatura importada
+IMP064;2026-06-29;2026-07;Saída;CAPPTA *GESSI VIEIRA D;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;25.06;Sim;fatura importada
+IMP065;2026-06-30;2026-07;Saída;CLARICES;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;87.1;Sim;fatura importada
+IMP066;2026-06-30;2026-07;Saída;CAPPTA *R DE GOIS DALE;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;38.88;Sim;fatura importada
+IMP067;2026-07-01;2026-07;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;35.97;Sim;fatura importada
+IMP068;2026-07-01;2026-07;Saída;IZU JAPANESE FOOD;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;120.0;Sim;fatura importada
+IMP069;2026-07-02;2026-07;Saída;IFD*ROSSINI LTDA;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;57.63;Sim;fatura importada
+IMP070;2026-07-03;2026-07;Saída;RESTAURANTE DO MILA;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;39.25;Sim;fatura importada
+IMP071;2026-07-03;2026-07;Saída;CONFECCOES S-CT;Vestuário;Pessoal;Crédito;VISA RICARDO;1;1;112.0;Sim;fatura importada
+IMP072;2026-07-03;2026-07;Saída;BAFFS;Vestuário;Pessoal;Crédito;VISA RICARDO;1;2;42.8;Sim;fatura importada
+IMP073;2026-07-03;2026-07;Saída;Jbj;Vestuário;Pessoal;Crédito;VISA RICARDO;1;1;72.5;Sim;fatura importada
+IMP074;2026-07-04;2026-07;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;33.96;Sim;fatura importada
+IMP075;2026-07-04;2026-07;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;45.97;Sim;fatura importada
+IMP076;2026-07-04;2026-07;Saída;KOPENHAGEM BSB AR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;45.9;Sim;fatura importada
+IMP077;2026-07-04;2026-07;Saída;DUFRY SHOPPING BRASILI;Viagem;Pessoal;Crédito;VISA RICARDO;1;1;9.9;Sim;fatura importada
+IMP078;2026-07-04;2026-07;Saída;IFD*ANGELO DA SILVA LEM;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;99.13;Sim;fatura importada
+IMP079;2026-07-05;2026-07;Saída;MarcioDosSan-CT;Outros;Outros;Crédito;VISA RICARDO;1;1;48.0;Sim;fatura importada
+IMP080;2026-07-06;2026-07;Saída;TCHE PAMPAS;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;50.2;Sim;fatura importada
+IMP081;2026-07-06;2026-07;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;33.99;Sim;fatura importada
+IMP082;2026-07-06;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;9;10;17.99;Sim;fatura importada
+IMP083;2026-07-07;2026-07;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;9;10;19.55;Sim;fatura importada
+IMP084;2025-10-25;2026-07;Saída;CARROSSEL ACONCHE;Outros;Outros;Crédito;VISA RICARDO;7;12;159.42;Sim;fatura importada
+IMP085;2025-10-29;2026-07;Saída;EXTRA FARMA -CT 13;Saúde/Farmácia;Saúde;Crédito;VISA RICARDO;7;12;143.5;Sim;fatura importada
+IMP086;2025-12-09;2026-07;Saída;PG *GRAN LINKPAGA;Educação;Educação;Crédito;VISA RICARDO;5;12;59.9;Sim;fatura importada
+IMP087;2025-12-17;2026-07;Saída;HOTMART C3DDOZER;Educação;Educação;Crédito;VISA RICARDO;3;12;289.27;Sim;fatura importada
+IMP088;2026-02-20;2026-07;Saída;AMAZON PRIME BR;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;1;1;13.9;Sim;fatura importada
+IMP089;2026-04-21;2026-07;Saída;EBN*CANVA0485;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;1;1;24.25;Sim;fatura importada
+IMP090;2026-06-15;2026-07;Saída;EBN *CapCut;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;1;1;32.9;Sim;fatura importada
+IMP091;2026-06-16;2026-07;Saída;EBN *ADOBE;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;1;1;27.5;Sim;fatura importada
+IMP092;2026-06-29;2026-07;Saída;IFD*iFood;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;8;12;7.95;Sim;fatura importada
+IMP093;2026-07-08;2026-07;Saída;MP*MELIMAIS;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;1;1;19.9;Sim;fatura importada
+IMP094;2026-06-09;2026-07;Saída;ANUIDADE DIFERENCI;Outros;Outros;Crédito;VISA RICARDO;1;1;62.0;Sim;fatura importada
+IMP095;2026-07-08;2026-07;Saída;ESTORNO DE ANUIDADE DIF;Outros;Outros;Crédito;VISA RICARDO;1;1;-62.0;Sim;estorno
+IMP096;2026-08-05;2026-08;Entrada;SALARIO;Salário;Receita;Pix;;1;1;9650.24;Sim;importado da planilha antiga
+IMP097;2026-08-06;2026-08;Saída;DIZIMO;Presentes/Doações;Pessoal;Débito;;1;1;965.02;Não;importado da planilha antiga
+IMP098;2026-08-06;2026-08;Saída;APCEF;Plano de Saúde;Saúde;Boleto;;1;1;41.0;Não;importado da planilha antiga
+IMP099;2026-08-20;2026-08;Saída;HUMANAS DENTINHO;Plano de Saúde;Saúde;Boleto;;1;1;8.0;Não;importado da planilha antiga
+IMP100;2026-08-20;2026-08;Saída;HUMANAS SAUDE;Plano de Saúde;Saúde;Boleto;;1;1;745.53;Não;importado da planilha antiga
+IMP101;2026-08-09;2026-08;Saída;PARCELA MRV;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.52;Não;importado da planilha antiga
+IMP102;2026-08-09;2026-08;Saída;SEGURO MRV;Aluguel/Condomínio;Moradia;Boleto;;1;1;38.59;Não;importado da planilha antiga
+IMP103;2026-08-09;2026-08;Saída;MRV;Aluguel/Condomínio;Moradia;Boleto;;1;1;11601.8;Não;importado da planilha antiga
+IMP104;2026-08-07;2026-08;Saída;ENERGIA;Contas da casa (luz/água/gás);Moradia;Boleto;;1;1;690.78;Não;importado da planilha antiga
+IMP105;2026-08-09;2026-08;Saída;RICARDO NU BANK;Outros;Outros;Crédito;NU RICARDO;1;1;538.99;Não;fatura sem detalhe
+IMP106;2026-08-20;2026-08;Saída;NUBAK HELENA;Outros;Outros;Crédito;NU HELENA;1;1;200.0;Não;fatura sem detalhe
+IMP107;2026-08-15;2026-08;Saída;CEA;Lazer;Pessoal;Boleto;;1;1;120.0;Não;importado da planilha antiga
+IMP108;2026-08-29;2026-08;Saída;SEGURO ITAU;Plano de Saúde;Saúde;Boleto;;1;1;80.0;Não;importado da planilha antiga
+IMP109;2026-08-07;2026-08;Saída;ALIMENTAÇÃO LUCENA;Mercado;Alimentação;Débito;;1;1;320.0;Não;importado da planilha antiga
+IMP110;2026-07-13;2026-08;Saída;42908470Adriano;Outros;Outros;Crédito;VISA RICARDO;1;1;-0.04;Não;estorno
+IMP111;2025-10-25;2026-08;Saída;CARROSSEL ACON;Outros;Outros;Crédito;VISA RICARDO;10;10;159.42;Não;fatura importada
+IMP112;2025-10-29;2026-08;Saída;EXTRA FARMA -C;Saúde/Farmácia;Saúde;Crédito;VISA RICARDO;10;10;143.5;Não;fatura importada
+IMP113;2025-12-09;2026-08;Saída;PG *GRAN LINKP;Educação;Educação;Crédito;VISA RICARDO;8;12;59.9;Não;fatura importada
+IMP114;2025-12-17;2026-08;Saída;HOTMART C3DDOZ;Educação;Educação;Crédito;VISA RICARDO;8;12;289.27;Não;fatura importada
+IMP115;2026-02-20;2026-08;Saída;AMAZON PRIME B;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;6;12;13.9;Não;fatura importada
+IMP116;2026-04-21;2026-08;Saída;EBN*CANVA0485;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;4;12;24.25;Não;fatura importada
+IMP117;2026-06-26;2026-08;Saída;42908470Adrian;Outros;Outros;Crédito;VISA RICARDO;2;3;137.98;Não;fatura importada
+IMP118;2026-07-03;2026-08;Saída;Jbj;Vestuário;Pessoal;Crédito;VISA RICARDO;2;2;72.5;Não;fatura importada
+IMP119;2026-07-08;2026-08;Saída;IFD*FNRN RESTAURANTE LT;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;36.91;Não;fatura importada
+IMP120;2026-07-08;2026-08;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;12.98;Não;fatura importada
+IMP121;2026-07-08;2026-08;Saída;IFD*Leandro Da Silva;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;2.0;Não;fatura importada
+IMP122;2026-07-09;2026-08;Saída;SMARVIC COMERCIO E SE;Outros;Outros;Crédito;VISA RICARDO;1;1;84.8;Não;fatura importada
+IMP123;2026-07-09;2026-08;Saída;SUBWAY HOLANDESES;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;42.0;Não;fatura importada
+IMP124;2026-07-09;2026-08;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;20.06;Não;fatura importada
+IMP125;2026-07-10;2026-08;Saída;IFD*F P S RODRIGUES LT;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;132.99;Não;fatura importada
+IMP126;2026-07-10;2026-08;Saída;EMPORIO PINHEIRO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;18.88;Não;fatura importada
+IMP127;2026-07-10;2026-08;Saída;SDL - SAO LUIZ DANIEL;Outros;Outros;Crédito;VISA RICARDO;1;1;88.9;Não;fatura importada
+IMP128;2026-07-11;2026-08;Saída;PRINCESA DOS SALGADOS;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;26.0;Não;fatura importada
+IMP129;2026-07-11;2026-08;Saída;DIVERNO COHAJAP MAQUIN;Lazer;Pessoal;Crédito;VISA RICARDO;1;1;96.0;Não;fatura importada
+IMP130;2026-07-11;2026-08;Saída;UBER * PENDING;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;39.98;Não;fatura importada
+IMP131;2026-07-12;2026-08;Saída;PAGUE MENOS 084;Saúde/Farmácia;Saúde;Crédito;VISA RICARDO;1;1;44.98;Não;fatura importada
+IMP132;2026-07-12;2026-08;Saída;A. B. COLINS LIMASAO JO;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;83.8;Não;fatura importada
+IMP133;2026-07-13;2026-08;Saída;SUBWAY HOLANDESESSAO LU;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;26.9;Não;fatura importada
+IMP134;2026-07-13;2026-08;Saída;EMPORIO PINHEIROSAO LUI;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;12.98;Não;fatura importada
+IMP135;2026-07-13;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;18.98;Não;fatura importada
+IMP136;2026-07-14;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;7.92;Não;fatura importada
+IMP137;2026-07-15;2026-08;Saída;EBN *CapCutCURI;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;1;1;32.9;Não;fatura importada
+IMP138;2026-07-15;2026-08;Saída;SUBWAY HOLANDESESSAO LU;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;49.5;Não;fatura importada
+IMP139;2026-07-15;2026-08;Saída;BURGER KINGSAO LUISBR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;38.9;Não;fatura importada
+IMP140;2026-07-15;2026-08;Saída;VICKS BURGER SLZSAO LUI;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;49.9;Não;fatura importada
+IMP141;2026-07-15;2026-08;Saída;LOJAS AMERICANAS 1278SA;Vestuário;Pessoal;Crédito;VISA RICARDO;1;1;55.98;Não;fatura importada
+IMP142;2026-07-15;2026-08;Saída;NBR MALLS EMPREENDIMENS;Manutenção/Móveis;Moradia;Crédito;VISA RICARDO;1;1;8.0;Não;fatura importada
+IMP143;2026-07-16;2026-08;Saída;ADOBESAO PAULOBR;Assinaturas/Streaming;Pessoal;Crédito;VISA RICARDO;1;1;27.5;Não;fatura importada
+IMP144;2026-07-16;2026-08;Saída;MP*62298516JOAOMSAO LUI;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;49.0;Não;fatura importada
+IMP145;2026-07-16;2026-08;Saída;ARMAZZEM-PASSAROSSAO LU;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;4.99;Não;fatura importada
+IMP146;2026-07-16;2026-08;Saída;RMendesCarvalhoSAO LUIS;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;10.0;Não;fatura importada
+IMP147;2026-07-16;2026-08;Saída;MP*PASTELANDOSLZSO LUSB;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;15.0;Não;fatura importada
+IMP148;2026-07-16;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;21.11;Não;fatura importada
+IMP149;2026-07-17;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;7.91;Não;fatura importada
+IMP150;2026-07-17;2026-08;Saída;EMPORIO PINHEIROSAO LUI;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;17.48;Não;fatura importada
+IMP151;2026-07-17;2026-08;Saída;MASSAS FASTSAO LUISBR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;37.0;Não;fatura importada
+IMP152;2026-07-17;2026-08;Saída;MASSAS FASTSAO LUISBR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;17.0;Não;fatura importada
+IMP153;2026-07-18;2026-08;Saída;A. B. COLINS LIMASAO JO;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;67.9;Não;fatura importada
+IMP154;2026-07-18;2026-08;Saída;KAROLICIASSAO LUISBR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;45.5;Não;fatura importada
+IMP155;2026-07-18;2026-08;Saída;POTIGUAR OLHO DAGUASAO;Outros;Outros;Crédito;VISA RICARDO;1;1;77.5;Não;fatura importada
+IMP156;2026-07-19;2026-08;Saída;IFD*F P S RODRIGUES LT;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;137.49;Não;fatura importada
+IMP157;2026-07-20;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;6.9;Não;fatura importada
+IMP158;2026-07-20;2026-08;Saída;MIX PINHEIRO ARACAGISAO;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;37.73;Não;fatura importada
+IMP159;2026-07-20;2026-08;Saída;UBER *TRIP HELP.UBER.CO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;3.0;Não;fatura importada
+IMP160;2026-07-20;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;16.97;Não;fatura importada
+IMP161;2026-07-20;2026-08;Saída;IFD*C. A. N. MOROMISATO;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;34.89;Não;fatura importada
+IMP162;2026-07-21;2026-08;Saída;IFD*ANSM COMERCIO DE AL;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;78.57;Não;fatura importada
+IMP163;2026-07-22;2026-08;Saída;SAGRES RESTBELEMBR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;8.0;Não;fatura importada
+IMP164;2026-07-22;2026-08;Saída;MAZURCABRAGANCABR;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;56.53;Não;fatura importada
+IMP165;2026-07-22;2026-08;Saída;SALGATEUABRAGANCABR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;22.0;Não;fatura importada
+IMP166;2026-07-23;2026-08;Saída;TOP CONVENIENCIABRAGANC;Mercado;Alimentação;Crédito;VISA RICARDO;1;1;8.0;Não;fatura importada
+IMP167;2026-07-23;2026-08;Saída;IFD*ROCHA LOBATO COMER;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;44.24;Não;fatura importada
+IMP168;2026-07-24;2026-08;Saída;IFD*PIZZA FRIGIO COMERC;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;71.4;Não;fatura importada
+IMP169;2026-07-25;2026-08;Saída;GB COMERCIO DE ALIMENTB;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;61.6;Não;fatura importada
+IMP170;2026-07-25;2026-08;Saída;MP*MALUXBELEMB;Educação;Educação;Crédito;VISA RICARDO;1;12;109.9;Não;fatura importada
+IMP171;2026-07-25;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;20.98;Não;fatura importada
+IMP172;2026-07-25;2026-08;Saída;PARSTOP ESTACIONAMENTSA;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;7.0;Não;fatura importada
+IMP173;2026-07-25;2026-08;Saída;Mc Donalds - Arcos Dour;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;118.9;Não;fatura importada
+IMP174;2026-07-25;2026-08;Saída;PbAdministradoraSAO LUI;Outros;Outros;Crédito;VISA RICARDO;1;1;8.0;Não;fatura importada
+IMP175;2026-07-26;2026-08;Saída;A. B. COLINS LIMASAO JO;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;85.9;Não;fatura importada
+IMP176;2026-07-26;2026-08;Saída;PARSTOP ESTACIONAMENTSA;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;10.0;Não;fatura importada
+IMP177;2026-07-26;2026-08;Saída;IFD*ANGELO DA SILVA LEM;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;123.44;Não;fatura importada
+IMP178;2026-07-27;2026-08;Saída;CHL PARK ESTACIONAMESAO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;7.0;Não;fatura importada
+IMP179;2026-07-28;2026-08;Saída;EstacionamentoSAO LUISB;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;14.0;Não;fatura importada
+IMP180;2026-07-28;2026-08;Saída;DROGASIL 3392SAO LUISBR;Saúde/Farmácia;Saúde;Crédito;VISA RICARDO;1;1;57.18;Não;fatura importada
+IMP181;2026-07-28;2026-08;Saída;A. B. COLINS LIMASAO JO;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;22.9;Não;fatura importada
+IMP182;2026-07-29;2026-08;Saída;UBER * PENDINGSAO PAULO;Transporte/App;Transporte;Crédito;VISA RICARDO;1;1;6.91;Não;fatura importada
+IMP183;2026-07-29;2026-08;Saída;IFD*iFoodOsascoBR;Restaurantes/Delivery;Alimentação;Crédito;VISA RICARDO;1;1;7.95;Não;fatura importada
+IMP184;2026-07-09;2026-08;Saída;ANUIDADE DIFER;Outros;Outros;Crédito;VISA RICARDO;9;12;62.0;Não;fatura importada
+IMP185;2026-07-17;2026-08;Saída;Redução Mensalidade - P;Outros;Outros;Crédito;VISA RICARDO;1;1;-31.0;Não;estorno

@@ -2,10 +2,13 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Custos da Casa v1.4.1 -->
+<!-- Controle Financeiro v1.5.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<title>Custos da Casa</title>
+<title>Controle Financeiro</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root{
@@ -19,7 +22,9 @@ body{background:var(--bg);color:var(--txt);font:15px/1.5 -apple-system,BlinkMacS
 .wrap{max-width:1180px;margin:0 auto;padding:16px}
 header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
 h1{font-size:19px;font-weight:700;letter-spacing:-.3px}
-h1 span{color:var(--ac)}
+h1 .nm span{color:var(--ac)}
+.marca{width:34px;height:34px;flex:none;border-radius:9px;display:block}
+h1{display:flex;align-items:center;gap:10px}
 .sp{flex:1}
 select,input,button,textarea{font-family:inherit;font-size:14px}
 select,input,textarea{background:var(--card2);border:1px solid var(--line);color:var(--txt);padding:9px 11px;border-radius:9px;width:100%}
@@ -100,7 +105,16 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
 <div class="wrap">
 
 <header>
-  <h1>Custos da <span>Casa</span></h1>
+  <h1><svg class="marca" viewBox="0 0 64 64" aria-hidden="true">
+    <rect width="64" height="64" rx="15" fill="#0f172a"/>
+    <rect x="1.75" y="1.75" width="60.5" height="60.5" rx="13.25" fill="none" stroke="#2b3a52" stroke-width="3.5"/>
+    <g fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round">
+      <path d="M28.2 17.4 A9.5 9.5 0 1 0 28.2 32.6"/>
+      <path d="M41.5 15.5 L41.5 34.5"/><path d="M41.5 15.5 L51 15.5"/><path d="M41.5 25 L49 25"/>
+    </g>
+    <path d="M14 51.5 L25.5 45.5 L35 48 L50 40.5" fill="none" stroke="#34d399"
+          stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg><span class="nm">Controle <span>Financeiro</span></span></h1>
   <div class="sp"></div>
   <button id="btAbrirNovo" class="hide">+ Novo lançamento</button>
   <button class="gh hide" id="btPlanilha" title="Abrir a planilha no Google Sheets">Planilha ↗</button>
@@ -379,12 +393,12 @@ code{background:var(--card2);padding:2px 6px;border-radius:5px;font-size:12.5px}
   </div>
 </div>
 
-<footer>Custos da Casa · dados na sua planilha do Google</footer>
+<footer>Controle Financeiro · dados na sua planilha do Google</footer>
 </div>
 
 <script>
 /* ============================================================ estado */
-var VERSAO = '1.4.1';
+var VERSAO = '1.5.0';
 /* Endereço da planilha. Pode ficar aqui porque o compartilhamento dela está
    RESTRITO — saber o endereço não dá acesso a nada. Se algum dia você mudar
    para "qualquer pessoa com o link", apague esta linha e use só o campo do ⚙. */

@@ -1,4 +1,4 @@
-# Custos da Casa · v1.4.1
+# Controle Financeiro · v1.5.0
 
 Controle de custos domésticos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -16,14 +16,17 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 │
 ├── docs/                        ► O SITE (é desta pasta que o GitHub Pages publica)
 │   ├── index.html                 painel, lançamentos, orçamento, investimentos
-│   └── importar.html              importador de CSV de fatura/extrato
+│   ├── importar.html              importador de CSV de fatura/extrato
+│   ├── favicon.svg                logo CF (nítido em qualquer tamanho)
+│   ├── icone-180/192/512.png      ícones para celular e tela de início
+│   └── manifest.webmanifest       nome e ícone do app quando instalado
 │
 ├── apps-script/                 ► O BACKEND (vai colado dentro da planilha)
 │   ├── Codigo.gs                  a API que lê e grava no Sheets
 │   └── appsscript.json            configuração do projeto Apps Script
 │
 ├── planilha/                    ► O BANCO DE DADOS
-│   ├── Custos-Casa-v1.1.0.xlsx    modelo para importar no Google Sheets
+│   ├── Controle-Financeiro-v1.5.0.xlsx  modelo para importar no Google Sheets
 │   └── anterior/                  a planilha antiga de 25 abas, guardada
 │       └── Controle-Custos-Casa-ORIGINAL.xlsx
 │
@@ -108,4 +111,4 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 ## Versão
 
-`1.4.1` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`1.5.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
