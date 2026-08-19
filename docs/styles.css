@@ -68,6 +68,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .month-picker span { color: var(--dim); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
 .month-picker select { min-width: 78px; padding: 5px 25px 5px 5px; border: 0; background-color: transparent; }
 select, input, textarea { width: 100%; padding: 11px 12px; color: var(--text); background: var(--surface-strong); border: 1px solid var(--line-strong); border-radius: 11px; }
+select option { color: #0f172a; background: #ffffff; }
 input::placeholder, textarea::placeholder { color: #5d6d82; }
 input:focus, select:focus, textarea:focus { border-color: rgba(94, 234, 212, 0.78); box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.08); }
 button { min-height: 42px; padding: 9px 15px; color: var(--primary-ink); font-weight: 750; background: var(--primary); border: 0; border-radius: 11px; transition: transform 0.16s ease, filter 0.16s ease, background 0.16s ease, border-color 0.16s ease; }
