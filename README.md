@@ -1,4 +1,4 @@
-# Meu Financeiro · front-end v2.1.0
+# Meu Financeiro · front-end v2.1.1
 
 Controle de custos, contas a pagar e investimentos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 

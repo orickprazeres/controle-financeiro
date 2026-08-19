@@ -9,6 +9,15 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [2.1.1] — 2026-08-19
+
+### Corrigido
+
+- Adicionado versionamento aos links de `styles.css` e `app.js` para impedir que o navegador misture HTML novo com JavaScript antigo em cache.
+- A navegação agora valida a tela de destino antes de ocultar o conteúdo atual.
+
+---
+
 ## [2.1.0] — 2026-08-19
 
 ### Alterado

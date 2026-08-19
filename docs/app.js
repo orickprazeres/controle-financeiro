@@ -1,5 +1,5 @@
 /* ============================================================ estado */
-var VERSAO = '2.1.0';
+var VERSAO = '2.1.1';
 /* Endereço da planilha. Pode ficar aqui porque o compartilhamento dela está
    RESTRITO — saber o endereço não dá acesso a nada. Se algum dia você mudar
    para "qualquer pessoa com o link", apague esta linha e use só o campo do ⚙. */
@@ -1009,11 +1009,16 @@ $('selMes').onchange = function(){ MES = this.value; render(); };
 
 document.querySelectorAll('#nav button[data-p]').forEach(function(b){
   b.onclick = function(){
+    var mapa = { painel:'pgPainel', mov:'pgMov', inv:'pgInv' };
+    var destino = mapa[b.dataset.p];
+    if (!destino || !$(destino)) {
+      aviso('Não foi possível abrir esta tela. Atualize a página para carregar a versão mais recente.','e');
+      return;
+    }
     document.querySelectorAll('#nav button').forEach(function(x){ x.classList.remove('on'); });
     b.classList.add('on');
     document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
-    var mapa = { painel:'pgPainel', mov:'pgMov', inv:'pgInv' };
-    $(mapa[b.dataset.p]).classList.remove('hide');
+    $(destino).classList.remove('hide');
     $('pgCfg').classList.add('hide');
     document.body.classList.remove('configuring');
     window.scrollTo({ top: 0, behavior: 'smooth' });
