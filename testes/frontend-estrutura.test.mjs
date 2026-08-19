@@ -30,6 +30,13 @@ const checks = [
   [html.includes('data-p="mov"'), "aba unificada de Movimentações ausente"],
   [!html.includes('data-p="lanc"') && !html.includes('data-p="pagar"'), "abas antigas ainda aparecem na navegação"],
   [html.includes('data-mov="contas"') && html.includes('data-mov="historico"') && html.includes('data-mov="recorrentes"'), "visões internas de Movimentações incompletas"],
+  [/<button data-esc="mes" class="on">/.test(html), "filtro mensal não está ativo por padrão"],
+  [/var ESCOPO = 'mes'/.test(js), "escopo inicial das contas não está limitado ao mês"],
+  [html.includes('id="modalConta"') && html.includes('id="btContaEditar"'), "detalhes e edição direta da conta ausentes"],
+  [html.includes('id="fContaBusca"') && html.includes('data-conta-filtro="7dias"'), "busca ou filtros rápidos das contas ausentes"],
+  [/function origemConta\(/.test(js), "identificação da origem da conta ausente"],
+  [html.includes('id="btCancelarFixa"') && /function editarFixa\(/.test(js), "edição de recorrência ausente"],
+  [/styles\.css\?v=2\.2\.0/.test(html) && /app\.js\?v=2\.2\.0/.test(html), "cache-bust do front-end não foi atualizado"],
 ];
 
 const failures = checks.filter(([ok]) => !ok).map(([, message]) => message);

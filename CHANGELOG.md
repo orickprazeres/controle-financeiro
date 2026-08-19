@@ -9,6 +9,31 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [2.2.0] — 2026-08-19
+
+### Adicionado
+
+- Detalhes da conta com ações diretas para editar, pagar, duplicar, excluir e desfazer pagamento.
+- Busca por conta, categoria ou forma de pagamento e filtros rápidos para atrasadas, hoje e próximos 7 dias.
+- Identificação da origem de cada conta: avulsa, parcela ou conta fixa.
+- Edição dos modelos recorrentes diretamente na lista de contas fixas.
+
+### Alterado
+
+- A edição de uma conta fixa distingue a ocorrência do mês do modelo usado nos meses futuros.
+- A visão de Contas continua abrindo somente na competência selecionada.
+
+---
+
+## [2.1.2] — 2026-08-19
+
+### Alterado
+
+- A visão de Contas agora abre filtrada pela competência selecionada.
+- **Tudo em aberto** continua disponível como consulta opcional para pendências de outros meses.
+
+---
+
 ## [2.1.1] — 2026-08-19
 
 ### Corrigido

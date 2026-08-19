@@ -1,4 +1,4 @@
-# Meu Financeiro · front-end v2.1.1
+# Meu Financeiro · front-end v2.2.0
 
 Controle de custos, contas a pagar e investimentos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -113,4 +113,4 @@ Detalhes em [`manual/02-estrutura-de-dados.md`](manual/02-estrutura-de-dados.md)
 
 ## Versão
 
-`1.8.0` — veja o [CHANGELOG.md](CHANGELOG.md). O número de versão aparece dentro de cada arquivo (`var VERSAO`) e no nome do arquivo da planilha.
+`2.2.0` — veja o [CHANGELOG.md](CHANGELOG.md). A versão do front-end aparece no `index.html` e no `app.js`; a estrutura da planilha permanece compatível.

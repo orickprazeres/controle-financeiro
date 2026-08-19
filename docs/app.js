@@ -1,5 +1,5 @@
 /* ============================================================ estado */
-var VERSAO = '2.1.1';
+var VERSAO = '2.2.0';
 /* Endereço da planilha. Pode ficar aqui porque o compartilhamento dela está
    RESTRITO — saber o endereço não dá acesso a nada. Se algum dia você mudar
    para "qualquer pessoa com o link", apague esta linha e use só o campo do ⚙. */
@@ -835,14 +835,39 @@ function diasAte(d){
   if (!d) return 0;
   return Math.round((new Date(d+'T00:00:00') - new Date(hoje()+'T00:00:00')) / 86400000);
 }
-var ESCOPO = 'tudo';   // 'tudo' = todos os meses · 'mes' = só a competência selecionada
+var ESCOPO = 'mes';   // 'mes' = só a competência selecionada · 'tudo' = todos os meses
+var FILTRO_CONTAS = 'todas';
+var BUSCA_CONTAS = '';
 
 function noEscopo(l){ return ESCOPO === 'tudo' || l.competencia === MES; }
 
-function emAberto(){
+function contasAbertasEscopo(){
   return DB.lancamentos.filter(function(l){
     return l.tipo !== 'Entrada' && String(l.pago) !== 'Sim' && noEscopo(l);
   }).sort(function(a,b){ return String(vencDe(a)).localeCompare(String(vencDe(b))); });
+}
+function filtrarContas(lista){
+  var busca = BUSCA_CONTAS.trim().toLocaleLowerCase('pt-BR');
+  return lista.filter(function(l){
+    var d = diasAte(vencDe(l));
+    var bateFiltro = FILTRO_CONTAS === 'todas'
+      || (FILTRO_CONTAS === 'atrasadas' && d < 0)
+      || (FILTRO_CONTAS === 'hoje' && d === 0)
+      || (FILTRO_CONTAS === '7dias' && d >= 0 && d <= 7);
+    var texto = [l.descricao,l.categoria,l.forma_pagamento,l.cartao].join(' ').toLocaleLowerCase('pt-BR');
+    return bateFiltro && (!busca || texto.indexOf(busca) >= 0);
+  });
+}
+function emAberto(){ return filtrarContas(contasAbertasEscopo()); }
+function normalizaConta(v){ return String(v||'').trim().toLocaleLowerCase('pt-BR'); }
+function fixaDaConta(l){
+  return (DB.contasFixas||[]).filter(function(f){ return normalizaConta(f.conta) === normalizaConta(l.descricao); })[0] || null;
+}
+function origemConta(l){
+  var total = Number(l.parcelas_total||1), atual = Number(l.parcela||1);
+  if (total > 1) return { tipo:'parcela', texto:'Parcela '+atual+'/'+total };
+  if (fixaDaConta(l)) return { tipo:'fixa', texto:'Conta fixa' };
+  return { tipo:'avulsa', texto:'Avulsa' };
 }
 function statusConta(l){
   var d = diasAte(vencDe(l));
@@ -857,9 +882,10 @@ function dataBR(d){
 }
 
 function renderContasAPagar(){
-  var abertas = emAberto();
-  var vencidas = abertas.filter(function(l){ return diasAte(vencDe(l)) < 0; });
-  var proximas = abertas.filter(function(l){ var d=diasAte(vencDe(l)); return d>=0 && d<=7; });
+  var abertasBase = contasAbertasEscopo();
+  var abertas = filtrarContas(abertasBase);
+  var vencidas = abertasBase.filter(function(l){ return diasAte(vencDe(l)) < 0; });
+  var proximas = abertasBase.filter(function(l){ var d=diasAte(vencDe(l)); return d>=0 && d<=7; });
   var pagas    = DB.lancamentos.filter(function(l){
     return l.tipo!=='Entrada' && String(l.pago)==='Sim' && noEscopo(l); });
   var rotulo   = ESCOPO === 'tudo' ? 'em todos os meses' : 'em ' + nomeMes(MES);
@@ -872,8 +898,8 @@ function renderContasAPagar(){
 
   $('pProx').textContent  = brl(soma2(proximas,'valor'));
   $('pProxS').textContent = proximas.length+' conta(s) nos próximos 7 dias';
-  $('pAber').textContent  = brl(soma2(abertas,'valor'));
-  $('pAberS').textContent = abertas.length+' em aberto ' + rotulo;
+  $('pAber').textContent  = brl(soma2(abertasBase,'valor'));
+  $('pAberS').textContent = abertasBase.length+' em aberto ' + rotulo;
   $('pProx').className    = 'v ' + (proximas.length ? 'neg' : '');
 
   var pagoReal = pagas.reduce(function(a,b){
@@ -886,21 +912,24 @@ function renderContasAPagar(){
   document.querySelectorAll('.escMes').forEach(function(e){ e.textContent = nomeMes(MES); });
 
   // ---- a pagar
-  var h = '<tr><th>Vencimento</th><th></th><th>Conta</th><th>Categoria</th><th>Pagamento</th>'
+  var h = '<tr><th>Vencimento</th><th></th><th>Conta</th><th>Origem</th><th>Categoria</th><th>Pagamento</th>'
         + '<th class="r">Previsto</th><th></th></tr>';
-  if (!abertas.length) h += '<tr><td colspan="7" class="empty">Nada em aberto. Tudo pago. 👍</td></tr>';
+  if (!abertas.length) h += '<tr><td colspan="8" class="empty">'+(abertasBase.length ? 'Nenhuma conta corresponde aos filtros.' : 'Nada em aberto. Tudo pago. 👍')+'</td></tr>';
   abertas.forEach(function(l){
     var st = statusConta(l);
-    h += '<tr class="'+(st.k==='atr'?'atrasada':'')+'">'
+    var origem = origemConta(l);
+    h += '<tr class="clicavel '+(st.k==='atr'?'atrasada':'')+'" data-conta="'+esc(l.id)+'">'
        + '<td>'+dataBR(vencDe(l))+'</td>'
        + '<td><span class="tag '+st.k+'">'+st.txt+'</span></td>'
        + '<td>'+esc(l.descricao)+'</td>'
+       + '<td><span class="tag cr">'+esc(origem.texto)+'</span></td>'
        + '<td class="mut">'+esc(l.categoria)+'</td>'
        + '<td class="mut">'+esc(l.cartao || l.forma_pagamento)+'</td>'
        + '<td class="r">'+brl(l.valor)+'</td>'
        + '<td class="r"><button class="mini" data-pagar="'+esc(l.id)+'">Pagar</button></td></tr>';
   });
-  h += '<tr><td colspan="5" style="font-weight:700">TOTAL EM ABERTO · '+rotulo.toUpperCase()+'</td>'
+  var totalRotulo = (BUSCA_CONTAS || FILTRO_CONTAS!=='todas') ? 'TOTAL FILTRADO' : 'TOTAL EM ABERTO';
+  h += '<tr><td colspan="6" style="font-weight:700">'+totalRotulo+' · '+rotulo.toUpperCase()+'</td>'
      + '<td class="r" style="font-weight:700">'+brl(soma2(abertas,'valor'))+'</td><td></td></tr>';
   $('tbPagar').innerHTML = h;
 
@@ -911,7 +940,7 @@ function renderContasAPagar(){
     .forEach(function(l){
       var vp = (l.valor_pago === null || l.valor_pago === undefined) ? Number(l.valor) : Number(l.valor_pago);
       var dif = vp - Number(l.valor);
-      h2 += '<tr><td class="mut">'+(l.data_pagamento ? dataBR(l.data_pagamento) : '—')+'</td>'
+      h2 += '<tr class="clicavel" data-conta="'+esc(l.id)+'"><td class="mut">'+(l.data_pagamento ? dataBR(l.data_pagamento) : '—')+'</td>'
          + '<td>'+esc(l.descricao)+'</td>'
          + '<td class="r mut">'+brl(l.valor)+'</td>'
          + '<td class="r">'+brl(vp)+'</td>'
@@ -923,14 +952,15 @@ function renderContasAPagar(){
 
   // ---- contas fixas
   var fixas = DB.contasFixas || [];
-  var h3 = '<tr><th>Conta</th><th>Categoria</th><th class="c">Vence dia</th><th class="r">Estimado</th><th>Pagamento</th><th class="c">Ativa</th></tr>';
-  if (!fixas.length) h3 += '<tr><td colspan="6" class="empty">Nenhuma conta fixa cadastrada ainda.</td></tr>';
+  var h3 = '<tr><th>Conta</th><th>Categoria</th><th class="c">Vence dia</th><th class="r">Estimado</th><th>Pagamento</th><th class="c">Ativa</th><th></th></tr>';
+  if (!fixas.length) h3 += '<tr><td colspan="7" class="empty">Nenhuma conta fixa cadastrada ainda.</td></tr>';
   fixas.forEach(function(f){
     h3 += '<tr><td>'+esc(f.conta)+'</td><td class="mut">'+esc(f.categoria)+'</td>'
        + '<td class="c">'+f.dia_vencimento+'</td>'
        + '<td class="r">'+brl(f.valor_estimado)+'</td>'
        + '<td class="mut">'+esc(f.forma_pagamento)+'</td>'
-       + '<td class="c">'+(f.em_uso==='Não'?'<span class="tag">não</span>':'<span class="tag pg">sim</span>')+'</td></tr>';
+       + '<td class="c">'+(f.em_uso==='Não'?'<span class="tag">não</span>':'<span class="tag pg">sim</span>')+'</td>'
+       + '<td class="r"><button class="mini gh" data-fixa="'+esc(f.conta)+'">Editar</button></td></tr>';
   });
   $('tbFixas').innerHTML = h3;
 
@@ -940,6 +970,77 @@ function renderContasAPagar(){
   (DB.categorias||[]).filter(function(c){ return c.tipo!=='Entrada'; })
     .forEach(function(c){ var o=document.createElement('option'); o.value=o.textContent=c.categoria; sel.appendChild(o); });
   if (atual) sel.value = atual;
+}
+
+/* --- detalhes e ações da conta --- */
+var CONTA_ABERTA = null;
+
+function contaPorId(id){
+  return DB.lancamentos.filter(function(l){ return String(l.id) === String(id); })[0] || null;
+}
+function abrirConta(id){
+  var l = contaPorId(id);
+  if (!l) return;
+  CONTA_ABERTA = l;
+  var paga = String(l.pago) === 'Sim';
+  var origem = origemConta(l);
+  var st = paga ? { k:'pg', txt:'paga' } : statusConta(l);
+  var vp = l.valor_pago === null || l.valor_pago === undefined || l.valor_pago === '' ? Number(l.valor)||0 : Number(l.valor_pago)||0;
+  var dif = vp - (Number(l.valor)||0);
+
+  $('ctDesc').textContent = l.descricao || '—';
+  $('ctStatus').textContent = st.txt;
+  $('ctStatus').className = 'tag '+st.k;
+  $('ctOrigem').textContent = origem.texto;
+  $('ctVenc').textContent = dataBR(vencDe(l));
+  $('ctComp').textContent = nomeMes(l.competencia);
+  $('ctCat').textContent = l.categoria || '—';
+  $('ctForma').textContent = l.cartao || l.forma_pagamento || '—';
+  $('ctValor').textContent = brl(l.valor);
+  $('ctPagoWrap').classList.toggle('hide', !paga);
+  $('ctPago').textContent = brl(vp);
+  $('ctDif').textContent = Math.abs(dif)<0.005 ? 'igual ao previsto' : (dif>0 ? brl(dif)+' acima do previsto' : brl(-dif)+' abaixo do previsto');
+  $('ctObs').textContent = l.obs || '';
+  $('ctObs').classList.toggle('hide', !l.obs);
+  $('ctRecAviso').classList.toggle('hide', origem.tipo !== 'fixa');
+  $('btContaRecorrencia').classList.toggle('hide', origem.tipo !== 'fixa');
+  $('btContaPagar').classList.toggle('hide', paga);
+  $('btContaDesfazer').classList.toggle('hide', !paga);
+  $('modalConta').classList.remove('hide');
+}
+function fecharConta(){ $('modalConta').classList.add('hide'); CONTA_ABERTA = null; }
+
+function desfazerPagamento(id){
+  if (!id) return;
+  if (!confirm('Desfazer o pagamento? A conta volta para "em aberto" e a data e o valor pagos são apagados.')) return;
+  apiPost({ acao:'desfazer_pag', id:id }).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    fecharConta(); aviso('Pagamento desfeito.','s'); carregar();
+  }).catch(function(e){ aviso('Erro: '+e.message,'e'); });
+}
+
+function editarFixa(fixa){
+  if (!fixa) return;
+  FIXA_EDITANDO = fixa;
+  $('fNome').value = fixa.conta || '';
+  $('fNome').disabled = true;
+  $('fCat2').value = fixa.categoria || '';
+  $('fDia').value = fixa.dia_vencimento || 1;
+  $('fValor').value = fixa.valor_estimado || 0;
+  $('fForma2').value = fixa.forma_pagamento || 'Boleto';
+  $('btSalvarFixa').textContent = 'Salvar alterações';
+  $('btCancelarFixa').classList.remove('hide');
+  msgEm('msgFixa','Editando o modelo recorrente de '+fixa.conta+'. As alterações valerão nas próximas contas geradas.','i');
+  $('fValor').focus();
+}
+function cancelarEdicaoFixa(){
+  FIXA_EDITANDO = null;
+  $('fNome').disabled = false;
+  $('fNome').value = '';
+  $('fValor').value = '';
+  $('btSalvarFixa').textContent = 'Cadastrar conta fixa';
+  $('btCancelarFixa').classList.add('hide');
+  msgEm('msgFixa','');
 }
 
 /* --- modal de pagamento --- */
@@ -1176,6 +1277,18 @@ function abrirNovo(id){
   $('modalNovo').classList.remove('hide');
   setTimeout(function(){ $('nDesc').focus(); }, 60);
 }
+function abrirDuplicar(id){
+  abrirNovo(id);
+  if (!EDITANDO) return;
+  EDITANDO = null;
+  $('tituloNovo').textContent = 'Duplicar lançamento';
+  $('btSalvarLanc').textContent = 'Criar cópia';
+  $('btExcluirLanc').classList.add('hide');
+  $('wrapParc').classList.remove('hide');
+  $('nParc').value = 1;
+  $('nPago').value = 'Não';
+  atualizaPrevia();
+}
 function fecharNovo(){ $('modalNovo').classList.add('hide'); EDITANDO = null; }
 
 $('btAbrirNovo').onclick    = abrirNovo;
@@ -1191,6 +1304,7 @@ document.addEventListener('keydown', function(ev){
   if (ev.key === 'Escape'){
     if (!$('modalNovo').classList.contains('hide'))  fecharNovo();
     if (!$('modalPagar').classList.contains('hide')) fecharPagar();
+    if (!$('modalConta').classList.contains('hide')) fecharConta();
     ['modalAporte','modalSaldo','modalAtivo'].forEach(function(id){
       if (!$(id).classList.contains('hide')) fecharModal(id);
     });
@@ -1313,20 +1427,63 @@ document.querySelectorAll('.sub button[data-esc]').forEach(function(b){
   };
 });
 
+$('fContaBusca').addEventListener('input', function(){
+  BUSCA_CONTAS = this.value;
+  renderContasAPagar();
+});
+document.querySelectorAll('[data-conta-filtro]').forEach(function(b){
+  b.onclick = function(){
+    document.querySelectorAll('[data-conta-filtro]').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    FILTRO_CONTAS = b.dataset.contaFiltro;
+    renderContasAPagar();
+  };
+});
+
 $('tbPagar').addEventListener('click', function(ev){
   var id = ev.target.dataset && ev.target.dataset.pagar;
-  if (id) abrirPagar(id);
+  if (id){ abrirPagar(id); return; }
+  var tr = ev.target.closest && ev.target.closest('tr[data-conta]');
+  if (tr) abrirConta(tr.dataset.conta);
 });
 
 $('tbPagas').addEventListener('click', function(ev){
   var id = ev.target.dataset && ev.target.dataset.desfazer;
-  if (!id) return;
-  if (!confirm('Desfazer o pagamento? A conta volta para "em aberto" e a data e o valor pagos são apagados.')) return;
-  apiPost({ acao:'desfazer_pag', id:id }).then(function(r){
-    if(!r.ok) throw new Error(r.erro);
-    aviso('Pagamento desfeito.','s'); carregar();
-  }).catch(function(e){ aviso('Erro: '+e.message,'e'); });
+  if (id){ desfazerPagamento(id); return; }
+  var tr = ev.target.closest && ev.target.closest('tr[data-conta]');
+  if (tr) abrirConta(tr.dataset.conta);
 });
+
+$('btFecharConta').onclick = fecharConta;
+$('modalConta').addEventListener('click', function(ev){ if (ev.target === this) fecharConta(); });
+$('btContaEditar').onclick = function(){
+  if (!CONTA_ABERTA) return;
+  var id=CONTA_ABERTA.id; fecharConta(); abrirNovo(id);
+};
+$('btContaPagar').onclick = function(){
+  if (!CONTA_ABERTA) return;
+  var id=CONTA_ABERTA.id; fecharConta(); abrirPagar(id);
+};
+$('btContaDuplicar').onclick = function(){
+  if (!CONTA_ABERTA) return;
+  var id=CONTA_ABERTA.id; fecharConta(); abrirDuplicar(id);
+};
+$('btContaExcluir').onclick = function(){
+  if (!CONTA_ABERTA || !confirm('Excluir "'+CONTA_ABERTA.descricao+'" definitivamente?')) return;
+  var id=CONTA_ABERTA.id;
+  apiPost({ acao:'excluir', id:id }).then(function(r){
+    if(!r.ok) throw new Error(r.erro);
+    fecharConta(); aviso('Conta excluída.','s'); carregar();
+  }).catch(function(e){ aviso('Erro ao excluir: '+e.message,'e'); });
+};
+$('btContaDesfazer').onclick = function(){ if (CONTA_ABERTA) desfazerPagamento(CONTA_ABERTA.id); };
+$('btContaRecorrencia').onclick = function(){
+  if (!CONTA_ABERTA) return;
+  var fixa=fixaDaConta(CONTA_ABERTA); fecharConta();
+  var aba=document.querySelector('.mov-tabs button[data-mov="recorrentes"]');
+  if (aba) aba.click();
+  editarFixa(fixa);
+};
 
 $('btFecharPagar').onclick  = fecharPagar;
 $('btCancelarPag').onclick  = fecharPagar;
@@ -1354,6 +1511,16 @@ $('btConfirmarPag').onclick = function(){
     .then(function(){ bt.disabled=false; bt.textContent='Confirmar pagamento'; });
 };
 
+var FIXA_EDITANDO = null;
+
+$('tbFixas').addEventListener('click', function(ev){
+  var nome = ev.target.dataset && ev.target.dataset.fixa;
+  if (!nome) return;
+  var fixa=(DB.contasFixas||[]).filter(function(f){ return String(f.conta)===String(nome); })[0];
+  editarFixa(fixa);
+});
+$('btCancelarFixa').onclick = cancelarEdicaoFixa;
+
 $('btSalvarFixa').onclick = function(){
   var d = { acao:'conta_fixa', dados:{
     conta: $('fNome').value.trim(),
@@ -1367,7 +1534,8 @@ $('btSalvarFixa').onclick = function(){
   apiPost(d).then(function(r){
     if(!r.ok) throw new Error(r.erro);
     msgEm('msgFixa', r.atualizado ? 'Conta fixa atualizada.' : 'Conta fixa cadastrada.','s');
-    $('fNome').value=''; $('fValor').value='';
+    FIXA_EDITANDO = null; $('fNome').disabled=false;
+    $('fNome').value=''; $('fValor').value=''; $('btCancelarFixa').classList.add('hide');
     carregar();
   }).catch(function(e){ msgEm('msgFixa','Erro: '+e.message,'e'); })
     .then(function(){ bt.disabled=false; bt.textContent='Cadastrar conta fixa'; });

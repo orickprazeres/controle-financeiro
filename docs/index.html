@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Meu Financeiro · front-end v2.1.1 -->
+<!-- Meu Financeiro · front-end v2.2.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
 <meta name="description" content="Painel pessoal para organizar contas, gastos e investimentos.">
@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icone-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<link rel="stylesheet" href="styles.css?v=2.1.1">
+<link rel="stylesheet" href="styles.css?v=2.2.0">
 </head>
 <body>
 <div class="app-shell">
@@ -180,8 +180,18 @@
 
   <div id="movContas" class="mov-section">
   <div class="sub">
-    <button data-esc="mes">Só <span class="escMes"></span></button>
-    <button data-esc="tudo" class="on">Tudo em aberto</button>
+    <button data-esc="mes" class="on">Só <span class="escMes"></span></button>
+    <button data-esc="tudo">Tudo em aberto</button>
+  </div>
+
+  <div class="contas-toolbar" aria-label="Filtros das contas">
+    <input id="fContaBusca" type="search" placeholder="Buscar conta, categoria ou pagamento…" aria-label="Buscar conta">
+    <div class="sub quick-filters">
+      <button data-conta-filtro="todas" class="on">Todas</button>
+      <button data-conta-filtro="atrasadas">Atrasadas</button>
+      <button data-conta-filtro="hoje">Hoje</button>
+      <button data-conta-filtro="7dias">Próximos 7 dias</button>
+    </div>
   </div>
 
   <div class="kpis">
@@ -195,7 +205,7 @@
     <h2>A pagar</h2>
     <div id="msgPagar"></div>
     <div class="scr"><table id="tbPagar"></table></div>
-    <div class="nota">Vencidas aparecem primeiro, com fundo avermelhado. O botão <b>Pagar</b> abre uma caixinha para você informar a data e o valor efetivamente pagos.</div>
+    <div class="nota">Clique em uma conta para ver detalhes, editar, duplicar ou excluir. Vencidas aparecem primeiro, com fundo avermelhado.</div>
   </div>
 
   <div class="card">
@@ -245,7 +255,7 @@
       <div class="fld"><label>Forma de pagamento</label><select id="fForma2">
         <option>Boleto</option><option>Débito</option><option>Pix</option>
         <option>Dinheiro</option><option>Crédito</option><option>Transferência</option></select></div>
-      <div class="fld"><label>&nbsp;</label><button id="btSalvarFixa">Cadastrar conta fixa</button></div>
+      <div class="fld"><label>&nbsp;</label><div class="form-actions"><button id="btSalvarFixa">Cadastrar conta fixa</button><button class="gh hide" id="btCancelarFixa">Cancelar edição</button></div></div>
     </div>
     <div class="scr" style="margin-top:16px"><table id="tbFixas"></table></div>
     <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
@@ -253,6 +263,36 @@
       <span class="nota" style="margin:0">Cria em aberto, sem sobrescrever nada.</span>
     </div>
   </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: DETALHES DA CONTA ================= -->
+<div id="modalConta" class="modal hide">
+  <div class="modal-box conta-detail">
+    <div class="modal-head">
+      <div><span class="eyebrow">Detalhes da conta</span><h2 id="ctDesc">—</h2></div>
+      <div class="sp"></div>
+      <button class="x" id="btFecharConta" title="Fechar (Esc)" aria-label="Fechar detalhes da conta">&#10005;</button>
+    </div>
+    <div class="conta-badges"><span class="tag" id="ctStatus">—</span><span class="tag cr" id="ctOrigem">—</span></div>
+    <div class="detail-grid">
+      <div><span>Vencimento</span><strong id="ctVenc">—</strong></div>
+      <div><span>Competência</span><strong id="ctComp">—</strong></div>
+      <div><span>Categoria</span><strong id="ctCat">—</strong></div>
+      <div><span>Pagamento</span><strong id="ctForma">—</strong></div>
+      <div><span>Valor previsto</span><strong id="ctValor">—</strong></div>
+      <div id="ctPagoWrap" class="hide"><span>Valor pago</span><strong id="ctPago">—</strong><small id="ctDif"></small></div>
+    </div>
+    <div class="detail-note hide" id="ctObs"></div>
+    <div class="msg i hide" id="ctRecAviso">Esta é uma cobrança gerada mensalmente. <b>Editar conta</b> altera somente esta ocorrência; use <b>Editar recorrência</b> para mudar os próximos meses.</div>
+    <div class="detail-actions">
+      <button id="btContaPagar">Registrar pagamento</button>
+      <button class="gh" id="btContaEditar">Editar conta</button>
+      <button class="gh" id="btContaDuplicar">Duplicar</button>
+      <button class="gh hide" id="btContaRecorrencia">Editar recorrência</button>
+      <button class="gh hide" id="btContaDesfazer">Desfazer pagamento</button>
+      <button class="dg" id="btContaExcluir">Excluir</button>
+    </div>
   </div>
 </div>
 
@@ -489,6 +529,6 @@
 </div>
 </div>
 
-<script src="app.js?v=2.1.1"></script>
+<script src="app.js?v=2.2.0"></script>
 </body>
 </html>
