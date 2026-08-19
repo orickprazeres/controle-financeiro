@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<!-- Meu Financeiro · front-end v2.0.0 -->
+<!-- Meu Financeiro · front-end v2.1.0 -->
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
 <meta name="description" content="Painel pessoal para organizar contas, gastos e investimentos.">
@@ -73,8 +73,7 @@
 
 <nav id="nav" class="main-nav hide" aria-label="Navegação principal">
   <button data-p="painel" class="on"><span aria-hidden="true">⌂</span><b>Resumo</b></button>
-  <button data-p="lanc"><span aria-hidden="true">≡</span><b>Lançamentos</b></button>
-  <button data-p="pagar"><span aria-hidden="true">✓</span><b>Contas</b></button>
+  <button data-p="mov"><span aria-hidden="true">≡</span><b>Movimentações</b></button>
   <button data-p="inv"><span aria-hidden="true">↗</span><b>Investimentos</b></button>
   <button onclick="location.href='importar.html'"><span aria-hidden="true">⇩</span><b>Importar</b></button>
 </nav>
@@ -169,27 +168,17 @@
   </div>
 </div>
 
-<!-- ================= LANCAMENTOS ================= -->
-<div id="pgLanc" class="pg hide">
-  <div class="page-heading"><div><span class="eyebrow">Movimentações</span><h1>Lançamentos</h1><p>Pesquise, confira e ajuste todas as entradas e saídas.</p></div></div>
-  <div class="card">
-    <h2>Filtros</h2>
-    <div class="filt">
-      <input id="fBusca" placeholder="Buscar descrição…">
-      <select id="fTipo"><option value="">Tipo: todos</option><option>Entrada</option><option>Saída</option></select>
-      <select id="fCat"><option value="">Categoria: todas</option></select>
-      <select id="fForma"><option value="">Pagamento: todos</option></select>
-      <select id="fPago"><option value="">Status: todos</option><option>Sim</option><option>Não</option></select>
-    </div>
-    <div class="scr"><table id="tbLanc"></table></div>
-    <div class="nota">Clique em qualquer linha para editar ou excluir.</div>
+<!-- ================= MOVIMENTACOES ================= -->
+<div id="pgMov" class="pg hide">
+  <div class="page-heading"><div><span class="eyebrow">Fluxo financeiro</span><h1>Movimentações</h1><p>Controle o que vence, consulte o histórico e organize recorrências em um só lugar.</p></div></div>
+
+  <div class="sub mov-tabs" aria-label="Visões de movimentações">
+    <button data-mov="contas" class="on">Contas</button>
+    <button data-mov="historico">Histórico</button>
+    <button data-mov="recorrentes">Recorrentes</button>
   </div>
-</div>
 
-
-<!-- ================= CONTAS A PAGAR ================= -->
-<div id="pgPagar" class="pg hide">
-  <div class="page-heading"><div><span class="eyebrow">Agenda financeira</span><h1>Contas a pagar</h1><p>Priorize vencimentos, registre pagamentos e organize recorrências.</p></div></div>
+  <div id="movContas" class="mov-section">
   <div class="sub">
     <button data-esc="mes">Só <span class="escMes"></span></button>
     <button data-esc="tudo" class="on">Tudo em aberto</button>
@@ -220,7 +209,24 @@
     <div class="scr" style="margin-top:16px"><table id="tbFut"></table></div>
     <div class="nota">Parcelas de compras já feitas que ainda vão cair. Não aparecem na lista acima porque ainda não venceram.</div>
   </div>
+  </div>
 
+  <div id="movHistorico" class="mov-section hide">
+    <div class="card">
+      <h2>Histórico de entradas e saídas</h2>
+      <div class="filt">
+        <input id="fBusca" placeholder="Buscar descrição…">
+        <select id="fTipo"><option value="">Tipo: todos</option><option>Entrada</option><option>Saída</option></select>
+        <select id="fCat"><option value="">Categoria: todas</option></select>
+        <select id="fForma"><option value="">Pagamento: todos</option></select>
+        <select id="fPago"><option value="">Status: todos</option><option>Sim</option><option>Não</option></select>
+      </div>
+      <div class="scr"><table id="tbLanc"></table></div>
+      <div class="nota">Clique em qualquer linha para editar ou excluir.</div>
+    </div>
+  </div>
+
+  <div id="movRecorrentes" class="mov-section hide">
   <div class="card">
     <h2>Contas fixas do mês</h2>
     <div id="msgFixa"></div>
@@ -246,6 +252,7 @@
       <button id="btGerar">Gerar contas de <span id="lblMesGerar"></span></button>
       <span class="nota" style="margin:0">Cria em aberto, sem sobrescrever nada.</span>
     </div>
+  </div>
   </div>
 </div>
 

@@ -119,6 +119,10 @@ body.configuring:not(.connected) #btCfg { display: none; }
 .sub { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
 .sub button { min-height: 37px; padding: 7px 13px; color: var(--muted); background: transparent; border: 1px solid var(--line); font-size: 13px; font-weight: 600; }
 .sub button.on { color: var(--primary-ink); background: var(--primary); border-color: var(--primary); }
+.mov-tabs { width: max-content; max-width: 100%; padding: 5px; background: rgba(15, 29, 48, 0.72); border: 1px solid var(--line); border-radius: 14px; }
+.mov-tabs button { min-width: 118px; justify-content: center; border-color: transparent; }
+.mov-section { animation: sectionIn 0.18s ease-out; }
+@keyframes sectionIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
 .setup-shell { display: grid; grid-template-columns: 0.9fr 1.1fr; align-items: center; gap: clamp(34px, 7vw, 96px); min-height: calc(100vh - 130px); padding: 42px 6vw 72px; }
 .setup-intro h1 { margin: 11px 0 18px; font-size: clamp(37px, 5vw, 62px); line-height: 1.02; letter-spacing: -0.055em; }
@@ -209,6 +213,8 @@ code { padding: 2px 6px; background: var(--surface-hover); border-radius: 5px; f
   .main-nav button span { line-height: 1; }
   .main-nav button b { font-size: 9px; font-weight: 700; }
   .page-heading { margin-top: 22px; }
+  .mov-tabs { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+  .mov-tabs button { min-width: 0; }
   .g2 { grid-template-columns: 1fr; }
   .pl { grid-template-columns: 1fr; gap: 10px; }
   .pl-op { display: none; }
@@ -245,8 +251,8 @@ code { padding: 2px 6px; background: var(--surface-hover); border-radius: 5px; f
   .brand span { display: none; }
   .month-picker { min-width: 94px; }
   .main-nav button { min-width: 0; }
-  .main-nav button:nth-child(5) b { font-size: 0; }
-  .main-nav button:nth-child(5) b::after { content: "CSV"; font-size: 9px; }
+  .main-nav button:nth-child(4) b { font-size: 0; }
+  .main-nav button:nth-child(4) b::after { content: "CSV"; font-size: 9px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }

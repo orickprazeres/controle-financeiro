@@ -9,6 +9,17 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [2.1.0] — 2026-08-19
+
+### Alterado
+
+- As abas **Lançamentos** e **Contas** foram unificadas em **Movimentações**.
+- A nova tela possui três visões: **Contas**, **Histórico** e **Recorrentes**.
+- A navegação principal foi reduzida para Resumo, Movimentações, Investimentos e Importar.
+- O banco de dados continua usando a mesma aba `Lancamentos`; nenhuma migração ou alteração no Apps Script é necessária.
+
+---
+
 ## [2.0.0] — 2026-08-19
 
 Nova experiência visual do site, sem alterar a estrutura da planilha nem exigir uma nova implantação do Apps Script.

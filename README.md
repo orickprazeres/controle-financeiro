@@ -1,4 +1,4 @@
-# Meu Financeiro · front-end v2.0.0
+# Meu Financeiro · front-end v2.1.0
 
 Controle de custos, contas a pagar e investimentos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -73,11 +73,9 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 
 **Resumo** — a página de abertura. Patrimônio líquido (investimentos menos dívidas em aberto) em destaque, alertas do que exige ação, indicadores do mês, contas e carteira, gráfico de 12 meses com entradas, saídas e patrimônio, resumo mês a mês com acumulado, próximos vencimentos, aberto por cartão e categorias com orçamento editável ali mesmo.
 
-**Lançamentos** — o histórico completo, filtrável por texto, tipo, categoria, forma de pagamento e status. **Clique numa linha para editar ou excluir.** O rodapé mostra entradas, saídas e saldo do recorte visível.
+**Movimentações** — reúne em uma só tela três visões: *Contas* mostra vencimentos, pagamentos e compromissos futuros; *Histórico* traz todas as entradas e saídas com filtros e edição; *Recorrentes* cadastra e gera as contas fixas do mês.
 
 **+ Novo lançamento** — botão fixo no topo, disponível de qualquer aba. Abre um modal sobre a tela atual; Esc ou clique fora fecha. A competência já vem no mês que você está olhando. Se você informar parcelas, mostra a prévia e grava cada parcela no mês em que ela cai.
-
-**Contas a pagar** — o que vence quando, com as atrasadas em destaque e um seletor "só este mês / tudo em aberto". Botão Pagar registra data e valor efetivos e avisa se o valor difere do previsto. Cadastro de contas fixas com geração mensal em um clique. Inclui as parcelas já comprometidas nos próximos meses.
 
 **Investimentos** — três telas. O *simulador* projeta aportes mensais com juros compostos, em % do CDI, % ao ano ou IPCA+, com IR regressivo e conversão para poder de compra de hoje. *Minha carteira* mostra patrimônio, quanto foi seu bolso e quanto foi juros, rentabilidade por ativo, composição por classe e a comparação entre a sobra do mês e o que você aportou. *Registrar* abre modais para aporte, saldo mensal e cadastro de ativo.
 

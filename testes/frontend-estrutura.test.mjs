@@ -27,6 +27,9 @@ const checks = [
   [html.includes('name="viewport"'), "meta viewport ausente"],
   [css.includes("@media (max-width: 640px)"), "breakpoint móvel principal ausente"],
   [html.includes('aria-label="Navegação principal"'), "navegação principal sem rótulo acessível"],
+  [html.includes('data-p="mov"'), "aba unificada de Movimentações ausente"],
+  [!html.includes('data-p="lanc"') && !html.includes('data-p="pagar"'), "abas antigas ainda aparecem na navegação"],
+  [html.includes('data-mov="contas"') && html.includes('data-mov="historico"') && html.includes('data-mov="recorrentes"'), "visões internas de Movimentações incompletas"],
 ];
 
 const failures = checks.filter(([ok]) => !ok).map(([, message]) => message);

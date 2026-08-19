@@ -1,5 +1,5 @@
 /* ============================================================ estado */
-var VERSAO = '2.0.0';
+var VERSAO = '2.1.0';
 /* Endereço da planilha. Pode ficar aqui porque o compartilhamento dela está
    RESTRITO — saber o endereço não dá acesso a nada. Se algum dia você mudar
    para "qualquer pessoa com o link", apague esta linha e use só o campo do ⚙. */
@@ -62,7 +62,7 @@ function setSyncStatus(estado, texto){
 }
 function abrirPainelAtual(){
   var ativo = document.querySelector('#nav button[data-p].on') || document.querySelector('#nav button[data-p="painel"]');
-  var mapa = { painel:'pgPainel', lanc:'pgLanc', pagar:'pgPagar', inv:'pgInv' };
+  var mapa = { painel:'pgPainel', mov:'pgMov', inv:'pgInv' };
   document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
   if (ativo && mapa[ativo.dataset.p]) $(mapa[ativo.dataset.p]).classList.remove('hide');
 }
@@ -1012,10 +1012,22 @@ document.querySelectorAll('#nav button[data-p]').forEach(function(b){
     document.querySelectorAll('#nav button').forEach(function(x){ x.classList.remove('on'); });
     b.classList.add('on');
     document.querySelectorAll('.pg').forEach(function(p){ p.classList.add('hide'); });
-    var mapa = { painel:'pgPainel', lanc:'pgLanc', pagar:'pgPagar', inv:'pgInv' };
+    var mapa = { painel:'pgPainel', mov:'pgMov', inv:'pgInv' };
     $(mapa[b.dataset.p]).classList.remove('hide');
     $('pgCfg').classList.add('hide');
     document.body.classList.remove('configuring');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+});
+
+document.querySelectorAll('.mov-tabs button[data-mov]').forEach(function(b){
+  b.onclick = function(){
+    var mapa = { contas:'movContas', historico:'movHistorico', recorrentes:'movRecorrentes' };
+    document.querySelectorAll('.mov-tabs button[data-mov]').forEach(function(x){ x.classList.remove('on'); });
+    document.querySelectorAll('.mov-section').forEach(function(x){ x.classList.add('hide'); });
+    b.classList.add('on');
+    $(mapa[b.dataset.mov]).classList.remove('hide');
+    if (b.dataset.mov === 'historico') renderLancamentos();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 });
