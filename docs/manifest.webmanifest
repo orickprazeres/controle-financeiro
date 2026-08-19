@@ -1,11 +1,11 @@
 {
-  "name": "Controle Financeiro",
-  "short_name": "CF",
+  "name": "Meu Financeiro",
+  "short_name": "Financeiro",
   "description": "Controle de custos e investimentos, com os dados na sua planilha do Google.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
   "lang": "pt-BR",
   "icons": [
     { "src": "favicon.svg",   "sizes": "any",     "type": "image/svg+xml" },

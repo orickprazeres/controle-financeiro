@@ -1,4 +1,4 @@
-# Controle Financeiro · v1.8.0
+# Meu Financeiro · front-end v2.0.0
 
 Controle de custos, contas a pagar e investimentos com **Google Sheets como banco de dados** e um **site no GitHub Pages** para analisar e lançar.
 
@@ -15,8 +15,11 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 ├── .gitignore                   o que o Git deve ignorar
 │
 ├── docs/                        ► O SITE (é desta pasta que o GitHub Pages publica)
-│   ├── index.html                 resumo, lançamentos, contas a pagar, investimentos
+│   ├── index.html                 estrutura das telas do painel
+│   ├── app.js                     integração, cálculos e interações
+│   ├── styles.css                 sistema visual e responsividade
 │   ├── importar.html              importador de CSV de fatura/extrato
+│   ├── importar.css               estilos específicos do importador
 │   ├── favicon.svg                logo CF (nítido em qualquer tamanho)
 │   ├── icone-180/192/512.png      ícones para celular e tela de início
 │   └── manifest.webmanifest       nome e ícone do app quando instalado
@@ -44,6 +47,7 @@ Você lança pelo site ou direto na planilha — é o mesmo dado, sincronizado n
 │
 └── testes/                      ► CONTROLE DE QUALIDADE
     ├── testes.js                  152 testes da lógica crítica
+    ├── frontend-estrutura.test.mjs  vínculos e IDs do front-end
     └── README.md                  como rodar
 ```
 

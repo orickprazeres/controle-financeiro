@@ -9,6 +9,33 @@ Numeração [SemVer](https://semver.org/lang/pt-BR/): `MAIOR.MENOR.CORREÇÃO`.
 
 ---
 
+## [2.0.0] — 2026-08-19
+
+Nova experiência visual do site, sem alterar a estrutura da planilha nem exigir uma nova implantação do Apps Script.
+
+### Alterado
+
+- Front-end separado em `index.html`, `app.js` e `styles.css`, facilitando manutenção.
+- Novo onboarding de conexão, com linguagem mais direta e configurações avançadas recolhidas.
+- Cabeçalho com competência, estado de sincronização e ações rápidas.
+- Navegação responsiva: abas no desktop e barra inferior no celular.
+- Painel reorganizado para priorizar patrimônio líquido, alertas, contas e evolução mensal.
+- Telas de Lançamentos, Contas e Investimentos ganharam títulos e contexto próprios.
+- Importador de CSV atualizado para o mesmo sistema visual.
+
+### Corrigido
+
+- Após a primeira conexão, o painel agora fica visível imediatamente, sem exigir clique manual em uma aba.
+- Abrir e fechar Configurações preserva a tela em que o usuário estava.
+- Botões de fechamento dos modais agora possuem rótulos acessíveis.
+
+### Testes
+
+- Mantidos os **152 testes** da lógica financeira.
+- Adicionado teste estrutural que verifica IDs, referências do JavaScript, arquivos vinculados e requisitos básicos de responsividade e acessibilidade.
+
+---
+
 ## [1.8.0] — 2026-07-31
 
 O Painel virou **Resumo**: uma página só que responde "como eu estou?". Só `docs/index.html` mudou.

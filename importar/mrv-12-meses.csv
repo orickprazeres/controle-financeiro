@@ -1,0 +1,26 @@
+﻿id;data;competencia;tipo;descricao;categoria;grupo;forma_pagamento;cartao;parcela;parcelas_total;valor;pago;obs;vencimento;data_pagamento;valor_pago
+MRV001;2026-09-08;2026-09;Saída;MRV parcela mensal 038;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-09-08;;
+MRV002;2026-09-08;2026-09;Saída;MRV seguro casa garantia 040;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-09-08;;
+MRV003;2026-10-08;2026-10;Saída;MRV parcela mensal 039;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-10-08;;
+MRV004;2026-10-08;2026-10;Saída;MRV seguro casa garantia 041;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-10-08;;
+MRV005;2026-11-08;2026-11;Saída;MRV parcela mensal 040;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-11-08;;
+MRV006;2026-11-08;2026-11;Saída;MRV seguro casa garantia 042;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-11-08;;
+MRV007;2026-12-08;2026-12;Saída;MRV parcela mensal 041;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-12-08;;
+MRV008;2026-12-08;2026-12;Saída;MRV seguro casa garantia 043;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2026-12-08;;
+MRV009;2027-01-08;2027-01;Saída;MRV parcela mensal 042;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-01-08;;
+MRV010;2027-01-08;2027-01;Saída;MRV seguro casa garantia 044;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-01-08;;
+MRV011;2027-02-08;2027-02;Saída;MRV parcela mensal 043;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-02-08;;
+MRV012;2027-02-08;2027-02;Saída;MRV seguro casa garantia 045;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-02-08;;
+MRV013;2027-03-08;2027-03;Saída;MRV seguro casa garantia 046;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-03-08;;
+MRV014;2027-03-08;2027-03;Saída;MRV parcela mensal 044;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-03-08;;
+MRV015;2027-04-08;2027-04;Saída;MRV seguro casa garantia 047;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-04-08;;
+MRV016;2027-04-08;2027-04;Saída;MRV parcela mensal 045;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-04-08;;
+MRV017;2027-05-08;2027-05;Saída;MRV seguro casa garantia 048;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-05-08;;
+MRV018;2027-05-08;2027-05;Saída;MRV parcela mensal 046;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-05-08;;
+MRV019;2027-06-08;2027-06;Saída;MRV seguro casa garantia 049;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-06-08;;
+MRV020;2027-06-08;2027-06;Saída;MRV parcela mensal 047;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-06-08;;
+MRV021;2027-07-08;2027-07;Saída;MRV parcela mensal 048;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-07-08;;
+MRV022;2027-07-08;2027-07;Saída;MRV seguro casa garantia 050;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-07-08;;
+MRV023;2027-08-08;2027-08;Saída;MRV parcela anual 003;Aluguel/Condomínio;Moradia;Boleto;;1;1;11597.48;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-08-08;;
+MRV024;2027-08-08;2027-08;Saída;MRV seguro casa garantia 051;Aluguel/Condomínio;Moradia;Boleto;;1;1;35.57;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-08-08;;
+MRV025;2027-08-08;2027-08;Saída;MRV parcela mensal 049;Aluguel/Condomínio;Moradia;Boleto;;1;1;1278.04;Não;MRV Torres Dos Portugueses · contrato 43233031;2027-08-08;;
